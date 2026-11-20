@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- API 23-30 backup rules. The vault never goes to cloud backup; export is the user-controlled backup (Plan §9.6). -->
+<full-backup-content>
+    <exclude domain="database" path="." />
+    <exclude domain="file" path="datastore/" />
+</full-backup-content>

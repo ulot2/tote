@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder app mark: a lime tote bag with a card tucked in. 108dp adaptive canvas, art in the 66dp safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Handle -->
+    <path
+        android:pathData="M42,50 L42,44 A12,12 0 0 1 66,44 L66,50"
+        android:strokeWidth="5"
+        android:strokeColor="#C8F23C"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+    <!-- Bag body -->
+    <path
+        android:fillColor="#C8F23C"
+        android:pathData="M34,52 L74,52 Q78,52 77.6,56 L75.6,74 Q75,78 71,78 L37,78 Q33,78 32.4,74 L30.4,56 Q30,52 34,52 Z" />
+    <!-- Slot -->
+    <path
+        android:fillColor="#0F0E0C"
+        android:pathData="M45,60 L63,60 Q65,60 65,62 Q65,64 63,64 L45,64 Q43,64 43,62 Q43,60 45,60 Z" />
+</vector>
