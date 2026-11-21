@@ -91,11 +91,18 @@ class KeywordDictionary(
     companion object {
         private val json = Json { ignoreUnknownKeys = true }
 
+        /**
+         * Absolute on purpose. R8 renames this class's package in release builds (to something like
+         * `m5`), so a path relative to the class would look in the wrong place and every fill request
+         * would fail. The resource itself keeps its path in the APK.
+         */
+        const val RESOURCE_PATH = "/app/tote/core/matching/dictionary.json"
+
         /** The bundled dictionary. Parsed once, lazily (a few ms), then shared. */
         val default: KeywordDictionary by lazy {
-            val text = KeywordDictionary::class.java.getResourceAsStream("dictionary.json")
+            val text = KeywordDictionary::class.java.getResourceAsStream(RESOURCE_PATH)
                 ?.bufferedReader()?.use { it.readText() }
-                ?: error("dictionary.json missing from :core:matching resources")
+                ?: error("$RESOURCE_PATH missing from :core:matching resources")
             parse(text)
         }
 

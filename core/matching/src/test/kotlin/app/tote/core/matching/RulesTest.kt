@@ -6,11 +6,19 @@ import app.tote.core.model.EntryIcon
 import app.tote.core.model.EntryType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class RulesTest {
+
+    @Test fun dictionaryPathSurvivesMinification() {
+        // A relative path broke every fill request in the minified 0.2.0 build. Keep it absolute,
+        // and make sure the file is where that path says, independent of this class's package.
+        assertTrue(KeywordDictionary.RESOURCE_PATH.startsWith("/"))
+        assertNotNull(ClassLoader.getSystemResource(KeywordDictionary.RESOURCE_PATH.removePrefix("/")))
+    }
 
     @Test fun dictionaryLoadsEveryKind() {
         val d = KeywordDictionary.default
