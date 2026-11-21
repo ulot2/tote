@@ -93,11 +93,15 @@ import app.tote.ui.components.pressScale
 import app.tote.ui.nav.EditorRoute
 import app.tote.ui.nav.SharedKeys
 import app.tote.ui.nav.sharedContainer
+import app.tote.ui.icons.ToteIcons
 import app.tote.ui.theme.Tote
 import app.tote.ui.theme.ToteShapes
 import app.tote.ui.theme.TotePalette
 import app.tote.ui.theme.ToteSpacing
+import app.tote.util.AutofillSetup
 import app.tote.util.Haptics
+import app.tote.util.rememberAutofillStatus
+import app.tote.ui.components.compositeOn
 import kotlinx.coroutines.delay
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -111,6 +115,9 @@ fun VaultRoute(
     viewModel: VaultViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val bannerDismissed by viewModel.autofillBannerDismissed.collectAsStateWithLifecycle()
+    val autofill = rememberAutofillStatus()
+    val context = LocalContext.current
     VaultScreen(
         state = state,
         onQueryChange = viewModel::onQueryChange,
@@ -122,6 +129,9 @@ fun VaultRoute(
         onCommitOrder = viewModel::commitOrder,
         onOpenEditor = onOpenEditor,
         onOpenSettings = onOpenSettings,
+        showAutofillBanner = autofill == AutofillSetup.Status.DISABLED && !bannerDismissed,
+        onEnableAutofill = { context.startActivity(AutofillSetup.requestIntent(context)) },
+        onDismissAutofillBanner = viewModel::dismissAutofillBanner,
     )
 }
 
@@ -137,6 +147,9 @@ fun VaultScreen(
     onCommitOrder: (List<Long>) -> Unit,
     onOpenEditor: (EditorRoute) -> Unit,
     onOpenSettings: () -> Unit,
+    showAutofillBanner: Boolean = false,
+    onEnableAutofill: () -> Unit = {},
+    onDismissAutofillBanner: () -> Unit = {},
 ) {
     val c = Tote.colors
     val view = LocalView.current
@@ -255,6 +268,12 @@ fun VaultScreen(
             if (!state.reordering && !state.loading) {
                 item(key = "search", contentType = "search") {
                     SearchField(state.query, onQueryChange, onClear = { onQueryChange(""); focus.clearFocus() })
+                }
+            }
+
+            if (showAutofillBanner && !state.reordering) {
+                item(key = "autofill-banner", contentType = "banner") {
+                    AutofillBanner(onEnableAutofill, onDismissAutofillBanner, Modifier.animateItem())
                 }
             }
 
@@ -518,6 +537,40 @@ private fun SearchField(query: String, onQueryChange: (String) -> Unit, onClear:
             }
         },
     )
+}
+
+/** Nudges the user to turn on autofill, the main surface (Plan §2). Dismissible for good. */
+@Composable
+private fun AutofillBanner(onEnable: () -> Unit, onDismiss: () -> Unit, modifier: Modifier = Modifier) {
+    val c = Tote.colors
+    Row(
+        modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
+            .clip(ToteShapes.card)
+            .background(c.accentSoft.compositeOn(c.background))
+            .border(1.dp, c.accent.copy(alpha = 0.5f), ToteShapes.card)
+            .padding(start = 16.dp, top = 14.dp, bottom = 14.dp, end = 4.dp),
+        verticalAlignment = Alignment.Top,
+    ) {
+        Icon(ToteIcons.FieldFill, contentDescription = null, tint = c.accentContent, modifier = Modifier.padding(top = 1.dp).size(22.dp))
+        Spacer(Modifier.size(12.dp))
+        Column(Modifier.weight(1f)) {
+            Text("Fill forms in one tap", style = Tote.type.titleSmall, color = c.textPrimary)
+            Text(
+                "Turn on autofill and Tote suggests the right entry when you tap a field.",
+                style = Tote.type.bodySmall,
+                color = c.textSecondary,
+                modifier = Modifier.padding(top = 2.dp, bottom = 12.dp),
+            )
+            PillButton(
+                "Turn on",
+                onClick = onEnable,
+                contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp),
+            )
+        }
+        ToteIconButton(Icons.Rounded.Close, contentDescription = "Dismiss", onClick = onDismiss, tint = c.textSecondary)
+    }
 }
 
 @Composable

@@ -137,3 +137,61 @@ Running log of choices made during the build, and places where the build deviate
   plus ambiguous and negative cases). `FixtureTest` reports every failing fixture at once, with
   scores and reasons. Changing the dictionary (removing "summary") makes the runner fail and name
   the fixture.
+
+## Phase 4
+
+- **Module wiring.** `:feature:autofill` holds the service, the structure parser, presentations and
+  the response builder. The picker stays in `:app` and both the tile and autofill reach it through
+  `PickerIntents` in `:core:data` (this replaces Phase 2's tile-only `PickerLauncher`).
+- **Fast path:** `VaultSnapshot` (`:core:data`) keeps the vault and active profile in memory, fed
+  from Room on an app-wide scope, so a fill request only waits on disk the very first time after
+  the process starts (capped at 2 s). Parsing and matching run off the main thread. Debug builds log
+  the response time only; no values or field text are ever logged.
+- **Parser** reads hints, HTML attributes (`type`, `name`, `id`, `placeholder`, `aria-label`,
+  `autocomplete`, and Chrome's `label`), view hint, id entry, content description, input-type
+  flags and the web domain (inherited from the WebView node). The "nearby label" is the last
+  visible text before the field in document order. A field's own typed text is never read.
+  Checkboxes, radios, buttons, file inputs and hidden or disabled views are skipped. It runs over
+  a small `NodeView` interface so the rules are unit-tested without a device.
+- **Datasets:** one per suggestion per field, each filling just that field, so the system shows the
+  right rows whichever field is focused without a new request. Up to 15 fields per screen.
+  Dataset ids are `e:<entryId>` only.
+- **Use counting** reads the fill event history at the next request (`TYPE_DATASET_SELECTED`),
+  de-duplicated by a response id in the client state. Picks made through "All entries…" are
+  counted by the picker. Storing *learned* mappings (Plan §6.3) is Phase 5; the matcher already
+  accepts them.
+- **No noise in chat and search boxes.** The "most used" fallback is only offered on screens that
+  look like forms (two or more fillable fields, or a web page). A lone text box only gets
+  suggestions for a real match. Otherwise every messaging app would show a Tote dropdown on its
+  compose box.
+- **Inline suggestions** (Android 11+) go on the focused field only, within the keyboard's
+  `maxSuggestionCount`, keeping one slot for "All entries…". They're skipped if the keyboard doesn't
+  support the v1 inline UI; the dropdown always works.
+- **Dropdown rows** are RemoteViews with system fonts (custom fonts can't cross into other apps),
+  Tote's palette in light and night variants, and badges drawn to bitmaps by `IconRenderer` with
+  the same colours as the app (`EntryIconPalette` in `:core:model`, now shared by both).
+- **Icons:** generic glyphs are Material Symbols Rounded (Apache-2.0,
+  `third_party/material-symbols/LICENSE`) and brand marks are Simple Icons (CC0), as vector
+  drawables.
+- **"All entries…"** uses dataset authentication with a mutable `PendingIntent` (the system adds
+  the screen structure to it). It opens `AutofillPickerActivity`, a standard-launch-mode subclass
+  of the picker: the single-task, own-task picker used by the tile can't return a result to the app
+  being filled. The picker then answers with a one-field dataset.
+- **Deprecated `Dataset.Builder` APIs** (pre-API 33) are used on every version. They still work
+  and cover API 26+ with one code path; moving to `Presentations`/`Field` is a later clean-up.
+- **No browser compatibility mode.** Chrome now hands forms to autofill services itself once
+  "Autofill using another service" is on, and declaring compat packages could degrade browsers
+  that already support autofill natively. To revisit after testing Firefox, Samsung Internet and
+  others on a device.
+- **Tote ignores its own screens**, except the autofill test screen.
+- **Setup UI:** Settings has an Autofill card (on/off status shown with an icon and a word, not just
+  colour; "Turn on" opens the system prompt; the one-service warning), Chrome steps with an "Open
+  Chrome" button (Chrome has no public intent for its autofill settings page), and "Try it". The
+  vault shows a dismissible banner while autofill is off. Full onboarding is Phase 5.
+- **Try autofill screen** (`AutofillPlaygroundActivity`, in release builds too): native fields
+  labelled only by nearby text, plus a local Greenhouse/Lever-style job form in a WebView
+  (`assets/playground/job_form.html`, no network). It covers Plan §11's test activity and lets S1/S2
+  be checked on a phone without a real job site.
+- **Not verifiable here:** the actual autofill flow needs a device or emulator (no KVM in the build
+  container). What's covered on the JVM: parsing, planning, dataset building, presentations
+  (rendered to PNG), the fill result, and the manifest wiring.

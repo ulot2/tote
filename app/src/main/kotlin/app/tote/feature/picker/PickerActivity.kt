@@ -6,6 +6,8 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
+import app.tote.feature.autofill.AutofillResults
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -16,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.tote.MainActivity
 import app.tote.core.data.settings.AppSettings
 import app.tote.core.data.settings.SettingsRepository
+import app.tote.core.model.Entry
 import app.tote.ui.theme.ToteTheme
 import app.tote.ui.theme.isAppInDarkTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,11 +26,13 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 /**
- * Translucent sheet-style activity used by the Quick Settings tile (and, in Phase 4, by autofill's
- * "All entries…"). It runs in its own task so it never drags the main app forward.
+ * Translucent sheet-style activity used by the Quick Settings tile. It runs in its own task so it
+ * never drags the main app forward. [AutofillPickerActivity] reuses it for autofill's "All entries…".
  */
 @AndroidEntryPoint
-class PickerActivity : ComponentActivity() {
+open class PickerActivity : ComponentActivity() {
+
+    protected open val mode: PickerMode = PickerMode.COPY
 
     @Inject lateinit var settingsRepository: SettingsRepository
 
@@ -50,16 +55,21 @@ class PickerActivity : ComponentActivity() {
                 PickerScreen(
                     state = state,
                     onQueryChange = viewModel::onQueryChange,
-                    onPick = viewModel::copy,
+                    onPick = ::onPick,
                     onOpenApp = {
                         startActivity(Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
                         finish()
                     },
                     onFinished = ::finish,
+                    mode = mode,
                 )
             }
         }
     }
+
+    protected open fun onPick(entry: Entry) = viewModel.copy(entry)
+
+    protected fun recordUse(entry: Entry) = viewModel.recordUse(entry)
 
     /** The sheet is a moment, not a place: leaving it (home, recents, screen off) closes it. */
     override fun onStop() {
@@ -88,5 +98,31 @@ class PickerActivity : ComponentActivity() {
 
     companion object {
         fun copyIntent(context: Context): Intent = Intent(context, PickerActivity::class.java)
+    }
+}
+
+/**
+ * The picker opened by autofill's "All entries…" (dataset authentication). A separate, standard
+ * launch-mode activity: the system delivers its result back to the app being filled, which a
+ * single-task activity in its own task can't do.
+ */
+@AndroidEntryPoint
+class AutofillPickerActivity : PickerActivity() {
+
+    override val mode: PickerMode = PickerMode.FILL
+
+    override fun onPick(entry: Entry) {
+        val id = AutofillResults.autofillId(intent) ?: return
+        val urlField = intent.getBooleanExtra(AutofillResults.EXTRA_URL_FIELD, false)
+        // Set the result now; the sheet animates out and then finishes, delivering it.
+        setResult(RESULT_OK, AutofillResults.resultFor(this, id, entry, urlField))
+        recordUse(entry)
+    }
+
+    companion object {
+        fun fillIntent(context: Context, autofillId: Parcelable, urlField: Boolean): Intent =
+            Intent(context, AutofillPickerActivity::class.java)
+                .putExtra(AutofillResults.EXTRA_AUTOFILL_ID, autofillId)
+                .putExtra(AutofillResults.EXTRA_URL_FIELD, urlField)
     }
 }

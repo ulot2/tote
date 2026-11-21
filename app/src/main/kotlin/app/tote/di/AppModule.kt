@@ -1,7 +1,11 @@
 package app.tote.di
 
+import android.content.Context
+import android.content.Intent
+import android.os.Parcelable
+import app.tote.core.data.platform.PickerIntents
+import app.tote.feature.picker.AutofillPickerActivity
 import app.tote.feature.picker.PickerActivity
-import app.tote.feature.tile.PickerLauncher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,5 +15,9 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 object AppModule {
     @Provides
-    fun pickerLauncher(): PickerLauncher = PickerLauncher { context -> PickerActivity.copyIntent(context) }
+    fun pickerIntents(): PickerIntents = object : PickerIntents {
+        override fun copyIntent(context: Context): Intent = PickerActivity.copyIntent(context)
+        override fun fillIntent(context: Context, autofillId: Parcelable, urlField: Boolean): Intent =
+            AutofillPickerActivity.fillIntent(context, autofillId, urlField)
+    }
 }

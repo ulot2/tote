@@ -7,6 +7,7 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
+import app.tote.core.data.platform.PickerIntents
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -18,7 +19,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ToteTileService : TileService() {
 
-    @Inject lateinit var pickerLauncher: PickerLauncher
+    @Inject lateinit var pickerIntents: PickerIntents
 
     override fun onStartListening() {
         super.onStartListening()
@@ -41,7 +42,7 @@ class ToteTileService : TileService() {
 
     @SuppressLint("StartActivityAndCollapseDeprecated")
     private fun openPicker() {
-        val intent = pickerLauncher.copyIntent(this).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val intent = pickerIntents.copyIntent(this).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             val pending = PendingIntent.getActivity(
                 this,

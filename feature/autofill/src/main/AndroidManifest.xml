@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <!-- Tote's autofill service (Plan §9.4). Bound only by the system. -->
+        <service
+            android:name=".ToteAutofillService"
+            android:exported="true"
+            android:label="@string/tote_af_service_label"
+            android:permission="android.permission.BIND_AUTOFILL_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.autofill.AutofillService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.autofill"
+                android:resource="@xml/tote_autofill_service" />
+        </service>
+    </application>
+</manifest>

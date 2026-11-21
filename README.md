@@ -1,7 +1,7 @@
 # Tote
 
 A personal vault of the links and answers you type into every form: LinkedIn, portfolio, GitHub,
-email, CV link, stock answers. Tap to copy in the app or from a Quick Settings tile; autofill is coming.
+email, CV link, stock answers. Tote suggests them when you tap a form field (autofill), or you copy them from the app or a Quick Settings tile.
 Android, Kotlin + Jetpack Compose. Fully offline: **no INTERNET permission**.
 
 See [`PLAN.md`](PLAN.md) for the build plan and [`DECISIONS.md`](DECISIONS.md) for deviations.
@@ -14,6 +14,7 @@ See [`PLAN.md`](PLAN.md) for the build plan and [`DECISIONS.md`](DECISIONS.md) f
 | `:core:data` | Room, DataStore, repositories, clipboard |
 | `:core:matching` | Pure Kotlin field-matching engine: shared JSON keyword dictionary, scoring, ignore rules, 61 job-form fixtures |
 | `:feature:tile` | Quick Settings tile that opens the picker sheet |
+| `:feature:autofill` | Autofill service: structure parsing, dataset building, dropdown and inline presentations |
 
 ## Build
 
@@ -45,6 +46,6 @@ base64 -w0 tote.p12 > tote.p12.b64   # paste this into TOTE_KEY
 - [x] Phase 1: foundation and vault
 - [x] Phase 2: Quick Settings tile and picker
 - [x] Phase 3: matching engine
-- [ ] Phase 4: autofill service
+- [x] Phase 4: autofill service
 - [ ] Phase 5: profiles, learning, polish
 - [ ] Phase 6: release prep

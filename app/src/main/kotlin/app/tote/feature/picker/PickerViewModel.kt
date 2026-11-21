@@ -2,7 +2,9 @@ package app.tote.feature.picker
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.tote.core.data.di.ApplicationScope
 import app.tote.core.data.platform.ClipboardWriter
+import kotlinx.coroutines.CoroutineScope
 import app.tote.core.data.repo.EntryRepository
 import app.tote.core.model.Entry
 import app.tote.core.model.EntryRanking
@@ -26,6 +28,7 @@ data class PickerUiState(
 class PickerViewModel @Inject constructor(
     private val repository: EntryRepository,
     private val clipboard: ClipboardWriter,
+    @ApplicationScope private val appScope: CoroutineScope,
 ) : ViewModel() {
 
     private val query = MutableStateFlow("")
@@ -41,6 +44,12 @@ class PickerViewModel @Inject constructor(
     /** Copies the entry and counts the use. Runs before the sheet animates away. */
     fun copy(entry: Entry) {
         clipboard.copy(entry.label, entry.value)
-        viewModelScope.launch { repository.recordUse(entry.id) }
+        recordUse(entry)
+    }
+
+    /** Counts a use without copying (autofill fills the field directly). */
+    fun recordUse(entry: Entry) {
+        // Outlives the ViewModel: the activity finishes right after a fill.
+        appScope.launch { repository.recordUse(entry.id) }
     }
 }

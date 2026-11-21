@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.tote.core.model.EntryIcon
+import app.tote.core.model.EntryIconPalette
 import app.tote.ui.theme.Geist
 import app.tote.ui.theme.Tote
 import app.tote.ui.theme.ToteShapes
@@ -67,23 +68,25 @@ private data class BadgeStyle(val container: Color, val content: Color, val vect
 @Composable
 private fun styleFor(icon: EntryIcon): BadgeStyle {
     val c = Tote.colors
-    // Monochrome brands get an inverted tile so they never vanish into the background.
-    val mono = if (c.isDark) Color(0xFFF5F2EA) to Color(0xFF111111) else Color(0xFF16150F) to Color.White
-    return when (icon) {
-        EntryIcon.LINKEDIN -> BadgeStyle(Color(0xFF0A66C2), Color.White, null, "in")
-        EntryIcon.GITHUB -> BadgeStyle(mono.first, mono.second, BrandVectors.GitHub)
-        EntryIcon.X -> BadgeStyle(mono.first, mono.second, BrandVectors.X)
-        EntryIcon.MEDIUM -> BadgeStyle(mono.first, mono.second, null, "M")
-        EntryIcon.BEHANCE -> BadgeStyle(Color(0xFF1769FF), Color.White, BrandVectors.Behance)
-        EntryIcon.DRIBBBLE -> BadgeStyle(Color(0xFFEA4C89), Color.White, BrandVectors.Dribbble)
-        EntryIcon.GOOGLE_DRIVE -> BadgeStyle(Color(0xFF1A73E8), Color.White, BrandVectors.GoogleDrive)
-        EntryIcon.GLOBE -> BadgeStyle(c.surfaceHigh, c.textPrimary, Icons.Rounded.Language)
-        EntryIcon.MAIL -> BadgeStyle(c.surfaceHigh, c.textPrimary, Icons.Rounded.MailOutline)
-        EntryIcon.PHONE -> BadgeStyle(c.surfaceHigh, c.textPrimary, Icons.Rounded.Call)
-        EntryIcon.DOC -> BadgeStyle(c.surfaceHigh, c.textPrimary, Icons.Rounded.Description)
-        EntryIcon.LOCATION -> BadgeStyle(c.surfaceHigh, c.textPrimary, Icons.Rounded.Place)
-        EntryIcon.TEXT -> BadgeStyle(c.surfaceHigh, c.textPrimary, Icons.AutoMirrored.Rounded.Notes)
+    val brand = EntryIconPalette.brand(icon, c.isDark)
+    // Brand colours are shared with the autofill dropdown; neutral icons follow the live theme.
+    val container = brand?.let { Color(it.container) } ?: c.surfaceHigh
+    val content = brand?.let { Color(it.content) } ?: c.textPrimary
+    EntryIconPalette.monogram(icon)?.let { return BadgeStyle(container, content, null, it) }
+    val vector = when (icon) {
+        EntryIcon.GITHUB -> BrandVectors.GitHub
+        EntryIcon.X -> BrandVectors.X
+        EntryIcon.BEHANCE -> BrandVectors.Behance
+        EntryIcon.DRIBBBLE -> BrandVectors.Dribbble
+        EntryIcon.GOOGLE_DRIVE -> BrandVectors.GoogleDrive
+        EntryIcon.GLOBE -> Icons.Rounded.Language
+        EntryIcon.MAIL -> Icons.Rounded.MailOutline
+        EntryIcon.PHONE -> Icons.Rounded.Call
+        EntryIcon.DOC -> Icons.Rounded.Description
+        EntryIcon.LOCATION -> Icons.Rounded.Place
+        else -> Icons.AutoMirrored.Rounded.Notes
     }
+    return BadgeStyle(container, content, vector)
 }
 
 /**

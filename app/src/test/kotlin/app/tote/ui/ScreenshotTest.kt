@@ -81,7 +81,15 @@ class ScreenshotTest {
     @Test fun editorDark() = editor(true)
     @Test fun editorLight() = editor(false)
 
-    @Test fun settingsDark() = snap("settings", true) { SettingsScreen(AppSettings(), {}, {}, {}, tilePromptSupported = true) }
+    @Test fun settingsDark() = snap("settings", true) { SettingsScreen(AppSettings(), {}, {}, {}, tilePromptSupported = true, onOpenChrome = {}) }
+
+    @Test fun settingsAutofillOnLight() = snap("settings-autofill-on", false) {
+        SettingsScreen(AppSettings(), {}, {}, {}, tilePromptSupported = true, autofillStatus = app.tote.util.AutofillSetup.Status.ENABLED, onOpenChrome = {})
+    }
+
+    @Test fun vaultBannerDark() = snap("vault-banner", true) {
+        VaultScreen(SampleData.state(), {}, {}, {}, {}, {}, {}, {}, {}, {}, showAutofillBanner = true)
+    }
 
     private fun picker(dark: Boolean, entries: List<app.tote.core.model.Entry>, name: String) = snap(name, dark) {
         // Draw something behind the translucent sheet, as the shade-launched picker would sit over another app.

@@ -1,0 +1,5 @@
+<resources>
+    <string name="tote_af_service_label">Tote</string>
+    <string name="tote_af_all_entries">All entries…</string>
+    <string name="tote_af_all_entries_subtitle">Search your Tote</string>
+</resources>

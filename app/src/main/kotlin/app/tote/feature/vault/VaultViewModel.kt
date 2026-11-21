@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.tote.core.data.platform.ClipboardWriter
 import app.tote.core.data.repo.EntryRepository
+import app.tote.core.data.settings.SettingsRepository
+import kotlinx.coroutines.flow.map
 import app.tote.core.model.Category
 import app.tote.core.model.Entry
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,7 +35,17 @@ data class VaultUiState(
 class VaultViewModel @Inject constructor(
     private val repository: EntryRepository,
     private val clipboard: ClipboardWriter,
+    private val settings: SettingsRepository,
 ) : ViewModel() {
+
+    val autofillBannerDismissed: StateFlow<Boolean> = settings.settings
+        .map { it.autofillBannerDismissed }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
+
+    fun dismissAutofillBanner() {
+        viewModelScope.launch { settings.setAutofillBannerDismissed(true) }
+    }
+
 
     private val query = MutableStateFlow("")
     private val reordering = MutableStateFlow(false)
