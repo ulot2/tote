@@ -91,8 +91,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-/** What a pick does. COPY for the tile; FILL arrives with the autofill service (Phase 4). */
-enum class PickerMode { COPY }
+/** What a pick does: COPY for the tile, FILL for autofill's "All entries…". */
+enum class PickerMode { COPY, FILL }
 
 /**
  * Picker sheet (Plan §8.4): translucent, sheet-style, search at the top, pinned first then most used.
@@ -108,6 +108,7 @@ fun PickerScreen(
     onOpenApp: () -> Unit,
     onFinished: () -> Unit,
     startVisible: Boolean = false,
+    mode: PickerMode = PickerMode.COPY,
 ) {
     val c = Tote.colors
     val view = LocalView.current
@@ -208,7 +209,7 @@ fun PickerScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            "Copy from Tote",
+                            if (mode == PickerMode.FILL) "Fill from Tote" else "Copy from Tote",
                             style = Tote.type.title,
                             color = c.textPrimary,
                             modifier = Modifier
@@ -241,7 +242,7 @@ fun PickerScreen(
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
                         items(state.entries, key = { it.id }) { entry ->
-                            PickerRow(entry, copied = picked?.id == entry.id, onClick = { pick(entry) }, modifier = Modifier.animateItem())
+                            PickerRow(entry, copied = picked?.id == entry.id, mode = mode, onClick = { pick(entry) }, modifier = Modifier.animateItem())
                         }
                     }
                 }
@@ -251,7 +252,7 @@ fun PickerScreen(
 }
 
 @Composable
-private fun PickerRow(entry: Entry, copied: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun PickerRow(entry: Entry, copied: Boolean, mode: PickerMode, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val c = Tote.colors
     val bg = if (copied) c.accentSoft.compositeOn(c.surface) else c.surface
     Row(
@@ -259,7 +260,7 @@ private fun PickerRow(entry: Entry, copied: Boolean, onClick: () -> Unit, modifi
             .fillMaxWidth()
             .clip(ToteShapes.field)
             .background(bg)
-            .clickable(role = Role.Button, onClickLabel = "Copy", onClick = onClick)
+            .clickable(role = Role.Button, onClickLabel = if (mode == PickerMode.FILL) "Fill" else "Copy", onClick = onClick)
             .defaultMinSize(minHeight = 64.dp)
             .padding(horizontal = 10.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -294,7 +295,7 @@ private fun PickerRow(entry: Entry, copied: Boolean, onClick: () -> Unit, modifi
                         Modifier
                             .size(28.dp)
                             .background(c.accent, ToteShapes.pill)
-                            .semantics { contentDescription = "Copied" },
+                            .semantics { contentDescription = if (mode == PickerMode.FILL) "Filled" else "Copied" },
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(Icons.Rounded.Check, contentDescription = null, tint = c.onAccent, modifier = Modifier.size(18.dp))

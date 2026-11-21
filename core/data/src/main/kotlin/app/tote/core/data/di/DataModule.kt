@@ -18,7 +18,16 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Qualifier
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+
+/** A scope that lives as long as the process, for work that must outlive a screen or a service bind. */
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class ApplicationScope
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -36,6 +45,9 @@ object DataProvidesModule {
         PreferenceDataStoreFactory.create { context.preferencesDataStoreFile("settings") }
 
     @Provides fun clock(): Clock = Clock.System
+
+    @Provides @Singleton @ApplicationScope
+    fun applicationScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 }
 
 @Module

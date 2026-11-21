@@ -35,5 +35,22 @@
             android:taskAffinity=""
             android:theme="@style/Theme.Tote.Picker"
             android:windowSoftInputMode="adjustResize" />
+
+        <!-- Same sheet, opened by autofill's "All entries…". Standard launch mode so the fill result
+             reaches the app being filled. -->
+        <activity
+            android:name=".feature.picker.AutofillPickerActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.Tote.Picker"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Realistic fields for trying autofill; opened from Settings. -->
+        <activity
+            android:name=".feature.playground.AutofillPlaygroundActivity"
+            android:exported="false"
+            android:label="Try autofill"
+            android:theme="@style/Theme.Tote"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 </manifest>

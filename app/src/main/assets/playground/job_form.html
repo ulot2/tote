@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test job form</title>
+<style>
+  body { font-family: sans-serif; margin: 0; padding: 16px 20px 40px; background: #f6f3ec; color: #1b1a16; }
+  h1 { font-size: 20px; margin: 4px 0 2px; }
+  p.note { color: #5c584f; font-size: 14px; margin: 0 0 16px; }
+  label { display: block; font-size: 14px; font-weight: 600; margin: 16px 0 6px; }
+  input, textarea { box-sizing: border-box; width: 100%; font-size: 16px; padding: 12px 14px; border: 1px solid #cbc5b8; border-radius: 12px; background: #fffdf8; }
+  textarea { min-height: 96px; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #0f0e0c; color: #f5f2ea; }
+    p.note { color: #a9a396; }
+    input, textarea { background: #191815; color: #f5f2ea; border-color: #45433c; }
+  }
+</style>
+</head>
+<body>
+  <!-- Mirrors Greenhouse/Lever field naming so autofill sees realistic signals. Nothing is submitted. -->
+  <h1>Acme Corp · Android Engineer</h1>
+  <p class="note">A local test form. Nothing here leaves your phone.</p>
+  <form onsubmit="return false" autocomplete="off">
+    <label for="email">Email</label>
+    <input id="email" name="job_application[email]" type="email" autocomplete="email">
+
+    <label for="phone">Phone</label>
+    <input id="phone" name="job_application[phone]" type="tel">
+
+    <label for="li">LinkedIn Profile</label>
+    <input id="li" name="urls[LinkedIn]" type="text">
+
+    <label for="gh">GitHub URL</label>
+    <input id="gh" name="urls[GitHub]" type="text">
+
+    <label for="site">Website</label>
+    <input id="site" name="job_application[answers_attributes][1][text_value]" type="text">
+
+    <label for="other">Other link</label>
+    <input id="other" name="urls[Other]" type="url">
+
+    <label for="cv">Resume/CV link</label>
+    <input id="cv" name="cards[resume][field0]" type="text">
+
+    <label for="city">Current location</label>
+    <input id="city" name="location" type="text">
+
+    <label for="why">Why do you want to work at Acme?</label>
+    <textarea id="why" name="job_application[answers_attributes][3][text_value]"></textarea>
+
+    <label for="pw">Create a password (Tote should stay quiet here)</label>
+    <input id="pw" name="password" type="password" autocomplete="new-password">
+  </form>
+</body>
+</html>

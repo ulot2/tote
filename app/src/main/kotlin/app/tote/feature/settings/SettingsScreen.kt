@@ -36,6 +36,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.automirrored.rounded.OpenInNew
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.remember
+import android.content.Intent
+import app.tote.feature.playground.AutofillPlaygroundActivity
+import app.tote.util.AutofillSetup
+import app.tote.util.rememberAutofillStatus
 import androidx.compose.material.icons.rounded.Check
 import app.tote.ui.components.PillButton
 import app.tote.ui.components.PillStyle
@@ -80,6 +90,8 @@ class SettingsViewModel @Inject constructor(
 fun SettingsRoute(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val autofillStatus = rememberAutofillStatus()
+    val chrome = remember { AutofillSetup.chromeLaunchIntent(context) }
     var tileResult by rememberSaveable { mutableStateOf<TileAddResult?>(null) }
     SettingsScreen(
         state = state,
@@ -89,6 +101,11 @@ fun SettingsRoute(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewMod
         tilePromptSupported = TilePrompt.isSupported,
         tileResult = tileResult,
         onAddTile = { TilePrompt.request(context) { tileResult = it } },
+        autofillStatus = autofillStatus,
+        onEnableAutofill = { context.startActivity(AutofillSetup.requestIntent(context)) },
+        onManageAutofill = { context.startActivity(AutofillSetup.manageIntent()) },
+        onOpenChrome = chrome?.let { intent -> { context.startActivity(intent) } },
+        onTryAutofill = { context.startActivity(Intent(context, AutofillPlaygroundActivity::class.java)) },
     )
 }
 
@@ -101,6 +118,11 @@ fun SettingsScreen(
     tilePromptSupported: Boolean = false,
     tileResult: TileAddResult? = null,
     onAddTile: () -> Unit = {},
+    autofillStatus: AutofillSetup.Status = AutofillSetup.Status.DISABLED,
+    onEnableAutofill: () -> Unit = {},
+    onManageAutofill: () -> Unit = {},
+    onOpenChrome: (() -> Unit)? = null,
+    onTryAutofill: () -> Unit = {},
 ) {
     val c = Tote.colors
     Box(Modifier.fillMaxSize().background(c.background), contentAlignment = Alignment.TopCenter) {
@@ -161,6 +183,11 @@ fun SettingsScreen(
                 }
             }
 
+            SectionLabel("Autofill")
+            AutofillCard(autofillStatus, onEnableAutofill, onManageAutofill, onTryAutofill)
+            Spacer(Modifier.height(12.dp))
+            ChromeCard(onOpenChrome)
+
             SectionLabel("Quick Settings tile")
             Card {
                 Text("Copy from anywhere", style = Tote.type.titleSmall, color = c.textPrimary)
@@ -212,15 +239,98 @@ fun SettingsScreen(
     }
 }
 
-/** Manual steps for Android 12 and older, which have no "add tile" prompt. */
 @Composable
-private fun TileSteps() {
+private fun AutofillCard(
+    status: AutofillSetup.Status,
+    onEnable: () -> Unit,
+    onManage: () -> Unit,
+    onTry: () -> Unit,
+) {
     val c = Tote.colors
-    val steps = listOf(
-        "Swipe down twice from the top to open Quick Settings.",
-        "Tap the pencil (edit) button.",
-        "Drag Tote into your tiles.",
-    )
+    Card {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("Suggest entries in forms", style = Tote.type.titleSmall, color = c.textPrimary)
+                Text(
+                    "Tap a field like \"LinkedIn profile\" and Tote offers the right link, in apps and in your browser.",
+                    style = Tote.type.bodySmall,
+                    color = c.textSecondary,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
+            Spacer(Modifier.width(12.dp))
+            StatusPill(status)
+        }
+        Spacer(Modifier.height(14.dp))
+        when (status) {
+            AutofillSetup.Status.DISABLED -> {
+                PillButton("Turn on autofill", onClick = onEnable, icon = Icons.Rounded.AutoAwesome)
+                Text(
+                    "Android uses one autofill service at a time. Choosing Tote turns off your password manager's autofill until you switch back. The Quick Settings tile works either way.",
+                    style = Tote.type.bodySmall,
+                    color = c.textSecondary,
+                    modifier = Modifier.padding(top = 12.dp),
+                )
+            }
+            AutofillSetup.Status.ENABLED -> Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                PillButton("Try it", onClick = onTry, icon = Icons.Rounded.Edit)
+                PillButton("Change service", onClick = onManage, style = PillStyle.Ghost)
+            }
+            AutofillSetup.Status.UNSUPPORTED -> Text(
+                "This phone doesn't offer autofill to other apps. Use the Quick Settings tile instead.",
+                style = Tote.type.bodySmall,
+                color = c.textSecondary,
+            )
+        }
+    }
+}
+
+@Composable
+private fun StatusPill(status: AutofillSetup.Status) {
+    val c = Tote.colors
+    val on = status == AutofillSetup.Status.ENABLED
+    Row(
+        Modifier
+            .background(if (on) c.accent else c.surfaceRaised, ToteShapes.pill)
+            .padding(horizontal = 10.dp, vertical = 5.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        // Icon + word, so the state never rests on colour alone.
+        Icon(if (on) Icons.Rounded.Check else Icons.Rounded.Close, contentDescription = null, tint = if (on) c.onAccent else c.textSecondary, modifier = Modifier.size(14.dp))
+        Spacer(Modifier.width(4.dp))
+        Text(if (on) "On" else "Off", style = Tote.type.label, color = if (on) c.onAccent else c.textSecondary)
+    }
+}
+
+/** Chrome needs its own switch before it hands web forms to Tote (Plan §9.7). */
+@Composable
+private fun ChromeCard(onOpenChrome: (() -> Unit)?) {
+    val c = Tote.colors
+    Card {
+        Text("In Chrome", style = Tote.type.titleSmall, color = c.textPrimary)
+        Text(
+            "Chrome fills web forms itself unless you tell it to use Tote.",
+            style = Tote.type.bodySmall,
+            color = c.textSecondary,
+            modifier = Modifier.padding(top = 4.dp, bottom = 12.dp),
+        )
+        Steps(
+            listOf(
+                "In Chrome, open Settings, then Autofill services.",
+                "Choose \"Autofill using another service\".",
+                "Restart Chrome when it asks.",
+            ),
+        )
+        if (onOpenChrome != null) {
+            Spacer(Modifier.height(14.dp))
+            PillButton("Open Chrome", onClick = onOpenChrome, style = PillStyle.Secondary, icon = Icons.AutoMirrored.Rounded.OpenInNew)
+        }
+    }
+}
+
+@Composable
+private fun Steps(steps: List<String>) {
+    val c = Tote.colors
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         steps.forEachIndexed { i, step ->
             Row(verticalAlignment = Alignment.Top) {
@@ -236,6 +346,16 @@ private fun TileSteps() {
         }
     }
 }
+
+/** Manual steps for Android 12 and older, which have no "add tile" prompt. */
+@Composable
+private fun TileSteps() = Steps(
+    listOf(
+        "Swipe down twice from the top to open Quick Settings.",
+        "Tap the pencil (edit) button.",
+        "Drag Tote into your tiles.",
+    ),
+)
 
 @Composable
 private fun SectionLabel(text: String) {

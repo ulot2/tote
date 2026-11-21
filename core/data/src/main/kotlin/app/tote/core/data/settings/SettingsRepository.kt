@@ -21,6 +21,8 @@ data class AppSettings(
     val onboardingDone: Boolean = false,
     /** null = the implicit "All" profile. */
     val activeProfileId: Long? = null,
+    /** The user closed the "Turn on autofill" banner on the vault. */
+    val autofillBannerDismissed: Boolean = false,
 )
 
 @Singleton
@@ -32,6 +34,7 @@ class SettingsRepository @Inject constructor(
         val dynamic = booleanPreferencesKey("dynamic_color")
         val onboarding = booleanPreferencesKey("onboarding_done")
         val activeProfile = longPreferencesKey("active_profile_id")
+        val autofillBannerDismissed = booleanPreferencesKey("autofill_banner_dismissed")
     }
 
     val settings: Flow<AppSettings> = store.data.map { p ->
@@ -40,6 +43,7 @@ class SettingsRepository @Inject constructor(
             dynamicColor = p[Keys.dynamic] ?: false,
             onboardingDone = p[Keys.onboarding] ?: false,
             activeProfileId = p[Keys.activeProfile],
+            autofillBannerDismissed = p[Keys.autofillBannerDismissed] ?: false,
         )
     }.distinctUntilChanged()
 
@@ -53,6 +57,10 @@ class SettingsRepository @Inject constructor(
 
     suspend fun setOnboardingDone(done: Boolean) {
         store.edit { it[Keys.onboarding] = done }
+    }
+
+    suspend fun setAutofillBannerDismissed(dismissed: Boolean) {
+        store.edit { it[Keys.autofillBannerDismissed] = dismissed }
     }
 
     suspend fun setActiveProfile(id: Long?) {

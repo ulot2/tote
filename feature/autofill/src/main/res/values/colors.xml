@@ -1,0 +1,7 @@
+<resources>
+    <!-- Dropdown rows match Tote's light palette; values-night has the dark one. -->
+    <color name="tote_af_surface">#FFFFFDF8</color>
+    <color name="tote_af_text">#FF1B1A16</color>
+    <color name="tote_af_text_secondary">#FF5C584F</color>
+    <color name="tote_af_accent_content">#FF4A6300</color>
+</resources>

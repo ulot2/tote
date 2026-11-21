@@ -71,6 +71,7 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:matching"))
     implementation(project(":feature:tile"))
+    implementation(project(":feature:autofill"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
