@@ -1,0 +1,97 @@
+name: Build Tote
+
+# A push to main or dev, or a pull request, runs the unit tests and builds, to prove the code still works;
+# the APK stays on the run page (download it with "gh run download"). Pushing a tag like v1.2.0 also
+# publishes a release with Tote.apk attached.
+on:
+  push:
+    branches: [main, dev]
+    tags: ['v*.*.*']
+  pull_request:
+  workflow_dispatch:
+
+# Read-only by default; only the release job below may write (to create the release).
+permissions:
+  contents: read
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: v
+        # Tag builds use the tag. Other builds use the last release tag plus "-dev.<run>".
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            v="${GITHUB_REF_NAME#v}"
+          else
+            last=$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n1)
+            last="${last:-v0.0.0}"
+            v="${last#v}-dev.${GITHUB_RUN_NUMBER}"
+          fi
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      # Uses the Gradle version pinned in gradle/wrapper, and checks that the wrapper jar is an official one.
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          validate-wrappers: true
+      - name: Test and build signed APK
+        env:
+          TOTE_KEY: ${{ secrets.TOTE_KEY }}
+          TOTE_KEY_PASSWORD: ${{ secrets.TOTE_KEY_PASSWORD }}
+          TOTE_VERSION: ${{ steps.v.outputs.version }}
+        run: |
+          if [ -z "$TOTE_KEY" ]; then
+            # No key in the repo secrets yet: sign with a throwaway key, so the build still proves the code compiles.
+            # Such an APK can't update one signed with the real key, so a release refuses to publish without it.
+            [[ "$GITHUB_REF" == refs/tags/v* ]] && { echo "::error::Add the TOTE_KEY and TOTE_KEY_PASSWORD secrets before releasing"; exit 1; }
+            echo "::warning::TOTE_KEY secret missing; signing with a throwaway key"
+            TOTE_KEY_PASSWORD=throwaway
+            keytool -genkeypair -keystore app/tote.p12 -storetype pkcs12 -storepass "$TOTE_KEY_PASSWORD" -keypass "$TOTE_KEY_PASSWORD" \
+              -alias throwaway -keyalg RSA -keysize 2048 -validity 1 -dname "CN=throwaway"
+            export TOTE_KEY_PASSWORD
+          else
+            # Strip spaces and line breaks that copying from a phone can add.
+            printf '%s' "$TOTE_KEY" | tr -d ' \r\n\t' | base64 -d > app/tote.p12 \
+              || { echo "::error::TOTE_KEY is not valid base64. Paste the whole of tote.p12.b64 into it again."; exit 1; }
+            keytool -list -keystore app/tote.p12 -storetype pkcs12 -storepass "$TOTE_KEY_PASSWORD" >/dev/null \
+              || { echo "::error::TOTE_KEY_PASSWORD does not open the key. Paste password.txt into it again."; exit 1; }
+          fi
+          export TOTE_KEY_ALIAS=$(keytool -list -keystore app/tote.p12 -storetype pkcs12 -storepass "$TOTE_KEY_PASSWORD" | grep PrivateKeyEntry | cut -d, -f1)
+          ./gradlew test assembleRelease
+          # Tote has no native code, so one APK runs on every phone.
+          cp app/build/outputs/apk/release/app-release.apk Tote.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: Tote.apk
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+
+  release:
+    needs: android
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: apk
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ needs.android.outputs.version }}
+        # The tag can come from "git push" (no release yet) or from publishing a release on GitHub (release exists).
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" Tote.apk --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" Tote.apk --title "Tote $VERSION" --generate-notes --latest
+          fi
