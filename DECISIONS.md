@@ -95,3 +95,45 @@ Running log of choices made during the build, and places where the build deviate
   (Phase 5) will reuse the same `TilePrompt` helper.
 - The "under 3 seconds from shade to paste" acceptance check needs a real phone; it can't be timed
   in this container. Nothing in the path waits on I/O beyond the first Room read.
+
+## Phase 3
+
+- **The dictionary is JSON** (`core/matching/src/main/resources/app/tote/core/matching/dictionary.json`),
+  not Kotlin, so the planned Chrome extension can load the same file (Plan §14). It holds kind
+  synonyms (strong and weak), generic link words, ignore phrases, and the meanings of Android
+  autofill hints and HTML `autocomplete` tokens. It's parsed once, lazily.
+- **`:core:matching` depends on `:core:model`**, which is also pure Kotlin, so it can score real
+  `Entry` objects. It has no Android dependency.
+- **Normalisation** now also folds accents ("résumé" → "resume") and applies a crude plural stem
+  ("links" → "link", but never "address" or "status").
+- **Entry kind** comes from the brand icon first, then the type (email, phone), then the label
+  ("Why this company?" → why_company, "CV (Non-tech)" → cv). A link with a globe icon and no
+  recognisable label counts as a portfolio. Every entry also matches on its own label and on its
+  user keywords, so entries with no known kind ("Pronouns") still get suggested.
+- **Scoring** (constants in `FieldMatcher`): hint/autocomplete 100; best hit per signal tier,
+  summed: label/placeholder/aria/hint 60, name/id 45, nearby text 35. Weak phrases score half,
+  and hits inside unsplit ids ("linkedinprofileurl") score 80%. Generic link words (or a URL-typed
+  field) give every link 32, so "Website" offers Portfolio first and then the other links (S2).
+  Learned picks add 200. Threshold 30. Anything under 30% of the top score is dropped. Max 3.
+- **Longer phrases swallow shorter ones** of a different meaning: "address" (location, weak) doesn't
+  fire inside "email address", nor "contact" (phone, weak) inside "contact email". Generic link
+  words never swallow, so "Other website" still counts as "website" for Portfolio.
+- **Type fit is a filter, not just a boost**, for email, tel and number inputs: an email field only
+  ever offers email entries, and a number field only numeric values. URL fields boost links and
+  sink everything else. Text areas favour long answers.
+- **Search ignoring is narrow** on purpose. A field counts as a search box only if its type is
+  `search`, its name/id is `q`/`search`/`query`, or its label *starts* with "Search". "Job search
+  status" and "How did you find us?" stay normal fields. An earlier draft that ignored any field
+  containing "find" or "search" would have hidden real questions.
+- **`autocomplete="off"` is not an ignore signal.** Job-board forms set it everywhere (Google Forms
+  does), and Plan §7.5 only asks us to respect "not important for autofill".
+- **Fallback** (nothing passed the threshold): the 3 most-used entries plus "All entries…", only in
+  text and URL inputs. Number, date, email-only and phone-only inputs get nothing at all. In a text
+  area the fallback puts long answers first; in a URL input, links first.
+- **Learning hook**: `MatchContext.learned` and `FieldSignature.key()` are in place now. Storing
+  and clearing learned mappings is Phase 5.
+- **Fixtures**: 61 field descriptions in `core/matching/src/test/resources/fixtures/job_forms.json`
+  (Greenhouse, Lever, Workable, Ashby, Google Forms, Typeform, LinkedIn Easy Apply, native apps,
+  plus ambiguous and negative cases). `FixtureTest` reports every failing fixture at once, with
+  scores and reasons. Changing the dictionary (removing "summary") makes the runner fail and name
+  the fixture.
