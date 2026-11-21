@@ -5,6 +5,14 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
+    <!-- Translucent window for the picker sheet; the sheet draws its own scrim and motion. -->
+    <style name="Theme.Tote.Picker" parent="Theme.Tote">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
     <style name="Theme.Tote.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/tote_background</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>

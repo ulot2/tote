@@ -70,6 +70,7 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:data"))
     implementation(project(":core:matching"))
+    implementation(project(":feature:tile"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)

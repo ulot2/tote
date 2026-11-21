@@ -30,6 +30,17 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Check
+import app.tote.ui.components.PillButton
+import app.tote.ui.components.PillStyle
+import app.tote.util.TileAddResult
+import app.tote.util.TilePrompt
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -68,7 +79,17 @@ class SettingsViewModel @Inject constructor(
 @Composable
 fun SettingsRoute(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    SettingsScreen(state, onBack, { viewModel.setTheme(it) }, { viewModel.setDynamic(it) })
+    val context = LocalContext.current
+    var tileResult by rememberSaveable { mutableStateOf<TileAddResult?>(null) }
+    SettingsScreen(
+        state = state,
+        onBack = onBack,
+        onTheme = { viewModel.setTheme(it) },
+        onDynamic = { viewModel.setDynamic(it) },
+        tilePromptSupported = TilePrompt.isSupported,
+        tileResult = tileResult,
+        onAddTile = { TilePrompt.request(context) { tileResult = it } },
+    )
 }
 
 @Composable
@@ -77,6 +98,9 @@ fun SettingsScreen(
     onBack: () -> Unit,
     onTheme: (ThemeMode) -> Unit,
     onDynamic: (Boolean) -> Unit,
+    tilePromptSupported: Boolean = false,
+    tileResult: TileAddResult? = null,
+    onAddTile: () -> Unit = {},
 ) {
     val c = Tote.colors
     Box(Modifier.fillMaxSize().background(c.background), contentAlignment = Alignment.TopCenter) {
@@ -137,6 +161,37 @@ fun SettingsScreen(
                 }
             }
 
+            SectionLabel("Quick Settings tile")
+            Card {
+                Text("Copy from anywhere", style = Tote.type.titleSmall, color = c.textPrimary)
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "Pull down the notification shade, tap Tote, pick an entry. It's copied, ready to paste in any app.",
+                    style = Tote.type.bodySmall,
+                    color = c.textSecondary,
+                )
+                Spacer(Modifier.height(14.dp))
+                if (tilePromptSupported) {
+                    PillButton(
+                        text = if (tileResult == TileAddResult.ADDED || tileResult == TileAddResult.ALREADY_ADDED) "Tile added" else "Add the tile",
+                        onClick = onAddTile,
+                        icon = if (tileResult == TileAddResult.ADDED || tileResult == TileAddResult.ALREADY_ADDED) Icons.Rounded.Check else Icons.Rounded.Add,
+                        style = if (tileResult == TileAddResult.ADDED || tileResult == TileAddResult.ALREADY_ADDED) PillStyle.Secondary else PillStyle.Primary,
+                    )
+                    val note = when (tileResult) {
+                        TileAddResult.ALREADY_ADDED -> "It's already in your Quick Settings."
+                        TileAddResult.NOT_ADDED -> "Not added. You can also add it by editing your Quick Settings."
+                        TileAddResult.UNAVAILABLE -> "Your phone didn't show the prompt. Add it by editing your Quick Settings."
+                        else -> null
+                    }
+                    if (note != null) {
+                        Text(note, style = Tote.type.bodySmall, color = c.textSecondary, modifier = Modifier.padding(top = 10.dp))
+                    }
+                } else {
+                    TileSteps()
+                }
+            }
+
             SectionLabel("About")
             Card {
                 Text("Tote ${BuildConfig.VERSION_NAME}", style = Tote.type.titleSmall, color = c.textPrimary)
@@ -152,6 +207,31 @@ fun SettingsScreen(
                     style = Tote.type.bodySmall,
                     color = c.textTertiary,
                 )
+            }
+        }
+    }
+}
+
+/** Manual steps for Android 12 and older, which have no "add tile" prompt. */
+@Composable
+private fun TileSteps() {
+    val c = Tote.colors
+    val steps = listOf(
+        "Swipe down twice from the top to open Quick Settings.",
+        "Tap the pencil (edit) button.",
+        "Drag Tote into your tiles.",
+    )
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        steps.forEachIndexed { i, step ->
+            Row(verticalAlignment = Alignment.Top) {
+                Box(
+                    Modifier
+                        .size(24.dp)
+                        .background(c.accentSoft, ToteShapes.pill),
+                    contentAlignment = Alignment.Center,
+                ) { Text("${i + 1}", style = Tote.type.label, color = c.accentContent) }
+                Spacer(Modifier.width(12.dp))
+                Text(step, style = Tote.type.bodySmall, color = c.textPrimary, modifier = Modifier.padding(top = 2.dp))
             }
         }
     }

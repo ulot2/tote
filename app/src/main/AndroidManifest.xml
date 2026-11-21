@@ -25,5 +25,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Picker sheet for the tile. Own task, never in recents, so it doesn't pull the vault forward. -->
+        <activity
+            android:name=".feature.picker.PickerActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:theme="@style/Theme.Tote.Picker"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 </manifest>
