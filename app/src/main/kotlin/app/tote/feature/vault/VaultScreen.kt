@@ -44,7 +44,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.DragIndicator
@@ -94,6 +93,7 @@ import app.tote.ui.components.pressScale
 import app.tote.ui.nav.EditorRoute
 import app.tote.ui.nav.SharedKeys
 import app.tote.ui.nav.sharedContainer
+import app.tote.ui.icons.ToteIcons
 import app.tote.ui.theme.Tote
 import app.tote.ui.theme.ToteShapes
 import app.tote.ui.theme.TotePalette
@@ -553,7 +553,7 @@ private fun AutofillBanner(onEnable: () -> Unit, onDismiss: () -> Unit, modifier
             .padding(start = 16.dp, top = 14.dp, bottom = 14.dp, end = 4.dp),
         verticalAlignment = Alignment.Top,
     ) {
-        Icon(Icons.Rounded.AutoAwesome, contentDescription = null, tint = c.accentContent, modifier = Modifier.padding(top = 2.dp).size(20.dp))
+        Icon(ToteIcons.FieldFill, contentDescription = null, tint = c.accentContent, modifier = Modifier.padding(top = 1.dp).size(22.dp))
         Spacer(Modifier.size(12.dp))
         Column(Modifier.weight(1f)) {
             Text("Fill forms in one tap", style = Tote.type.titleSmall, color = c.textPrimary)

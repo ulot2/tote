@@ -30,7 +30,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.ContentPaste
 import androidx.compose.material.icons.rounded.DeleteOutline
@@ -61,6 +60,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.tote.core.model.Category
@@ -83,6 +83,7 @@ import app.tote.ui.icons.displayName
 import app.tote.ui.nav.EditorRoute
 import app.tote.ui.nav.SharedKeys
 import app.tote.ui.nav.sharedContainer
+import app.tote.ui.icons.ToteIcons
 import app.tote.ui.theme.Tote
 import app.tote.ui.theme.ToteShapes
 import app.tote.ui.theme.ToteSpacing
@@ -356,7 +357,7 @@ private fun AutofillPreview(state: EditorUiState, modifier: Modifier = Modifier)
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Rounded.AutoAwesome, contentDescription = null, tint = c.accentContent, modifier = Modifier.size(14.dp))
+            Icon(ToteIcons.FieldFill, contentDescription = null, tint = c.accentContent, modifier = Modifier.size(16.dp))
             Spacer(Modifier.width(6.dp))
             Text("AUTOFILL PREVIEW", style = Tote.type.overline, color = c.textSecondary)
         }
@@ -424,8 +425,9 @@ private fun IconPicker(selected: EntryIcon, auto: Boolean, onSelect: (EntryIcon?
             description = "Automatic icon",
             onClick = { onSelect(null) },
         ) {
+            // A word, not a symbol: there's no picture for "pick one for me".
             Box(Modifier.size(40.dp).background(c.accentSoft, ToteShapes.badge), contentAlignment = Alignment.Center) {
-                Icon(Icons.Rounded.AutoAwesome, contentDescription = null, tint = c.accentContent, modifier = Modifier.size(20.dp))
+                Text("Auto", style = Tote.type.overline.copy(letterSpacing = 0.sp), color = c.accentContent)
             }
         }
         EntryIcon.entries.forEach { icon ->

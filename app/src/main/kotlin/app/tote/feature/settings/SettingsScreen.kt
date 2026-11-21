@@ -36,7 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
@@ -67,6 +66,7 @@ import app.tote.core.data.settings.AppSettings
 import app.tote.core.data.settings.SettingsRepository
 import app.tote.core.data.settings.ThemeMode
 import app.tote.ui.components.ToteIconButton
+import app.tote.ui.icons.ToteIcons
 import app.tote.ui.theme.Tote
 import app.tote.ui.theme.ToteShapes
 import app.tote.ui.theme.ToteSpacing
@@ -264,7 +264,7 @@ private fun AutofillCard(
         Spacer(Modifier.height(14.dp))
         when (status) {
             AutofillSetup.Status.DISABLED -> {
-                PillButton("Turn on autofill", onClick = onEnable, icon = Icons.Rounded.AutoAwesome)
+                PillButton("Turn on autofill", onClick = onEnable, icon = ToteIcons.FieldFill)
                 Text(
                     "Android uses one autofill service at a time. Choosing Tote turns off your password manager's autofill until you switch back. The Quick Settings tile works either way.",
                     style = Tote.type.bodySmall,
