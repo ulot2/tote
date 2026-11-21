@@ -67,3 +67,31 @@ Running log of choices made during the build, and places where the build deviate
   tests run on the JVM under **Robolectric**. `ScreenshotTest` renders the main screens in dark and
   light to `app/build/screenshots/` (Robolectric native graphics) for visual review.
 - Release unit tests are disabled for `:app` because the Compose test manifest is debug-only.
+
+## Phase 2
+
+- **Tile module wiring.** `:feature:tile` holds `ToteTileService` but not the picker, which needs the
+  design system in `:app`. The tile asks for a `PickerLauncher` (a one-method interface) through
+  Hilt, and `:app` binds it to `PickerActivity`. The tile module never references `:app`.
+- **The tile is a launcher, not a toggle.** It is always `STATE_ACTIVE` and declares
+  `TOGGLEABLE_TILE=false`. Its subtitle says "Copy an entry" until profiles (Phase 5) replace it with
+  the active profile's name.
+- **Lock screen:** tapping the tile while locked calls `unlockAndRun` first, so the vault never opens
+  over the lock screen.
+- **Android 14+** launches the picker with the `PendingIntent` form of `startActivityAndCollapse`;
+  older versions use the `Intent` form.
+- **Picker activity:** translucent, its own task (`taskAffinity=""`), excluded from recents, not
+  exported, and it finishes in `onStop`. That keeps it from pulling the vault forward or lingering
+  behind other apps. The window has no animation of its own: the sheet springs in and slides out
+  in Compose, with drag-to-dismiss on the header.
+- **Search isn't auto-focused** in the picker. The common path is tap-and-go, and an open keyboard
+  would hide most of the list.
+- **After a pick** the row shows a check for ~0.4 s, then the sheet leaves. The haptic tick fires on
+  tap. On Android 13+ the system also shows its own clipboard confirmation (accepted, Plan §13).
+- **Picker order** (`EntryRanking`, pure Kotlin): pinned, then use count, then last used, then the
+  vault's own order. In search, label-prefix matches come first.
+- **Add-tile prompt:** Settings has a "Quick Settings tile" card. Android 13+ gets the system
+  `requestAddTileService` prompt; older versions get three illustrated manual steps. Onboarding
+  (Phase 5) will reuse the same `TilePrompt` helper.
+- The "under 3 seconds from shade to paste" acceptance check needs a real phone; it can't be timed
+  in this container. Nothing in the path waits on I/O beyond the first Room read.

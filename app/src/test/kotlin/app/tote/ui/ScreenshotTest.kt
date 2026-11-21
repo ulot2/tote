@@ -22,6 +22,8 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import java.io.File
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 
 /**
  * Renders key screens in dark and light to PNGs under build/screenshots for visual review.
@@ -79,5 +81,26 @@ class ScreenshotTest {
     @Test fun editorDark() = editor(true)
     @Test fun editorLight() = editor(false)
 
-    @Test fun settingsDark() = snap("settings", true) { SettingsScreen(AppSettings(), {}, {}, {}) }
+    @Test fun settingsDark() = snap("settings", true) { SettingsScreen(AppSettings(), {}, {}, {}, tilePromptSupported = true) }
+
+    private fun picker(dark: Boolean, entries: List<app.tote.core.model.Entry>, name: String) = snap(name, dark) {
+        // Draw something behind the translucent sheet, as the shade-launched picker would sit over another app.
+        androidx.compose.foundation.layout.Box(
+            androidx.compose.ui.Modifier
+                .fillMaxSize()
+                .background(androidx.compose.ui.graphics.Color(0xFF3A5A7A)),
+        )
+        app.tote.feature.picker.PickerScreen(
+            state = app.tote.feature.picker.PickerUiState(
+                loading = false,
+                entries = app.tote.core.model.EntryRanking.forPicker(entries),
+                totalCount = entries.size,
+            ),
+            onQueryChange = {}, onPick = {}, onOpenApp = {}, onFinished = {}, startVisible = true,
+        )
+    }
+
+    @Test fun pickerDark() = picker(true, SampleData.all, "picker")
+    @Test fun pickerLight() = picker(false, SampleData.all, "picker")
+    @Test fun pickerEmptyDark() = picker(true, emptyList(), "picker-empty")
 }
