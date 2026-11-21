@@ -15,13 +15,28 @@ android {
         applicationId = "app.tote"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        // Set by the GitHub build: the run number, and the version from the release tag.
+        versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
+        versionName = System.getenv("TOTE_VERSION") ?: "0.0.0-local"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    // The key comes from GitHub secrets (see .github/workflows/build.yml), which write it to app/tote.p12.
+    // Without that file (a local build) the release APK is left unsigned.
+    val releaseKey = file("tote.p12")
+    signingConfigs {
+        create("release") {
+            storeFile = releaseKey
+            storeType = "pkcs12"
+            storePassword = System.getenv("TOTE_KEY_PASSWORD")
+            keyAlias = System.getenv("TOTE_KEY_ALIAS")
+            keyPassword = System.getenv("TOTE_KEY_PASSWORD")
+        }
     }
 
     buildTypes {
         release {
+            if (releaseKey.exists()) signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

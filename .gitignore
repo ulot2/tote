@@ -10,3 +10,6 @@ build/
 .kotlin/
 *.keystore
 *.jks
+*.p12
+keys/
+/Tote.apk

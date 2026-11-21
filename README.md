@@ -14,12 +14,31 @@ See [`PLAN.md`](PLAN.md) for the build plan and [`DECISIONS.md`](DECISIONS.md) f
 | `:core:data` | Room, DataStore, repositories, clipboard |
 | `:core:matching` | Pure Kotlin field-matching engine (Phase 3) |
 
-## Build and test
+## Build
+
+GitHub Actions runs the unit tests and builds `Tote.apk` on every push to `main` or `dev` and on every pull
+request (see `.github/workflows/build.yml`). The APK is attached to the run page. Pushing a tag like `v0.1.0`
+publishes a release with `Tote.apk`.
+
+To build on a computer with the Android SDK: `./gradlew test assembleDebug`. The wrapper fetches the right
+Gradle. JVM tests include Robolectric screenshots of the main screens in `app/build/screenshots/`.
+
+The release APK is signed with a key kept in two repository secrets:
+
+| Secret | What it holds |
+|---|---|
+| `TOTE_KEY` | The PKCS12 key file, base64-encoded |
+| `TOTE_KEY_PASSWORD` | Its password |
+
+Without them, branch builds are signed with a throwaway key and tag builds refuse to publish. Keep the same
+key forever: Android only installs an update that is signed with the same key as the installed app.
+
+To make the key once (keep `tote.p12` and the password somewhere safe):
 ```sh
-./gradlew assembleDebug      # app/build/outputs/apk/debug/app-debug.apk
-./gradlew test               # JVM + Robolectric tests; screenshots land in app/build/screenshots/
+keytool -genkeypair -keystore tote.p12 -storetype pkcs12 -alias tote -keyalg RSA -keysize 4096 \
+  -validity 10000 -dname "CN=Tote"
+base64 -w0 tote.p12 > tote.p12.b64   # paste this into TOTE_KEY
 ```
-Requires JDK 17+ and an Android SDK with platform 36 (`sdk.dir` in `local.properties` or `ANDROID_HOME`).
 
 ## Status
 - [x] Phase 1: foundation and vault
