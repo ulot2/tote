@@ -1,0 +1,350 @@
+{
+  "version": 1,
+  "_comment": "Tote's keyword dictionary (Plan §7.3). Shared source for the Android engine and a future TypeScript port (Plan §14). Phrases are matched after normalisation: lowercase, camelCase split, accents folded, punctuation removed, trailing plural 's' ignored. 'strong' phrases score fully, 'weak' at half.",
+  "kinds": {
+    "linkedin": {
+      "strong": [
+        "linkedin",
+        "linked in",
+        "li profile",
+        "linkedin profile",
+        "linkedin url"
+      ],
+      "weak": []
+    },
+    "github": {
+      "strong": [
+        "github",
+        "git hub",
+        "github profile",
+        "github url"
+      ],
+      "weak": [
+        "gitlab",
+        "git lab",
+        "bitbucket",
+        "code repository",
+        "code samples",
+        "repository",
+        "repo"
+      ]
+    },
+    "portfolio": {
+      "strong": [
+        "portfolio",
+        "website",
+        "personal site",
+        "personal website",
+        "homepage",
+        "home page",
+        "web site",
+        "work samples",
+        "personal url",
+        "personal page",
+        "portfolio url",
+        "portfolio link"
+      ],
+      "weak": [
+        "site",
+        "design portfolio",
+        "online portfolio"
+      ]
+    },
+    "twitter": {
+      "strong": [
+        "twitter",
+        "x handle",
+        "x profile",
+        "x com",
+        "twitter handle",
+        "twitter url"
+      ],
+      "weak": []
+    },
+    "behance": {
+      "strong": [
+        "behance"
+      ],
+      "weak": [
+        "design portfolio"
+      ]
+    },
+    "dribbble": {
+      "strong": [
+        "dribbble"
+      ],
+      "weak": [
+        "design portfolio"
+      ]
+    },
+    "blog": {
+      "strong": [
+        "blog",
+        "medium",
+        "writing samples",
+        "articles"
+      ],
+      "weak": [
+        "writing"
+      ]
+    },
+    "email": {
+      "strong": [
+        "email",
+        "e mail",
+        "email address",
+        "e mail address",
+        "mail address"
+      ],
+      "weak": [
+        "mail",
+        "contact email"
+      ]
+    },
+    "phone": {
+      "strong": [
+        "phone",
+        "mobile",
+        "telephone",
+        "tel",
+        "whatsapp",
+        "whats app",
+        "contact number",
+        "phone number",
+        "mobile number",
+        "cell",
+        "cell phone",
+        "cellphone"
+      ],
+      "weak": [
+        "contact"
+      ]
+    },
+    "cv": {
+      "strong": [
+        "cv",
+        "resume",
+        "curriculum vitae",
+        "cv link",
+        "resume link",
+        "resume url",
+        "cv url"
+      ],
+      "weak": [
+        "document"
+      ]
+    },
+    "cover_letter": {
+      "strong": [
+        "cover letter",
+        "motivation letter",
+        "letter of motivation",
+        "covering letter"
+      ],
+      "weak": []
+    },
+    "location": {
+      "strong": [
+        "city",
+        "location",
+        "where are you based",
+        "where are you located",
+        "current location",
+        "based in",
+        "town",
+        "city of residence",
+        "current city"
+      ],
+      "weak": [
+        "address",
+        "country",
+        "residence",
+        "home address"
+      ]
+    },
+    "bio": {
+      "strong": [
+        "about you",
+        "about yourself",
+        "summary",
+        "bio",
+        "introduce yourself",
+        "tell us about yourself",
+        "tell us a bit about yourself",
+        "professional summary",
+        "short bio",
+        "describe yourself",
+        "about me"
+      ],
+      "weak": [
+        "introduction",
+        "profile summary"
+      ]
+    },
+    "years_experience": {
+      "strong": [
+        "years of experience",
+        "yoe",
+        "experience years",
+        "years experience",
+        "how many years",
+        "years of professional experience",
+        "total experience"
+      ],
+      "weak": [
+        "experience"
+      ]
+    },
+    "why_company": {
+      "strong": [
+        "why do you want to work",
+        "why are you interested",
+        "why this company",
+        "why us",
+        "why join",
+        "why are you applying",
+        "why do you want to join",
+        "what excites you",
+        "why would you like to work"
+      ],
+      "weak": [
+        "motivation",
+        "interest in"
+      ]
+    },
+    "salary": {
+      "strong": [
+        "salary",
+        "compensation",
+        "expected salary",
+        "salary expectation",
+        "pay expectation",
+        "desired salary"
+      ],
+      "weak": []
+    },
+    "notice_period": {
+      "strong": [
+        "notice period",
+        "when can you start",
+        "earliest start",
+        "availability to start"
+      ],
+      "weak": [
+        "availability"
+      ]
+    }
+  },
+  "genericLink": [
+    "website",
+    "web site",
+    "url",
+    "link",
+    "web address",
+    "online profile",
+    "social profile",
+    "social media",
+    "profile link",
+    "other link",
+    "additional link",
+    "other website",
+    "any other link",
+    "web link",
+    "online presence"
+  ],
+  "ignore": {
+    "password": [
+      "password",
+      "passwd",
+      "pwd",
+      "passphrase",
+      "confirm password",
+      "new password"
+    ],
+    "otp": [
+      "otp",
+      "one time code",
+      "one time password",
+      "verification code",
+      "security code",
+      "2fa",
+      "two factor",
+      "auth code",
+      "authentication code",
+      "sms code",
+      "passcode",
+      "verify code"
+    ],
+    "card": [
+      "card number",
+      "credit card",
+      "debit card",
+      "cvv",
+      "cvc",
+      "csc",
+      "cc number",
+      "name on card",
+      "expiry date",
+      "expiration date",
+      "card expiry",
+      "cardholder"
+    ],
+    "search": [
+      "search",
+      "search box",
+      "query",
+      "q"
+    ],
+    "captcha": [
+      "captcha",
+      "recaptcha"
+    ]
+  },
+  "androidHints": {
+    "emailaddress": "email",
+    "phone": "phone",
+    "phonenumber": "phone",
+    "phonenational": "phone",
+    "phonenumberdevice": "phone",
+    "postaladdress": "location",
+    "postaladdresslocality": "location",
+    "addresslocality": "location",
+    "addresscountry": "location",
+    "password": "@ignore:password",
+    "newpassword": "@ignore:password",
+    "smsotpcode": "@ignore:otp",
+    "2faappotpcode": "@ignore:otp",
+    "emailotpcode": "@ignore:otp",
+    "creditcardnumber": "@ignore:card",
+    "creditcardsecuritycode": "@ignore:card",
+    "creditcardexpirationdate": "@ignore:card",
+    "creditcardexpirationmonth": "@ignore:card",
+    "creditcardexpirationyear": "@ignore:card",
+    "creditcardexpirationday": "@ignore:card"
+  },
+  "htmlAutocomplete": {
+    "email": "email",
+    "tel": "phone",
+    "tel-national": "phone",
+    "tel-local": "phone",
+    "mobile": "phone",
+    "url": "@link",
+    "photo": "@link",
+    "address-level2": "location",
+    "address-level1": "location",
+    "country-name": "location",
+    "street-address": "location",
+    "address-line1": "location",
+    "current-password": "@ignore:password",
+    "new-password": "@ignore:password",
+    "one-time-code": "@ignore:otp",
+    "cc-number": "@ignore:card",
+    "cc-csc": "@ignore:card",
+    "cc-exp": "@ignore:card",
+    "cc-exp-month": "@ignore:card",
+    "cc-exp-year": "@ignore:card",
+    "cc-name": "@ignore:card",
+    "cc-type": "@ignore:card"
+  },
+  "_searchNote": "'search' phrases only ignore a field when they appear in its name/id, or start its label/placeholder; 'Job search status' stays matchable."
+}

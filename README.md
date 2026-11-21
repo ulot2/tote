@@ -12,7 +12,7 @@ See [`PLAN.md`](PLAN.md) for the build plan and [`DECISIONS.md`](DECISIONS.md) f
 | `:app` | Compose UI, theme, navigation |
 | `:core:model` | Plain Kotlin models, value classification, formatting, validation |
 | `:core:data` | Room, DataStore, repositories, clipboard |
-| `:core:matching` | Pure Kotlin field-matching engine (Phase 3) |
+| `:core:matching` | Pure Kotlin field-matching engine: shared JSON keyword dictionary, scoring, ignore rules, 61 job-form fixtures |
 | `:feature:tile` | Quick Settings tile that opens the picker sheet |
 
 ## Build
@@ -44,7 +44,7 @@ base64 -w0 tote.p12 > tote.p12.b64   # paste this into TOTE_KEY
 ## Status
 - [x] Phase 1: foundation and vault
 - [x] Phase 2: Quick Settings tile and picker
-- [ ] Phase 3: matching engine
+- [x] Phase 3: matching engine
 - [ ] Phase 4: autofill service
 - [ ] Phase 5: profiles, learning, polish
 - [ ] Phase 6: release prep
