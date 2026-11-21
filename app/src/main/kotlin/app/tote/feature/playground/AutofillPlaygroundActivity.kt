@@ -15,6 +15,7 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import app.tote.feature.autofill.AutofillDiagnostics
 import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -43,7 +44,8 @@ class AutofillPlaygroundActivity : ComponentActivity() {
             setPadding(dp(20), dp(16), dp(20), dp(24))
         }
         column.addView(text("Try autofill", 26f, fg, bold = true))
-        column.addView(text("Tap a field. Tote's suggestions appear in a dropdown or above the keyboard.", 14f, muted).apply { setPadding(0, dp(4), 0, dp(12)) })
+        column.addView(text("Tap a field. Tote's suggestions appear in a dropdown or above the keyboard.", 14f, muted).apply { setPadding(0, dp(4), 0, dp(8)) })
+        column.addView(status)
 
         column.addView(section("In an app"))
         column.addView(field("LinkedIn profile"))
@@ -73,6 +75,38 @@ class AutofillPlaygroundActivity : ComponentActivity() {
             insets
         }
         setContentView(scroll)
+    }
+
+    /** Shows what Tote's last fill request did, so a silent failure is visible on the phone. */
+    private val status by lazy { text("", 13f, muted).apply { setPadding(0, 0, 0, dp(8)) } }
+    private val handler = android.os.Handler(android.os.Looper.getMainLooper())
+    private val refresh = object : Runnable {
+        override fun run() {
+            status.text = statusText()
+            handler.postDelayed(this, 1_000)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        handler.post(refresh)
+    }
+
+    override fun onPause() {
+        handler.removeCallbacks(refresh)
+        super.onPause()
+    }
+
+    private fun statusText(): String {
+        val enabled = getSystemService(android.view.autofill.AutofillManager::class.java)?.hasEnabledAutofillServices() == true
+        if (!enabled) return "Tote isn't your autofill service yet. Turn it on in Tote's Settings."
+        val last = AutofillDiagnostics.last ?: return "Waiting for a request: tap a field."
+        val ago = ((System.currentTimeMillis() - last.atMillis) / 1000).coerceAtLeast(0)
+        return if (last.error != null) {
+            "Last request failed (${last.error}), ${ago}s ago. Please report this."
+        } else {
+            "Last request: ${last.fields} fields, ${last.suggestions} suggestions, ${last.durationMs} ms, ${ago}s ago."
+        }
     }
 
     private fun section(title: String) = text(title.uppercase(), 12f, muted, bold = true).apply {

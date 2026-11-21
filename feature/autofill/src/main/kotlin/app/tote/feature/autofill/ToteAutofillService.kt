@@ -60,22 +60,25 @@ class ToteAutofillService : AutofillService() {
         val inlineRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) request.inlineSuggestionsRequest else null
 
         val job = scope.launch {
+            val started = System.nanoTime()
+            fun elapsedMs() = (System.nanoTime() - started) / 1_000_000
             val response = try {
-                val started = System.nanoTime()
                 val vault = withTimeout(VAULT_TIMEOUT_MS) { snapshot.current() }
-                val built = withContext(Dispatchers.Default) {
+                val (built, fieldCount, suggestionCount) = withContext(Dispatchers.Default) {
                     val fields = StructureParser.parse(AssistNodeView.windows(structure), structure.activityComponent?.packageName)
                     val plans = factory.plan(fields, vault.entries, MatchContext(activeProfileId = vault.activeProfileId))
-                    factory.build(plans, inlineRequest, UUID.randomUUID().toString())
+                    Triple(factory.build(plans, inlineRequest, UUID.randomUUID().toString()), fields.size, plans.sumOf { it.entries.size })
                 }
+                AutofillDiagnostics.record(AutofillDiagnostics.LastRequest(System.currentTimeMillis(), fieldCount, suggestionCount, elapsedMs()))
                 if (BuildConfigCompat.isDebuggable(this@ToteAutofillService)) {
-                    // Timing only. Never entry values or field text.
-                    Log.d(TAG, "fill request answered in ${(System.nanoTime() - started) / 1_000_000} ms")
+                    // Counts and timing only. Never entry values or field text.
+                    Log.d(TAG, "fill request: $fieldCount fields, $suggestionCount suggestions, ${elapsedMs()} ms")
                 }
                 built
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
+                AutofillDiagnostics.record(AutofillDiagnostics.LastRequest(System.currentTimeMillis(), 0, 0, elapsedMs(), e.javaClass.simpleName))
                 Log.w(TAG, "fill request failed: ${e.javaClass.simpleName}")
                 null
             }

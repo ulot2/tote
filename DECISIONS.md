@@ -195,3 +195,17 @@ Running log of choices made during the build, and places where the build deviate
 - **Not verifiable here:** the actual autofill flow needs a device or emulator (no KVM in the build
   container). What's covered on the JVM: parsing, planning, dataset building, presentations
   (rendered to PNG), the fill result, and the manifest wiring.
+
+## Fix after 0.2.0: autofill returned nothing in release builds
+
+- **Cause:** the keyword dictionary was loaded with a path relative to `KeywordDictionary`'s
+  package. R8 renames that package in release builds (`app.tote.core.matching` → `m5`), so the
+  lookup missed the file and every fill request failed and returned nothing. Debug builds and the
+  unit tests weren't minified, so they passed.
+- **Fix:** an absolute resource path (`KeywordDictionary.RESOURCE_PATH`) plus a test that pins it.
+  Checked on *minified* code: R8 run over the matching engine with a small driver program. The
+  old code fails with "dictionary.json missing" and the fixed code returns LinkedIn for "LinkedIn
+  Profile".
+- **Visibility:** the service now records what its last request did (counts, timing, or the error's
+  class name, never values or field text) and the Try autofill screen shows it. A silent failure
+  like this one is now visible on the phone.
