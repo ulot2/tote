@@ -56,11 +56,15 @@ jobs:
               -alias throwaway -keyalg RSA -keysize 2048 -validity 1 -dname "CN=throwaway"
             export TOTE_KEY_PASSWORD
           else
-            # Strip spaces and line breaks that copying from a phone can add.
+            # Strip spaces and line breaks that copying (from a phone, or a chat) can add to either secret.
+            TOTE_KEY_PASSWORD=$(printf '%s' "$TOTE_KEY_PASSWORD" | tr -d ' \r\n\t')
+            export TOTE_KEY_PASSWORD
             printf '%s' "$TOTE_KEY" | tr -d ' \r\n\t' | base64 -d > app/tote.p12 \
               || { echo "::error::TOTE_KEY is not valid base64. Paste the whole of tote.p12.b64 into it again."; exit 1; }
+            # Sizes aren't secret, and they tell a cut-off paste apart from a wrong password.
+            echo "Key file: $(wc -c < app/tote.p12) bytes; password: ${#TOTE_KEY_PASSWORD} characters"
             keytool -list -keystore app/tote.p12 -storetype pkcs12 -storepass "$TOTE_KEY_PASSWORD" >/dev/null \
-              || { echo "::error::TOTE_KEY_PASSWORD does not open the key. Paste password.txt into it again."; exit 1; }
+              || { echo "::error::TOTE_KEY_PASSWORD does not open TOTE_KEY. Paste password.txt into it again; if the key file size above looks short, paste tote.p12.b64 again too."; exit 1; }
           fi
           export TOTE_KEY_ALIAS=$(keytool -list -keystore app/tote.p12 -storetype pkcs12 -storepass "$TOTE_KEY_PASSWORD" | grep PrivateKeyEntry | cut -d, -f1)
           ./gradlew test assembleRelease
