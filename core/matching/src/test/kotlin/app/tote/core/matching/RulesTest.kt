@@ -48,7 +48,21 @@ class RulesTest {
         assertEquals(EntryKind.WHY_COMPANY, EntryKinds.of(entry("Why this company?", "...", EntryType.LONG_TEXT, EntryIcon.TEXT)))
         assertEquals(EntryKind.PORTFOLIO, EntryKinds.of(entry("My site", "me.dev", EntryType.LINK, EntryIcon.GLOBE)))
         assertEquals(EntryKind.YEARS_EXPERIENCE, EntryKinds.of(entry("Years of experience", "5", EntryType.SHORT_TEXT, EntryIcon.TEXT)))
-        assertNull(EntryKinds.of(entry("Pronouns", "they/them", EntryType.SHORT_TEXT, EntryIcon.TEXT)))
+        assertEquals(EntryKind.PRONOUNS, EntryKinds.of(entry("Pronouns", "they/them", EntryType.SHORT_TEXT, EntryIcon.TEXT)))
+        assertEquals(EntryKind.FIRST_NAME, EntryKinds.of(entry("First name", "Ada", EntryType.SHORT_TEXT, EntryIcon.TEXT)))
+        assertEquals(EntryKind.FULL_NAME, EntryKinds.of(entry("Name", "Ada Lovelace", EntryType.SHORT_TEXT, EntryIcon.TEXT)))
+        assertNull("'company name' is a stop phrase, not a name", EntryKinds.of(entry("Company name", "Acme", EntryType.SHORT_TEXT, EntryIcon.TEXT)))
+        assertNull(EntryKinds.of(entry("Shoe size", "42", EntryType.SHORT_TEXT, EntryIcon.TEXT)))
+    }
+
+    @Test fun builtInPhrasesAreReadableAndCoverEveryKind() {
+        val linkedin = EntryKinds.builtInPhrases(entry("LinkedIn", "linkedin.com/in/x", EntryType.LINK, EntryIcon.LINKEDIN))
+        assertTrue("LinkedIn" in linkedin.map { it.lowercase() }.map { if (it == "linkedin") "LinkedIn" else it })
+        assertTrue("phrases are shown as written, not stemmed", "linkedin profile url" in linkedin)
+        assertTrue(EntryKinds.builtInPhrases(entry("Shoe size", "42", EntryType.SHORT_TEXT, EntryIcon.TEXT)).isEmpty())
+        // Every kind should know a decent number of wordings.
+        val d = KeywordDictionary.default
+        EntryKind.entries.forEach { k -> assertTrue("$k has only ${d.strong[k]?.size} phrases", (d.strong[k]?.size ?: 0) >= 4) }
     }
 
     @Test fun ignoreRulesAreNarrowForSearch() {

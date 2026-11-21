@@ -29,10 +29,25 @@ object EntryKinds {
         val label = SignalText(entry.label)
         val fromLabel = dictionary.strong.entries
             .flatMap { (kind, phrases) -> phrases.mapNotNull { p -> PhraseMatcher.find(label, p)?.let { kind to it } } }
+            // "Company name" mustn't read as a full name: drop hits inside a longer phrase.
+            .filterNot { (_, hit) -> PhraseMatcher.isSwallowed(label, hit, dictionary.kindPhrases) }
             .minWithOrNull(compareBy<Pair<EntryKind, PhraseHit>> { it.second.range?.first ?: Int.MAX_VALUE }.thenByDescending { it.second.phrase.tokens.size })
             ?.first
         if (fromLabel != null) return fromLabel
 
+        return fallbackKind(entry)
+    }
+
+    /**
+     * The built-in phrases Tote already matches for this entry, as written, for the editor to show
+     * (so the user only adds what's missing). Empty when Tote doesn't recognise the entry's kind.
+     */
+    fun builtInPhrases(entry: Entry, dictionary: KeywordDictionary = KeywordDictionary.default): List<String> {
+        val kind = of(entry, dictionary) ?: return emptyList()
+        return dictionary.strong[kind].orEmpty().map { it.display }.distinct()
+    }
+
+    private fun fallbackKind(entry: Entry): EntryKind? {
         return when {
             entry.icon == EntryIcon.GOOGLE_DRIVE || entry.icon == EntryIcon.DOC -> EntryKind.CV
             entry.type == EntryType.LINK && entry.icon == EntryIcon.GLOBE -> EntryKind.PORTFOLIO

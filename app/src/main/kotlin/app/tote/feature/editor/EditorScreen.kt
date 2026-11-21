@@ -226,7 +226,8 @@ fun EditorScreen(
                     IconPicker(state.icon, state.iconAuto, onIconSelected)
                 }
 
-                Group("Keywords", hint = "Extra words that should suggest this entry") {
+                Group("Keywords") {
+                    BuiltInKeywords(state.builtInKeywords)
                     if (state.keywords.isNotEmpty()) {
                         FlowRow(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -414,6 +415,60 @@ private fun Group(title: String, hint: String? = null, content: @Composable () -
         content()
     }
 }
+
+/**
+ * What Tote already matches for this kind of entry, so the user only adds what's missing.
+ * Read-only chips, visibly different from the user's own (no remove button, muted).
+ */
+@Composable
+private fun BuiltInKeywords(phrases: List<String>) {
+    val c = Tote.colors
+    var expanded by remember { mutableStateOf(false) }
+    Column(Modifier.padding(bottom = 14.dp)) {
+        if (phrases.isEmpty()) {
+            Text(
+                "Tote doesn't recognise this kind of entry yet, so add the words forms use for it.",
+                style = Tote.type.bodySmall,
+                color = c.textSecondary,
+                modifier = Modifier.padding(start = 4.dp),
+            )
+            return@Column
+        }
+        Text(
+            "Tote already matches fields like these. Add your own only for anything missing.",
+            style = Tote.type.bodySmall,
+            color = c.textSecondary,
+            modifier = Modifier.padding(start = 4.dp, bottom = 10.dp),
+        )
+        val shown = if (expanded) phrases else phrases.take(COLLAPSED_BUILT_INS)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            shown.forEach { phrase ->
+                Text(
+                    phrase,
+                    style = Tote.type.bodySmall,
+                    color = c.textSecondary,
+                    modifier = Modifier
+                        .background(c.surfaceRaised, ToteShapes.pill)
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                )
+            }
+            val hidden = phrases.size - COLLAPSED_BUILT_INS
+            if (hidden > 0) {
+                Text(
+                    if (expanded) "Show fewer" else "+$hidden more",
+                    style = Tote.type.label,
+                    color = c.accentContent,
+                    modifier = Modifier
+                        .clip(ToteShapes.pill)
+                        .clickable(role = Role.Button, onClickLabel = if (expanded) "Show fewer" else "Show all") { expanded = !expanded }
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                )
+            }
+        }
+    }
+}
+
+private const val COLLAPSED_BUILT_INS = 8
 
 @Composable
 private fun IconPicker(selected: EntryIcon, auto: Boolean, onSelect: (EntryIcon?) -> Unit) {

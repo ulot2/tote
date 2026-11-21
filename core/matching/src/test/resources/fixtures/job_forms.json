@@ -1,198 +1,1414 @@
 {
   "_comment": "Field descriptions modelled on real job-application forms (Plan §7.6). Each fixture names the platform, the field's signals as the autofill service would see them, and what Tote should do. Labels in 'expect' refer to the test vault in FixtureTest. Shared format, reusable by a future TypeScript port.",
   "fixtures": [
-    { "id": "greenhouse-linkedin", "platform": "Greenhouse",
-      "field": { "label": "LinkedIn Profile", "htmlName": "job_application[answers_attributes][0][text_value]", "htmlId": "job_application_answers_attributes_0_text_value", "htmlType": "text", "webDomain": "boards.greenhouse.io" },
-      "expect": { "top": "LinkedIn" } },
-    { "id": "greenhouse-website", "platform": "Greenhouse",
-      "field": { "label": "Website", "htmlName": "job_application[answers_attributes][1][text_value]", "htmlType": "text", "webDomain": "boards.greenhouse.io" },
-      "expect": { "top": "Portfolio", "contains": ["GitHub", "LinkedIn"] } },
-    { "id": "greenhouse-email", "platform": "Greenhouse",
-      "field": { "label": "Email", "htmlName": "job_application[email]", "htmlId": "email", "htmlType": "text", "htmlAutocomplete": "email" },
-      "expect": { "top": "Email", "only": ["Email"] } },
-    { "id": "greenhouse-phone", "platform": "Greenhouse",
-      "field": { "label": "Phone", "htmlName": "job_application[phone]", "htmlId": "phone", "htmlType": "tel" },
-      "expect": { "top": "Phone", "only": ["Phone"] } },
-    { "id": "greenhouse-location", "platform": "Greenhouse",
-      "field": { "label": "Location (City)", "htmlId": "job_application_location", "htmlName": "job_application[location]", "htmlAutocomplete": "address-level2" },
-      "expect": { "top": "Location" } },
-    { "id": "greenhouse-github", "platform": "Greenhouse",
-      "field": { "label": "GitHub URL", "htmlName": "job_application[answers_attributes][2][text_value]", "htmlType": "text" },
-      "expect": { "top": "GitHub" } },
-    { "id": "greenhouse-why", "platform": "Greenhouse",
-      "field": { "label": "Why do you want to work at Acme?", "htmlType": "textarea", "htmlName": "job_application[answers_attributes][3][text_value]" },
-      "expect": { "top": "Why this company?" } },
-
-    { "id": "lever-linkedin", "platform": "Lever",
-      "field": { "label": "LinkedIn URL", "htmlName": "urls[LinkedIn]", "htmlType": "text", "webDomain": "jobs.lever.co" },
-      "expect": { "top": "LinkedIn" } },
-    { "id": "lever-github", "platform": "Lever",
-      "field": { "label": "GitHub URL", "htmlName": "urls[GitHub]", "htmlType": "text", "webDomain": "jobs.lever.co" },
-      "expect": { "top": "GitHub" } },
-    { "id": "lever-twitter", "platform": "Lever",
-      "field": { "label": "Twitter URL", "htmlName": "urls[Twitter]", "htmlType": "text" },
-      "expect": { "top": "X" } },
-    { "id": "lever-portfolio", "platform": "Lever",
-      "field": { "label": "Portfolio URL", "htmlName": "urls[Portfolio]", "htmlType": "text" },
-      "expect": { "top": "Portfolio" } },
-    { "id": "lever-other-website", "platform": "Lever",
-      "field": { "label": "Other website", "htmlName": "urls[Other]", "htmlType": "text" },
-      "expect": { "top": "Portfolio", "contains": ["GitHub"] } },
-    { "id": "lever-email", "platform": "Lever",
-      "field": { "label": "Email", "htmlName": "email", "htmlType": "email" },
-      "expect": { "top": "Email", "only": ["Email"] } },
-    { "id": "lever-current-location", "platform": "Lever",
-      "field": { "label": "Current location", "htmlName": "location", "htmlId": "location-input", "htmlType": "text" },
-      "expect": { "top": "Location" } },
-    { "id": "lever-resume-link", "platform": "Lever",
-      "field": { "label": "Resume/CV link", "htmlName": "cards[resume][field0]", "htmlType": "text" },
-      "context": { "activeProfileId": 1 },
-      "expect": { "top": "CV (Tech)", "absent": ["CV (Non-tech)"] } },
-    { "id": "lever-additional-info", "platform": "Lever",
-      "field": { "label": "Additional information", "htmlName": "comments", "htmlType": "textarea", "placeholder": "Add a cover letter or anything else you want to share." },
-      "expect": { "top": "Cover letter" } },
-
-    { "id": "workable-linkedin", "platform": "Workable",
-      "field": { "label": "LinkedIn", "htmlName": "linkedin", "htmlId": "linkedin", "htmlType": "text", "webDomain": "apply.workable.com" },
-      "expect": { "top": "LinkedIn" } },
-    { "id": "workable-summary", "platform": "Workable",
-      "field": { "label": "Summary", "htmlName": "summary", "htmlType": "textarea" },
-      "expect": { "top": "Short bio" } },
-    { "id": "workable-phone", "platform": "Workable",
-      "field": { "label": "Phone", "htmlName": "phone", "htmlType": "tel", "htmlAutocomplete": "tel" },
-      "expect": { "top": "Phone" } },
-    { "id": "workable-address", "platform": "Workable",
-      "field": { "label": "Address", "htmlName": "address", "htmlType": "text" },
-      "expect": { "top": "Location" } },
-    { "id": "workable-cover-letter", "platform": "Workable",
-      "field": { "label": "Cover letter", "htmlName": "cover_letter", "htmlType": "textarea" },
-      "expect": { "top": "Cover letter" } },
-
-    { "id": "ashby-linkedin", "platform": "Ashby",
-      "field": { "label": "LinkedIn Profile", "htmlName": "_systemfield_linkedin", "htmlType": "url", "webDomain": "jobs.ashbyhq.com" },
-      "expect": { "top": "LinkedIn" } },
-    { "id": "ashby-email", "platform": "Ashby",
-      "field": { "label": "Email", "htmlName": "_systemfield_email", "htmlType": "email" },
-      "expect": { "top": "Email" } },
-    { "id": "ashby-yoe", "platform": "Ashby",
-      "field": { "label": "How many years of experience do you have with Kotlin?", "htmlType": "number" },
-      "expect": { "top": "Years of experience", "only": ["Years of experience"] } },
-    { "id": "ashby-website-url-type", "platform": "Ashby",
-      "field": { "label": "Website", "htmlType": "url" },
-      "expect": { "top": "Portfolio", "allLinks": true } },
-    { "id": "ashby-links", "platform": "Ashby",
-      "field": { "label": "Links", "htmlType": "text", "placeholder": "Any links you'd like to share" },
-      "expect": { "allLinks": true, "contains": ["Portfolio"] } },
-
-    { "id": "gforms-linkedin", "platform": "Google Forms",
-      "field": { "ariaLabel": "LinkedIn profile link", "htmlType": "text", "htmlAutocomplete": "off", "webDomain": "docs.google.com" },
-      "expect": { "top": "LinkedIn" } },
-    { "id": "gforms-email", "platform": "Google Forms",
-      "field": { "ariaLabel": "Email address", "htmlType": "email", "htmlAutocomplete": "email" },
-      "expect": { "top": "Email", "only": ["Email"] } },
-    { "id": "gforms-email-text-type", "platform": "Google Forms",
-      "field": { "ariaLabel": "Your email address", "htmlType": "text" },
-      "expect": { "top": "Email", "absent": ["Location"] } },
-    { "id": "gforms-about", "platform": "Google Forms",
-      "field": { "ariaLabel": "Tell us about yourself", "htmlType": "textarea" },
-      "expect": { "top": "Short bio" } },
-    { "id": "gforms-whatsapp", "platform": "Google Forms",
-      "field": { "ariaLabel": "WhatsApp number", "htmlType": "text" },
-      "expect": { "top": "Phone" } },
-
-    { "id": "typeform-portfolio", "platform": "Typeform",
-      "field": { "placeholder": "https://", "nearbyText": "Share a link to your portfolio", "htmlType": "url" },
-      "expect": { "top": "Portfolio" } },
-    { "id": "typeform-github-nearby", "platform": "Typeform",
-      "field": { "placeholder": "Type your answer here...", "nearbyText": "What's your GitHub username or profile?", "htmlType": "text" },
-      "expect": { "top": "GitHub" } },
-    { "id": "typeform-city", "platform": "Typeform",
-      "field": { "placeholder": "Type your answer here...", "nearbyText": "Which city are you based in?", "htmlType": "text" },
-      "expect": { "top": "Location" } },
-
-    { "id": "easyapply-phone", "platform": "LinkedIn Easy Apply",
-      "field": { "label": "Mobile phone number", "htmlId": "single-line-text-form-component-phoneNumber-nationalNumber", "htmlType": "text" },
-      "expect": { "top": "Phone" } },
-    { "id": "easyapply-yoe", "platform": "LinkedIn Easy Apply",
-      "field": { "label": "How many years of work experience do you have with Android?", "htmlType": "text", "htmlId": "single-line-text-form-component-numeric" },
-      "expect": { "top": "Years of experience" } },
-    { "id": "easyapply-city", "platform": "LinkedIn Easy Apply",
-      "field": { "label": "City", "htmlId": "location-GEO-LOCATION", "htmlType": "text" },
-      "expect": { "top": "Location" } },
-
-    { "id": "native-linkedin-hint", "platform": "Native app",
-      "field": { "hintText": "LinkedIn profile", "resourceId": "et_linkedin", "packageName": "com.example.jobs" },
-      "expect": { "top": "LinkedIn" } },
-    { "id": "native-email-hint", "platform": "Native app",
-      "field": { "autofillHints": ["emailAddress"], "hintText": "Email", "inputKind": "EMAIL", "packageName": "com.example.jobs" },
-      "expect": { "top": "Email", "only": ["Email"] } },
-    { "id": "native-phone-flags", "platform": "Native app",
-      "field": { "hintText": "Enter phone", "inputKind": "PHONE", "packageName": "com.example.jobs" },
-      "expect": { "top": "Phone" } },
-    { "id": "native-id-only", "platform": "Native app",
-      "field": { "resourceId": "githubUrlInput", "packageName": "com.example.jobs" },
-      "expect": { "top": "GitHub" } },
-    { "id": "native-compact-id", "platform": "Native app",
-      "field": { "resourceId": "linkedinprofileurl", "packageName": "com.example.jobs" },
-      "expect": { "top": "LinkedIn" } },
-    { "id": "native-nearby-label", "platform": "Native app",
-      "field": { "nearbyText": "Portfolio", "resourceId": "edit_text_3", "packageName": "com.example.jobs" },
-      "expect": { "top": "Portfolio" } },
-
-    { "id": "keyword-personal-site", "platform": "Custom ATS",
-      "field": { "label": "Where can we see your work online?", "htmlType": "text" },
-      "expect": { "top": "Portfolio" } },
-    { "id": "ambiguous-other-link", "platform": "Custom ATS",
-      "field": { "label": "Other link", "htmlType": "text" },
-      "expect": { "allLinks": true } },
-    { "id": "ambiguous-unknown-free-text", "platform": "Custom ATS",
-      "field": { "label": "Anything else we should know?", "htmlType": "text" },
-      "expect": { "fallback": true } },
-
-    { "id": "neg-password", "platform": "Greenhouse account",
-      "field": { "label": "Password", "htmlType": "password", "htmlName": "password" },
-      "expect": { "ignored": "PASSWORD" } },
-    { "id": "neg-new-password-autocomplete", "platform": "Workday sign-up",
-      "field": { "label": "Create a key", "htmlType": "text", "htmlAutocomplete": "new-password" },
-      "expect": { "ignored": "PASSWORD" } },
-    { "id": "neg-otp", "platform": "LinkedIn sign-in",
-      "field": { "label": "Enter the 6-digit code", "htmlName": "pin", "htmlAutocomplete": "one-time-code", "htmlType": "text" },
-      "expect": { "ignored": "OTP" } },
-    { "id": "neg-verification-code", "platform": "Native app",
-      "field": { "hintText": "Verification code", "inputKind": "NUMBER", "packageName": "com.example.jobs" },
-      "expect": { "ignored": "OTP" } },
-    { "id": "neg-sms-hint", "platform": "Native app",
-      "field": { "autofillHints": ["smsOTPCode"], "hintText": "Code" },
-      "expect": { "ignored": "OTP" } },
-    { "id": "neg-card", "platform": "Checkout",
-      "field": { "label": "Card number", "htmlAutocomplete": "cc-number", "htmlType": "text" },
-      "expect": { "ignored": "CARD" } },
-    { "id": "neg-cvv", "platform": "Checkout",
-      "field": { "placeholder": "CVV", "htmlName": "cvv", "htmlType": "text" },
-      "expect": { "ignored": "CARD" } },
-    { "id": "neg-search", "platform": "Job board",
-      "field": { "placeholder": "Search jobs", "htmlType": "search", "htmlName": "q" },
-      "expect": { "ignored": "SEARCH" } },
-    { "id": "neg-search-by-name", "platform": "Job board",
-      "field": { "placeholder": "Job title, keywords", "htmlType": "text", "htmlName": "q" },
-      "expect": { "ignored": "SEARCH" } },
-    { "id": "neg-not-important", "platform": "Native app",
-      "field": { "hintText": "LinkedIn", "importantForAutofill": false },
-      "expect": { "ignored": "NOT_IMPORTANT" } },
-    { "id": "neg-hidden", "platform": "Greenhouse",
-      "field": { "htmlName": "job_application[linkedin]", "htmlType": "hidden" },
-      "expect": { "ignored": "HIDDEN" } },
-    { "id": "neg-date-no-fallback", "platform": "Greenhouse",
-      "field": { "label": "Earliest start date", "htmlType": "date" },
-      "expect": { "none": true } },
-    { "id": "neg-number-no-match", "platform": "Ashby",
-      "field": { "label": "Desired hourly rate", "htmlType": "number" },
-      "expect": { "none": true } },
-    { "id": "neg-job-search-status-not-ignored", "platform": "Custom ATS",
-      "field": { "label": "Job search status", "htmlType": "text" },
-      "expect": { "notIgnored": true } },
-    { "id": "neg-hear-about-us-not-ignored", "platform": "Greenhouse",
-      "field": { "label": "How did you find out about us?", "htmlType": "text" },
-      "expect": { "notIgnored": true, "fallback": true } }
+    {
+      "id": "greenhouse-linkedin",
+      "platform": "Greenhouse",
+      "field": {
+        "label": "LinkedIn Profile",
+        "htmlName": "job_application[answers_attributes][0][text_value]",
+        "htmlId": "job_application_answers_attributes_0_text_value",
+        "htmlType": "text",
+        "webDomain": "boards.greenhouse.io"
+      },
+      "expect": {
+        "top": "LinkedIn"
+      }
+    },
+    {
+      "id": "greenhouse-website",
+      "platform": "Greenhouse",
+      "field": {
+        "label": "Website",
+        "htmlName": "job_application[answers_attributes][1][text_value]",
+        "htmlType": "text",
+        "webDomain": "boards.greenhouse.io"
+      },
+      "expect": {
+        "top": "Portfolio",
+        "contains": [
+          "GitHub",
+          "LinkedIn"
+        ]
+      }
+    },
+    {
+      "id": "greenhouse-email",
+      "platform": "Greenhouse",
+      "field": {
+        "label": "Email",
+        "htmlName": "job_application[email]",
+        "htmlId": "email",
+        "htmlType": "text",
+        "htmlAutocomplete": "email"
+      },
+      "expect": {
+        "top": "Email",
+        "only": [
+          "Email"
+        ]
+      }
+    },
+    {
+      "id": "greenhouse-phone",
+      "platform": "Greenhouse",
+      "field": {
+        "label": "Phone",
+        "htmlName": "job_application[phone]",
+        "htmlId": "phone",
+        "htmlType": "tel"
+      },
+      "expect": {
+        "top": "Phone",
+        "only": [
+          "Phone"
+        ]
+      }
+    },
+    {
+      "id": "greenhouse-location",
+      "platform": "Greenhouse",
+      "field": {
+        "label": "Location (City)",
+        "htmlId": "job_application_location",
+        "htmlName": "job_application[location]",
+        "htmlAutocomplete": "address-level2"
+      },
+      "expect": {
+        "top": "Location"
+      }
+    },
+    {
+      "id": "greenhouse-github",
+      "platform": "Greenhouse",
+      "field": {
+        "label": "GitHub URL",
+        "htmlName": "job_application[answers_attributes][2][text_value]",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "GitHub"
+      }
+    },
+    {
+      "id": "greenhouse-why",
+      "platform": "Greenhouse",
+      "field": {
+        "label": "Why do you want to work at Acme?",
+        "htmlType": "textarea",
+        "htmlName": "job_application[answers_attributes][3][text_value]"
+      },
+      "expect": {
+        "top": "Why this company?"
+      }
+    },
+    {
+      "id": "lever-linkedin",
+      "platform": "Lever",
+      "field": {
+        "label": "LinkedIn URL",
+        "htmlName": "urls[LinkedIn]",
+        "htmlType": "text",
+        "webDomain": "jobs.lever.co"
+      },
+      "expect": {
+        "top": "LinkedIn"
+      }
+    },
+    {
+      "id": "lever-github",
+      "platform": "Lever",
+      "field": {
+        "label": "GitHub URL",
+        "htmlName": "urls[GitHub]",
+        "htmlType": "text",
+        "webDomain": "jobs.lever.co"
+      },
+      "expect": {
+        "top": "GitHub"
+      }
+    },
+    {
+      "id": "lever-twitter",
+      "platform": "Lever",
+      "field": {
+        "label": "Twitter URL",
+        "htmlName": "urls[Twitter]",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "X"
+      }
+    },
+    {
+      "id": "lever-portfolio",
+      "platform": "Lever",
+      "field": {
+        "label": "Portfolio URL",
+        "htmlName": "urls[Portfolio]",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Portfolio"
+      }
+    },
+    {
+      "id": "lever-other-website",
+      "platform": "Lever",
+      "field": {
+        "label": "Other website",
+        "htmlName": "urls[Other]",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Portfolio",
+        "contains": [
+          "GitHub"
+        ]
+      }
+    },
+    {
+      "id": "lever-email",
+      "platform": "Lever",
+      "field": {
+        "label": "Email",
+        "htmlName": "email",
+        "htmlType": "email"
+      },
+      "expect": {
+        "top": "Email",
+        "only": [
+          "Email"
+        ]
+      }
+    },
+    {
+      "id": "lever-current-location",
+      "platform": "Lever",
+      "field": {
+        "label": "Current location",
+        "htmlName": "location",
+        "htmlId": "location-input",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Location"
+      }
+    },
+    {
+      "id": "lever-resume-link",
+      "platform": "Lever",
+      "field": {
+        "label": "Resume/CV link",
+        "htmlName": "cards[resume][field0]",
+        "htmlType": "text"
+      },
+      "context": {
+        "activeProfileId": 1
+      },
+      "expect": {
+        "top": "CV (Tech)",
+        "absent": [
+          "CV (Non-tech)"
+        ]
+      }
+    },
+    {
+      "id": "lever-additional-info",
+      "platform": "Lever",
+      "field": {
+        "label": "Additional information",
+        "htmlName": "comments",
+        "htmlType": "textarea",
+        "placeholder": "Add a cover letter or anything else you want to share."
+      },
+      "expect": {
+        "top": "Cover letter"
+      }
+    },
+    {
+      "id": "workable-linkedin",
+      "platform": "Workable",
+      "field": {
+        "label": "LinkedIn",
+        "htmlName": "linkedin",
+        "htmlId": "linkedin",
+        "htmlType": "text",
+        "webDomain": "apply.workable.com"
+      },
+      "expect": {
+        "top": "LinkedIn"
+      }
+    },
+    {
+      "id": "workable-summary",
+      "platform": "Workable",
+      "field": {
+        "label": "Summary",
+        "htmlName": "summary",
+        "htmlType": "textarea"
+      },
+      "expect": {
+        "top": "Short bio"
+      }
+    },
+    {
+      "id": "workable-phone",
+      "platform": "Workable",
+      "field": {
+        "label": "Phone",
+        "htmlName": "phone",
+        "htmlType": "tel",
+        "htmlAutocomplete": "tel"
+      },
+      "expect": {
+        "top": "Phone"
+      }
+    },
+    {
+      "id": "workable-address",
+      "platform": "Workable",
+      "field": {
+        "label": "Address",
+        "htmlName": "address",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Location"
+      }
+    },
+    {
+      "id": "workable-cover-letter",
+      "platform": "Workable",
+      "field": {
+        "label": "Cover letter",
+        "htmlName": "cover_letter",
+        "htmlType": "textarea"
+      },
+      "expect": {
+        "top": "Cover letter"
+      }
+    },
+    {
+      "id": "ashby-linkedin",
+      "platform": "Ashby",
+      "field": {
+        "label": "LinkedIn Profile",
+        "htmlName": "_systemfield_linkedin",
+        "htmlType": "url",
+        "webDomain": "jobs.ashbyhq.com"
+      },
+      "expect": {
+        "top": "LinkedIn"
+      }
+    },
+    {
+      "id": "ashby-email",
+      "platform": "Ashby",
+      "field": {
+        "label": "Email",
+        "htmlName": "_systemfield_email",
+        "htmlType": "email"
+      },
+      "expect": {
+        "top": "Email"
+      }
+    },
+    {
+      "id": "ashby-yoe",
+      "platform": "Ashby",
+      "field": {
+        "label": "How many years of experience do you have with Kotlin?",
+        "htmlType": "number"
+      },
+      "expect": {
+        "top": "Years of experience",
+        "only": [
+          "Years of experience"
+        ]
+      }
+    },
+    {
+      "id": "ashby-website-url-type",
+      "platform": "Ashby",
+      "field": {
+        "label": "Website",
+        "htmlType": "url"
+      },
+      "expect": {
+        "top": "Portfolio",
+        "allLinks": true
+      }
+    },
+    {
+      "id": "ashby-links",
+      "platform": "Ashby",
+      "field": {
+        "label": "Links",
+        "htmlType": "text",
+        "placeholder": "Any links you'd like to share"
+      },
+      "expect": {
+        "allLinks": true,
+        "contains": [
+          "Portfolio"
+        ]
+      }
+    },
+    {
+      "id": "gforms-linkedin",
+      "platform": "Google Forms",
+      "field": {
+        "ariaLabel": "LinkedIn profile link",
+        "htmlType": "text",
+        "htmlAutocomplete": "off",
+        "webDomain": "docs.google.com"
+      },
+      "expect": {
+        "top": "LinkedIn"
+      }
+    },
+    {
+      "id": "gforms-email",
+      "platform": "Google Forms",
+      "field": {
+        "ariaLabel": "Email address",
+        "htmlType": "email",
+        "htmlAutocomplete": "email"
+      },
+      "expect": {
+        "top": "Email",
+        "only": [
+          "Email"
+        ]
+      }
+    },
+    {
+      "id": "gforms-email-text-type",
+      "platform": "Google Forms",
+      "field": {
+        "ariaLabel": "Your email address",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Email",
+        "absent": [
+          "Location"
+        ]
+      }
+    },
+    {
+      "id": "gforms-about",
+      "platform": "Google Forms",
+      "field": {
+        "ariaLabel": "Tell us about yourself",
+        "htmlType": "textarea"
+      },
+      "expect": {
+        "top": "Short bio"
+      }
+    },
+    {
+      "id": "gforms-whatsapp",
+      "platform": "Google Forms",
+      "field": {
+        "ariaLabel": "WhatsApp number",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Phone"
+      }
+    },
+    {
+      "id": "typeform-portfolio",
+      "platform": "Typeform",
+      "field": {
+        "placeholder": "https://",
+        "nearbyText": "Share a link to your portfolio",
+        "htmlType": "url"
+      },
+      "expect": {
+        "top": "Portfolio"
+      }
+    },
+    {
+      "id": "typeform-github-nearby",
+      "platform": "Typeform",
+      "field": {
+        "placeholder": "Type your answer here...",
+        "nearbyText": "What's your GitHub username or profile?",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "GitHub"
+      }
+    },
+    {
+      "id": "typeform-city",
+      "platform": "Typeform",
+      "field": {
+        "placeholder": "Type your answer here...",
+        "nearbyText": "Which city are you based in?",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Location"
+      }
+    },
+    {
+      "id": "easyapply-phone",
+      "platform": "LinkedIn Easy Apply",
+      "field": {
+        "label": "Mobile phone number",
+        "htmlId": "single-line-text-form-component-phoneNumber-nationalNumber",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Phone"
+      }
+    },
+    {
+      "id": "easyapply-yoe",
+      "platform": "LinkedIn Easy Apply",
+      "field": {
+        "label": "How many years of work experience do you have with Android?",
+        "htmlType": "text",
+        "htmlId": "single-line-text-form-component-numeric"
+      },
+      "expect": {
+        "top": "Years of experience"
+      }
+    },
+    {
+      "id": "easyapply-city",
+      "platform": "LinkedIn Easy Apply",
+      "field": {
+        "label": "City",
+        "htmlId": "location-GEO-LOCATION",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Location"
+      }
+    },
+    {
+      "id": "native-linkedin-hint",
+      "platform": "Native app",
+      "field": {
+        "hintText": "LinkedIn profile",
+        "resourceId": "et_linkedin",
+        "packageName": "com.example.jobs"
+      },
+      "expect": {
+        "top": "LinkedIn"
+      }
+    },
+    {
+      "id": "native-email-hint",
+      "platform": "Native app",
+      "field": {
+        "autofillHints": [
+          "emailAddress"
+        ],
+        "hintText": "Email",
+        "inputKind": "EMAIL",
+        "packageName": "com.example.jobs"
+      },
+      "expect": {
+        "top": "Email",
+        "only": [
+          "Email"
+        ]
+      }
+    },
+    {
+      "id": "native-phone-flags",
+      "platform": "Native app",
+      "field": {
+        "hintText": "Enter phone",
+        "inputKind": "PHONE",
+        "packageName": "com.example.jobs"
+      },
+      "expect": {
+        "top": "Phone"
+      }
+    },
+    {
+      "id": "native-id-only",
+      "platform": "Native app",
+      "field": {
+        "resourceId": "githubUrlInput",
+        "packageName": "com.example.jobs"
+      },
+      "expect": {
+        "top": "GitHub"
+      }
+    },
+    {
+      "id": "native-compact-id",
+      "platform": "Native app",
+      "field": {
+        "resourceId": "linkedinprofileurl",
+        "packageName": "com.example.jobs"
+      },
+      "expect": {
+        "top": "LinkedIn"
+      }
+    },
+    {
+      "id": "native-nearby-label",
+      "platform": "Native app",
+      "field": {
+        "nearbyText": "Portfolio",
+        "resourceId": "edit_text_3",
+        "packageName": "com.example.jobs"
+      },
+      "expect": {
+        "top": "Portfolio"
+      }
+    },
+    {
+      "id": "keyword-personal-site",
+      "platform": "Custom ATS",
+      "field": {
+        "label": "Where can we see your work online?",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Portfolio"
+      }
+    },
+    {
+      "id": "ambiguous-other-link",
+      "platform": "Custom ATS",
+      "field": {
+        "label": "Other link",
+        "htmlType": "text"
+      },
+      "expect": {
+        "allLinks": true
+      }
+    },
+    {
+      "id": "ambiguous-unknown-free-text",
+      "platform": "Custom ATS",
+      "field": {
+        "label": "Anything else we should know?",
+        "htmlType": "text"
+      },
+      "expect": {
+        "fallback": true
+      }
+    },
+    {
+      "id": "neg-password",
+      "platform": "Greenhouse account",
+      "field": {
+        "label": "Password",
+        "htmlType": "password",
+        "htmlName": "password"
+      },
+      "expect": {
+        "ignored": "PASSWORD"
+      }
+    },
+    {
+      "id": "neg-new-password-autocomplete",
+      "platform": "Workday sign-up",
+      "field": {
+        "label": "Create a key",
+        "htmlType": "text",
+        "htmlAutocomplete": "new-password"
+      },
+      "expect": {
+        "ignored": "PASSWORD"
+      }
+    },
+    {
+      "id": "neg-otp",
+      "platform": "LinkedIn sign-in",
+      "field": {
+        "label": "Enter the 6-digit code",
+        "htmlName": "pin",
+        "htmlAutocomplete": "one-time-code",
+        "htmlType": "text"
+      },
+      "expect": {
+        "ignored": "OTP"
+      }
+    },
+    {
+      "id": "neg-verification-code",
+      "platform": "Native app",
+      "field": {
+        "hintText": "Verification code",
+        "inputKind": "NUMBER",
+        "packageName": "com.example.jobs"
+      },
+      "expect": {
+        "ignored": "OTP"
+      }
+    },
+    {
+      "id": "neg-sms-hint",
+      "platform": "Native app",
+      "field": {
+        "autofillHints": [
+          "smsOTPCode"
+        ],
+        "hintText": "Code"
+      },
+      "expect": {
+        "ignored": "OTP"
+      }
+    },
+    {
+      "id": "neg-card",
+      "platform": "Checkout",
+      "field": {
+        "label": "Card number",
+        "htmlAutocomplete": "cc-number",
+        "htmlType": "text"
+      },
+      "expect": {
+        "ignored": "CARD"
+      }
+    },
+    {
+      "id": "neg-cvv",
+      "platform": "Checkout",
+      "field": {
+        "placeholder": "CVV",
+        "htmlName": "cvv",
+        "htmlType": "text"
+      },
+      "expect": {
+        "ignored": "CARD"
+      }
+    },
+    {
+      "id": "neg-search",
+      "platform": "Job board",
+      "field": {
+        "placeholder": "Search jobs",
+        "htmlType": "search",
+        "htmlName": "q"
+      },
+      "expect": {
+        "ignored": "SEARCH"
+      }
+    },
+    {
+      "id": "neg-search-by-name",
+      "platform": "Job board",
+      "field": {
+        "placeholder": "Job title, keywords",
+        "htmlType": "text",
+        "htmlName": "q"
+      },
+      "expect": {
+        "ignored": "SEARCH"
+      }
+    },
+    {
+      "id": "neg-not-important",
+      "platform": "Native app",
+      "field": {
+        "hintText": "LinkedIn",
+        "importantForAutofill": false
+      },
+      "expect": {
+        "ignored": "NOT_IMPORTANT"
+      }
+    },
+    {
+      "id": "neg-hidden",
+      "platform": "Greenhouse",
+      "field": {
+        "htmlName": "job_application[linkedin]",
+        "htmlType": "hidden"
+      },
+      "expect": {
+        "ignored": "HIDDEN"
+      }
+    },
+    {
+      "id": "neg-date-no-fallback",
+      "platform": "Greenhouse",
+      "field": {
+        "label": "Earliest start date",
+        "htmlType": "date"
+      },
+      "expect": {
+        "none": true
+      }
+    },
+    {
+      "id": "neg-number-no-match",
+      "platform": "Ashby",
+      "field": {
+        "label": "Desired hourly rate",
+        "htmlType": "number"
+      },
+      "expect": {
+        "none": true
+      }
+    },
+    {
+      "id": "neg-job-search-status-not-ignored",
+      "platform": "Custom ATS",
+      "field": {
+        "label": "Job search status",
+        "htmlType": "text"
+      },
+      "expect": {
+        "notIgnored": true
+      }
+    },
+    {
+      "id": "neg-hear-about-us-not-ignored",
+      "platform": "Greenhouse",
+      "field": {
+        "label": "How did you find out about us?",
+        "htmlType": "text"
+      },
+      "expect": {
+        "notIgnored": true,
+        "top": "How did you hear about us?"
+      }
+    },
+    {
+      "id": "wording-professional-profile",
+      "platform": "Workday",
+      "field": {
+        "label": "Professional profile URL",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "LinkedIn"
+      }
+    },
+    {
+      "id": "wording-linkedin-optional",
+      "platform": "Ashby",
+      "field": {
+        "label": "LinkedIn (optional)",
+        "htmlType": "url"
+      },
+      "expect": {
+        "top": "LinkedIn"
+      }
+    },
+    {
+      "id": "wording-github-username",
+      "platform": "Custom ATS",
+      "field": {
+        "label": "GitHub username",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "GitHub"
+      }
+    },
+    {
+      "id": "wording-code-samples",
+      "platform": "Greenhouse",
+      "field": {
+        "label": "Link to code samples",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "GitHub"
+      }
+    },
+    {
+      "id": "wording-examples-of-work",
+      "platform": "Workable",
+      "field": {
+        "label": "Examples of your work",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Portfolio"
+      }
+    },
+    {
+      "id": "wording-portfolio-website",
+      "platform": "SmartRecruiters",
+      "field": {
+        "label": "Portfolio website",
+        "htmlName": "portfolioWebsite"
+      },
+      "expect": {
+        "top": "Portfolio"
+      }
+    },
+    {
+      "id": "wording-x-formerly-twitter",
+      "platform": "Lever",
+      "field": {
+        "label": "X (formerly Twitter)",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "X"
+      }
+    },
+    {
+      "id": "wording-substack",
+      "platform": "Typeform",
+      "field": {
+        "nearbyText": "Do you have a blog or Substack?",
+        "placeholder": "Type your answer here...",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Blog"
+      }
+    },
+    {
+      "id": "wording-email-id",
+      "platform": "Naukri-style",
+      "field": {
+        "label": "E-mail ID",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Email"
+      }
+    },
+    {
+      "id": "wording-confirm-email",
+      "platform": "Workday",
+      "field": {
+        "label": "Confirm email address",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Email",
+        "absent": [
+          "Location"
+        ]
+      }
+    },
+    {
+      "id": "wording-mobile-no",
+      "platform": "Naukri-style",
+      "field": {
+        "label": "Mobile No.",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Phone"
+      }
+    },
+    {
+      "id": "wording-resume-accent",
+      "platform": "Workable",
+      "field": {
+        "label": "Résumé link",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "CV (Tech)"
+      },
+      "context": {
+        "activeProfileId": 1
+      }
+    },
+    {
+      "id": "wording-link-to-resume",
+      "platform": "Google Forms",
+      "field": {
+        "ariaLabel": "Link to your resume (Google Drive is fine)",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "CV (Non-tech)"
+      },
+      "context": {
+        "activeProfileId": 2
+      }
+    },
+    {
+      "id": "wording-personal-statement",
+      "platform": "University-style",
+      "field": {
+        "label": "Personal statement",
+        "htmlType": "textarea"
+      },
+      "expect": {
+        "top": "Cover letter"
+      }
+    },
+    {
+      "id": "wording-where-live",
+      "platform": "Typeform",
+      "field": {
+        "nearbyText": "Where do you currently live?",
+        "placeholder": "Type your answer here...",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Location"
+      }
+    },
+    {
+      "id": "wording-city-country",
+      "platform": "Ashby",
+      "field": {
+        "label": "City, Country",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Location"
+      }
+    },
+    {
+      "id": "wording-elevator-pitch",
+      "platform": "Custom ATS",
+      "field": {
+        "label": "Your elevator pitch",
+        "htmlType": "textarea"
+      },
+      "expect": {
+        "top": "Short bio"
+      }
+    },
+    {
+      "id": "wording-why-role",
+      "platform": "Ashby",
+      "field": {
+        "label": "Why are you interested in this role?",
+        "htmlType": "textarea"
+      },
+      "expect": {
+        "top": "Why this company?"
+      }
+    },
+    {
+      "id": "wording-reason-applying",
+      "platform": "Workable",
+      "field": {
+        "label": "Reason for applying",
+        "htmlType": "textarea"
+      },
+      "expect": {
+        "top": "Why this company?"
+      }
+    },
+    {
+      "id": "wording-total-experience",
+      "platform": "Naukri-style",
+      "field": {
+        "label": "Total experience (in years)",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Years of experience"
+      }
+    },
+    {
+      "id": "name-plain",
+      "platform": "Greenhouse",
+      "field": {
+        "label": "Name",
+        "htmlName": "job_application[name]",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Full name"
+      }
+    },
+    {
+      "id": "name-full-legal",
+      "platform": "Workday",
+      "field": {
+        "label": "Full legal name",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Full name"
+      }
+    },
+    {
+      "id": "name-first",
+      "platform": "Greenhouse",
+      "field": {
+        "label": "First Name",
+        "htmlName": "job_application[first_name]",
+        "htmlAutocomplete": "given-name"
+      },
+      "expect": {
+        "top": "First name",
+        "absent": [
+          "Full name"
+        ]
+      }
+    },
+    {
+      "id": "name-given",
+      "platform": "Workday",
+      "field": {
+        "label": "Given name(s)",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "First name"
+      }
+    },
+    {
+      "id": "name-last",
+      "platform": "Greenhouse",
+      "field": {
+        "label": "Last Name",
+        "htmlName": "job_application[last_name]",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Last name",
+        "absent": [
+          "Full name"
+        ]
+      }
+    },
+    {
+      "id": "name-surname",
+      "platform": "UK council form",
+      "field": {
+        "label": "Surname",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Last name"
+      }
+    },
+    {
+      "id": "name-preferred",
+      "platform": "Ashby",
+      "field": {
+        "label": "Preferred name",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "First name"
+      }
+    },
+    {
+      "id": "pronouns",
+      "platform": "Lever",
+      "field": {
+        "label": "Pronouns (optional)",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Pronouns"
+      }
+    },
+    {
+      "id": "work-auth",
+      "platform": "Greenhouse",
+      "field": {
+        "label": "Are you legally authorised to work in the UK?",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Right to work"
+      }
+    },
+    {
+      "id": "work-auth-sponsorship",
+      "platform": "Lever",
+      "field": {
+        "label": "Will you now or in the future require visa sponsorship?",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Right to work"
+      }
+    },
+    {
+      "id": "nationality",
+      "platform": "Workday",
+      "field": {
+        "label": "Nationality",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Nationality"
+      }
+    },
+    {
+      "id": "current-company",
+      "platform": "LinkedIn Easy Apply",
+      "field": {
+        "label": "Current company",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Current company"
+      }
+    },
+    {
+      "id": "current-employer",
+      "platform": "Workday",
+      "field": {
+        "label": "Current employer",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Current company"
+      }
+    },
+    {
+      "id": "current-title",
+      "platform": "Lever",
+      "field": {
+        "label": "Current job title",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Job title"
+      }
+    },
+    {
+      "id": "salary",
+      "platform": "Workable",
+      "field": {
+        "label": "Salary expectations",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Salary expectations"
+      }
+    },
+    {
+      "id": "salary-ctc",
+      "platform": "Naukri-style",
+      "field": {
+        "label": "Expected CTC",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Salary expectations"
+      }
+    },
+    {
+      "id": "notice",
+      "platform": "Workable",
+      "field": {
+        "label": "Notice period",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Notice period"
+      }
+    },
+    {
+      "id": "notice-start",
+      "platform": "Greenhouse",
+      "field": {
+        "label": "When can you start?",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Notice period"
+      }
+    },
+    {
+      "id": "hear-about",
+      "platform": "Greenhouse",
+      "field": {
+        "label": "How did you hear about this job?",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "How did you hear about us?"
+      }
+    },
+    {
+      "id": "trap-company-website",
+      "platform": "Greenhouse",
+      "field": {
+        "label": "Company website",
+        "htmlType": "text"
+      },
+      "expect": {
+        "fallback": true
+      }
+    },
+    {
+      "id": "trap-company-name",
+      "platform": "Workday",
+      "field": {
+        "label": "Company name",
+        "htmlType": "text"
+      },
+      "expect": {
+        "fallback": true,
+        "absent": [
+          "Full name"
+        ]
+      }
+    },
+    {
+      "id": "trap-username",
+      "platform": "Sign-up form",
+      "field": {
+        "label": "Username",
+        "htmlType": "text"
+      },
+      "expect": {
+        "fallback": true,
+        "absent": [
+          "Full name"
+        ]
+      }
+    },
+    {
+      "id": "trap-referrer-name",
+      "platform": "Greenhouse",
+      "field": {
+        "label": "Referrer name",
+        "htmlType": "text"
+      },
+      "expect": {
+        "fallback": true,
+        "absent": [
+          "Full name"
+        ]
+      }
+    },
+    {
+      "id": "trap-emergency-contact",
+      "platform": "HR onboarding",
+      "field": {
+        "label": "Emergency contact name",
+        "htmlType": "text"
+      },
+      "expect": {
+        "fallback": true,
+        "absent": [
+          "Full name",
+          "Phone"
+        ]
+      }
+    },
+    {
+      "id": "trap-school-name",
+      "platform": "Workday",
+      "field": {
+        "label": "School name",
+        "htmlType": "text"
+      },
+      "expect": {
+        "fallback": true
+      }
+    },
+    {
+      "id": "trap-describe-experience",
+      "platform": "Workable",
+      "field": {
+        "label": "Describe your experience with Kotlin",
+        "htmlType": "text"
+      },
+      "expect": {
+        "fallback": true,
+        "absent": [
+          "Years of experience"
+        ]
+      }
+    },
+    {
+      "id": "trap-years-with-experience-with",
+      "platform": "Ashby",
+      "field": {
+        "label": "How many years of experience with Kotlin do you have?",
+        "htmlType": "text"
+      },
+      "expect": {
+        "top": "Years of experience"
+      }
+    },
+    {
+      "id": "trap-job-location",
+      "platform": "Lever",
+      "field": {
+        "label": "Preferred job location",
+        "htmlType": "text"
+      },
+      "expect": {
+        "fallback": true,
+        "absent": [
+          "Location"
+        ]
+      }
+    },
+    {
+      "id": "trap-web-address",
+      "platform": "Custom ATS",
+      "field": {
+        "label": "Web address",
+        "htmlType": "text"
+      },
+      "expect": {
+        "allLinks": true,
+        "absent": [
+          "Location"
+        ]
+      }
+    },
+    {
+      "id": "trap-mobile-app",
+      "platform": "Custom ATS",
+      "field": {
+        "label": "Link to a mobile app you built",
+        "htmlType": "text"
+      },
+      "expect": {
+        "allLinks": true,
+        "absent": [
+          "Phone"
+        ]
+      }
+    },
+    {
+      "id": "trap-position-applied",
+      "platform": "Workday",
+      "field": {
+        "label": "Position you are applying for",
+        "htmlType": "text"
+      },
+      "expect": {
+        "fallback": true,
+        "absent": [
+          "Job title"
+        ]
+      }
+    },
+    {
+      "id": "trap-start-date-picker",
+      "platform": "Greenhouse",
+      "field": {
+        "label": "Earliest start date",
+        "htmlType": "date"
+      },
+      "expect": {
+        "none": true
+      }
+    },
+    {
+      "id": "trap-privacy-notice",
+      "platform": "Custom ATS",
+      "field": {
+        "label": "Privacy notice acknowledgement",
+        "htmlType": "text"
+      },
+      "expect": {
+        "absent": [
+          "Notice period"
+        ]
+      }
+    }
   ]
 }

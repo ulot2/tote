@@ -7,10 +7,12 @@ class SignalText(raw: String) {
     val isEmpty: Boolean get() = tokens.isEmpty()
 }
 
-/** Where a phrase was found in a [SignalText]. A null [range] means a compact (substring) match. */
-data class PhraseHit(val phrase: Phrase, val range: IntRange?) {
-    val isCompact: Boolean get() = range == null
-}
+/**
+ * Where a phrase was found in a [SignalText], as a token range. [isCompact] hits were found inside a
+ * single unsplit token ("linkedinprofileurl", or "website" for "web site"); their range is that
+ * token, so a longer phrase around it can still swallow them.
+ */
+data class PhraseHit(val phrase: Phrase, val range: IntRange?, val isCompact: Boolean = false)
 
 object PhraseMatcher {
 
@@ -24,7 +26,10 @@ object PhraseMatcher {
         for (i in 0..text.tokens.size - n) {
             if (text.tokens.subList(i, i + n) == phrase.tokens) return PhraseHit(phrase, i until i + n)
         }
-        if (phrase.compact.length >= MIN_COMPACT_LENGTH && text.compact.contains(phrase.compact)) return PhraseHit(phrase, null)
+        if (phrase.compact.length >= MIN_COMPACT_LENGTH) {
+            val i = text.tokens.indexOfFirst { it.contains(phrase.compact) }
+            if (i >= 0) return PhraseHit(phrase, i..i, isCompact = true)
+        }
         return null
     }
 
@@ -35,11 +40,12 @@ object PhraseMatcher {
      */
     fun isSwallowed(text: SignalText, hit: PhraseHit, claimants: List<Phrase>): Boolean {
         val range = hit.range ?: return false
+        // Compare how much of the text each covers, not phrase length: a compact "web site" hit
+        // covers one token ("website") and "company website" covers two.
+        val width = range.last - range.first
         return claimants.any { other ->
-            other.tokens.size > hit.phrase.tokens.size && run {
-                val o = find(text, other)?.range
-                o != null && o.first <= range.first && o.last >= range.last
-            }
+            val o = find(text, other)?.range
+            o != null && o.last - o.first > width && o.first <= range.first && o.last >= range.last
         }
     }
 }

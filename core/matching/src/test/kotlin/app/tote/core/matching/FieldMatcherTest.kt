@@ -61,8 +61,8 @@ class FieldMatcherTest {
     }
 
     @Test fun entryLabelMatchesEvenWithoutDictionaryKind() {
-        val entries = TestVault.all + Entry(98, "Pronouns", "they/them", EntryType.SHORT_TEXT, Category.ANSWERS, EntryIcon.TEXT)
-        assertEquals("Pronouns", match(FieldSignals(label = "Pronouns (optional)"), entries = entries).top?.label)
+        val entries = TestVault.all + Entry(98, "Shoe size", "42", EntryType.SHORT_TEXT, Category.ANSWERS, EntryIcon.TEXT)
+        assertEquals("Shoe size", match(FieldSignals(label = "Shoe size (EU)"), entries = entries).top?.label)
     }
 
     @Test fun longerPhraseSwallowsWeakerShorterOne() {

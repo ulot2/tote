@@ -172,6 +172,8 @@ class FieldMatcher(private val dictionary: KeywordDictionary = KeywordDictionary
         InputKind.EMAIL -> entry.type == EntryType.EMAIL
         InputKind.PHONE -> entry.type == EntryType.PHONE
         InputKind.NUMBER -> entry.value.trim().matches(Regex("[+-]?[0-9][0-9.,\\s]*"))
+        // Date pickers: Tote doesn't store dates, and "2 weeks" in a date field is noise.
+        InputKind.DATE -> false
         else -> true
     }
 

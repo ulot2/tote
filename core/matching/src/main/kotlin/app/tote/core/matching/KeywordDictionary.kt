@@ -22,6 +22,15 @@ enum class EntryKind(val key: String) {
     WHY_COMPANY("why_company"),
     SALARY("salary"),
     NOTICE_PERIOD("notice_period"),
+    FULL_NAME("full_name"),
+    FIRST_NAME("first_name"),
+    LAST_NAME("last_name"),
+    PRONOUNS("pronouns"),
+    WORK_AUTHORIZATION("work_authorization"),
+    NATIONALITY("nationality"),
+    CURRENT_COMPANY("current_company"),
+    CURRENT_TITLE("current_title"),
+    HEAR_ABOUT("hear_about"),
     ;
 
     companion object {
@@ -31,15 +40,15 @@ enum class EntryKind(val key: String) {
 
 enum class IgnoreReason { NOT_IMPORTANT, PASSWORD, OTP, CARD, SEARCH, CAPTCHA, HIDDEN }
 
-/** A phrase, pre-split into stemmed tokens. */
-data class Phrase(val text: String, val tokens: List<String>) {
+/** A phrase, pre-split into stemmed tokens. [display] is the phrase as written, for showing to people. */
+data class Phrase(val text: String, val tokens: List<String>, val display: String = text) {
     /** Tokens joined without spaces, for ids like "linkedinurl" that have no separators. */
     val compact: String = tokens.joinToString("")
 
     companion object {
         fun of(raw: String): Phrase {
             val tokens = TextNormalizer.tokens(raw).map(TextNormalizer::stem)
-            return Phrase(tokens.joinToString(" "), tokens)
+            return Phrase(tokens.joinToString(" "), tokens, raw.trim())
         }
     }
 }
@@ -60,14 +69,17 @@ class KeywordDictionary(
     val weak: Map<EntryKind, List<Phrase>>,
     val genericLink: List<Phrase>,
     val ignore: Map<IgnoreReason, List<Phrase>>,
+    /** Phrases that mean something else and swallow any shorter hit inside them ("company website"). */
+    val stopPhrases: List<Phrase>,
     private val androidHints: Map<String, HintMeaning>,
     private val htmlAutocomplete: Map<String, HintMeaning>,
 ) {
     /**
-     * Every kind phrase, used to decide which shorter hits a longer phrase swallows. Generic link
-     * words are left out on purpose: "other website" must not hide the portfolio's "website".
+     * Every kind phrase plus the stop phrases, used to decide which shorter hits a longer phrase
+     * swallows. Generic link words are left out on purpose: "other website" must not hide the
+     * portfolio's "website".
      */
-    val kindPhrases: List<Phrase> = (strong.values.flatten() + weak.values.flatten()).distinct()
+    val kindPhrases: List<Phrase> = (strong.values.flatten() + weak.values.flatten() + stopPhrases).distinct()
 
     fun androidHint(hint: String): HintMeaning? = androidHints[hint.lowercase().replace(Regex("[^a-z0-9]"), "")]
 
@@ -84,6 +96,7 @@ class KeywordDictionary(
         val kinds: Map<String, KindJson>,
         val genericLink: List<String>,
         val ignore: Map<String, List<String>>,
+        val stopPhrases: List<String> = emptyList(),
         val androidHints: Map<String, String>,
         val htmlAutocomplete: Map<String, String>,
     )
@@ -119,6 +132,7 @@ class KeywordDictionary(
                 weak = d.kinds.entries.associate { (k, v) -> kind(k) to v.weak.map(Phrase::of) },
                 genericLink = d.genericLink.map(Phrase::of),
                 ignore = d.ignore.entries.associate { (k, v) -> IgnoreReason.valueOf(k.uppercase()) to v.map(Phrase::of) },
+                stopPhrases = d.stopPhrases.map(Phrase::of),
                 androidHints = d.androidHints.mapValues { meaning(it.value) },
                 htmlAutocomplete = d.htmlAutocomplete.mapValues { meaning(it.value) },
             )

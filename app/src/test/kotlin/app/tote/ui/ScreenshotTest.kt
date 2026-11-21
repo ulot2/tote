@@ -70,7 +70,8 @@ class ScreenshotTest {
         type = EntryType.LINK,
         category = Category.LINKS,
         icon = EntryIcon.LINKEDIN,
-        keywords = listOf("linked in", "li profile"),
+        keywords = listOf("network profile"),
+        builtInKeywords = app.tote.core.matching.EntryKinds.builtInPhrases(SampleData.linkedin),
         validation = EntryValidator.Result(emptyList(), emptyList()),
     )
 
@@ -79,6 +80,12 @@ class ScreenshotTest {
     }
 
     @Test fun editorDark() = editor(true)
+
+    @Test @Config(qualifiers = "w411dp-h2200dp-xxhdpi")
+    fun editorKeywordsDark() = snap("editor-keywords", true) {
+        // A tall window so the keywords section, at the bottom of the form, is in frame.
+        EditorScreen(editorState, "k", {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})
+    }
     @Test fun editorLight() = editor(false)
 
     @Test fun settingsDark() = snap("settings", true) { SettingsScreen(AppSettings(), {}, {}, {}, tilePromptSupported = true, onOpenChrome = {}) }
