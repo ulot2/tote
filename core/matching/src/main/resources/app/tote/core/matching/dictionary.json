@@ -8,7 +8,20 @@
         "linked in",
         "li profile",
         "linkedin profile",
-        "linkedin url"
+        "linkedin url",
+        "linkedin link",
+        "linkedin profile url",
+        "linkedin profile link",
+        "linkedin page",
+        "linkedin username",
+        "linkedin handle",
+        "linkedin account",
+        "linkedin com",
+        "lnkd in",
+        "professional profile",
+        "professional profile url",
+        "professional networking profile",
+        "your linkedin"
       ],
       "weak": []
     },
@@ -17,7 +30,14 @@
         "github",
         "git hub",
         "github profile",
-        "github url"
+        "github url",
+        "github username",
+        "github handle",
+        "github link",
+        "github account",
+        "github com",
+        "github page",
+        "your github"
       ],
       "weak": [
         "gitlab",
@@ -26,7 +46,13 @@
         "code repository",
         "code samples",
         "repository",
-        "repo"
+        "repo",
+        "source code",
+        "open source contributions",
+        "code portfolio",
+        "sample code",
+        "coding samples",
+        "link to your code"
       ]
     },
     "portfolio": {
@@ -42,12 +68,32 @@
         "personal url",
         "personal page",
         "portfolio url",
-        "portfolio link"
+        "portfolio link",
+        "portfolio website",
+        "personal portfolio",
+        "online portfolio",
+        "your site",
+        "your website",
+        "personal web page",
+        "examples of your work",
+        "samples of your work",
+        "link to your work",
+        "show us your work",
+        "see your work",
+        "case studies",
+        "personal domain",
+        "portfolio site",
+        "design portfolio",
+        "work portfolio"
       ],
       "weak": [
         "site",
-        "design portfolio",
-        "online portfolio"
+        "projects",
+        "project link",
+        "project links",
+        "demo",
+        "demo link",
+        "work online"
       ]
     },
     "twitter": {
@@ -57,13 +103,26 @@
         "x profile",
         "x com",
         "twitter handle",
-        "twitter url"
+        "twitter url",
+        "twitter profile",
+        "twitter username",
+        "x username",
+        "x account",
+        "x formerly twitter",
+        "formerly twitter",
+        "twitter x",
+        "x twitter"
       ],
       "weak": []
     },
     "behance": {
       "strong": [
-        "behance"
+        "behance",
+        "behance profile",
+        "behance url",
+        "behance link",
+        "behance portfolio",
+        "behance net"
       ],
       "weak": [
         "design portfolio"
@@ -71,10 +130,16 @@
     },
     "dribbble": {
       "strong": [
-        "dribbble"
+        "dribbble",
+        "dribbble profile",
+        "dribbble url",
+        "dribbble link",
+        "dribbble portfolio",
+        "dribbble com"
       ],
       "weak": [
-        "design portfolio"
+        "design portfolio",
+        "shots"
       ]
     },
     "blog": {
@@ -82,10 +147,23 @@
         "blog",
         "medium",
         "writing samples",
-        "articles"
+        "articles",
+        "substack",
+        "dev to",
+        "hashnode",
+        "publications",
+        "writing portfolio",
+        "personal blog",
+        "newsletter",
+        "blog url",
+        "medium profile",
+        "published articles",
+        "technical writing"
       ],
       "weak": [
-        "writing"
+        "writing",
+        "posts",
+        "publication"
       ]
     },
     "email": {
@@ -94,11 +172,25 @@
         "e mail",
         "email address",
         "e mail address",
-        "mail address"
+        "mail address",
+        "email id",
+        "e mail id",
+        "mail id",
+        "contact email",
+        "personal email",
+        "work email",
+        "your email",
+        "primary email",
+        "confirm email",
+        "re enter email",
+        "retype email",
+        "email confirmation",
+        "gmail",
+        "preferred email",
+        "electronic mail"
       ],
       "weak": [
-        "mail",
-        "contact email"
+        "mail"
       ]
     },
     "phone": {
@@ -114,7 +206,21 @@
         "mobile number",
         "cell",
         "cell phone",
-        "cellphone"
+        "cellphone",
+        "mobile phone",
+        "telephone number",
+        "phone no",
+        "mobile no",
+        "tel no",
+        "primary phone",
+        "contact phone",
+        "sms number",
+        "best number",
+        "daytime phone",
+        "phone num",
+        "mobile num",
+        "contact no",
+        "whatsapp number"
       ],
       "weak": [
         "contact"
@@ -128,10 +234,26 @@
         "cv link",
         "resume link",
         "resume url",
-        "cv url"
+        "cv url",
+        "link to resume",
+        "link to your resume",
+        "link to cv",
+        "link to your cv",
+        "resume cv",
+        "cv resume",
+        "resume google drive",
+        "online resume",
+        "resume file",
+        "cv file",
+        "copy of your resume",
+        "copy of your cv",
+        "latest resume",
+        "updated resume",
+        "biodata"
       ],
       "weak": [
-        "document"
+        "document",
+        "attachment"
       ]
     },
     "cover_letter": {
@@ -139,9 +261,18 @@
         "cover letter",
         "motivation letter",
         "letter of motivation",
-        "covering letter"
+        "covering letter",
+        "cover note",
+        "personal statement",
+        "letter of interest",
+        "application letter",
+        "motivational letter",
+        "statement of interest",
+        "supporting statement"
       ],
-      "weak": []
+      "weak": [
+        "statement"
+      ]
     },
     "location": {
       "strong": [
@@ -153,13 +284,33 @@
         "based in",
         "town",
         "city of residence",
-        "current city"
+        "current city",
+        "where do you live",
+        "where do you currently live",
+        "city and country",
+        "city country",
+        "home city",
+        "place of residence",
+        "current address",
+        "residential address",
+        "location city",
+        "metro area",
+        "city state",
+        "city town",
+        "where are you currently based",
+        "your location",
+        "country of residence",
+        "current residence"
       ],
       "weak": [
         "address",
         "country",
         "residence",
-        "home address"
+        "home address",
+        "state",
+        "province",
+        "region",
+        "postal address"
       ]
     },
     "bio": {
@@ -174,11 +325,25 @@
         "professional summary",
         "short bio",
         "describe yourself",
-        "about me"
+        "about me",
+        "personal summary",
+        "profile summary",
+        "elevator pitch",
+        "brief introduction",
+        "background summary",
+        "who are you",
+        "short introduction",
+        "tell me about yourself",
+        "a little about yourself",
+        "brief bio",
+        "career summary",
+        "executive summary"
       ],
       "weak": [
         "introduction",
-        "profile summary"
+        "overview",
+        "background",
+        "headline"
       ]
     },
     "years_experience": {
@@ -189,7 +354,18 @@
         "years experience",
         "how many years",
         "years of professional experience",
-        "total experience"
+        "total experience",
+        "total years",
+        "number of years",
+        "years in the industry",
+        "years in industry",
+        "years working",
+        "years of relevant experience",
+        "work experience years",
+        "experience in years",
+        "years of work experience",
+        "how long have you",
+        "years of industry experience"
       ],
       "weak": [
         "experience"
@@ -205,11 +381,24 @@
         "why are you applying",
         "why do you want to join",
         "what excites you",
-        "why would you like to work"
+        "why would you like to work",
+        "why this role",
+        "why do you want this job",
+        "why are you interested in this role",
+        "what interests you",
+        "what attracts you",
+        "reason for applying",
+        "reasons for applying",
+        "motivation for applying",
+        "why do you want to work here",
+        "why are you a good fit",
+        "why should we hire you",
+        "why the role"
       ],
       "weak": [
         "motivation",
-        "interest in"
+        "interest in",
+        "good fit"
       ]
     },
     "salary": {
@@ -218,20 +407,198 @@
         "compensation",
         "expected salary",
         "salary expectation",
+        "salary expectations",
         "pay expectation",
-        "desired salary"
+        "pay expectations",
+        "desired salary",
+        "expected compensation",
+        "current salary",
+        "current compensation",
+        "ctc",
+        "current ctc",
+        "expected ctc",
+        "desired pay",
+        "pay range",
+        "salary range",
+        "compensation expectations",
+        "rate expectations",
+        "hourly rate",
+        "day rate",
+        "daily rate",
+        "desired compensation",
+        "remuneration",
+        "salary requirements",
+        "expected pay"
       ],
-      "weak": []
+      "weak": [
+        "pay"
+      ]
     },
     "notice_period": {
       "strong": [
         "notice period",
         "when can you start",
         "earliest start",
-        "availability to start"
+        "availability to start",
+        "when could you start",
+        "how soon can you start",
+        "earliest availability",
+        "start availability",
+        "available to start",
+        "when are you available",
+        "availability date"
       ],
       "weak": [
-        "availability"
+        "availability",
+        "notice"
+      ]
+    },
+    "full_name": {
+      "strong": [
+        "name",
+        "full name",
+        "your name",
+        "legal name",
+        "full legal name",
+        "name and surname",
+        "applicant name",
+        "candidate name",
+        "complete name",
+        "first and last name",
+        "name surname",
+        "your full name",
+        "fullname"
+      ],
+      "weak": []
+    },
+    "first_name": {
+      "strong": [
+        "first name",
+        "given name",
+        "forename",
+        "firstname",
+        "fname",
+        "first names",
+        "given names"
+      ],
+      "weak": [
+        "preferred name",
+        "preferred first name",
+        "nickname"
+      ]
+    },
+    "last_name": {
+      "strong": [
+        "last name",
+        "surname",
+        "family name",
+        "lastname",
+        "lname",
+        "second name"
+      ],
+      "weak": []
+    },
+    "pronouns": {
+      "strong": [
+        "pronouns",
+        "pronoun",
+        "preferred pronouns",
+        "your pronouns",
+        "personal pronouns"
+      ],
+      "weak": []
+    },
+    "work_authorization": {
+      "strong": [
+        "work authorization",
+        "work authorisation",
+        "authorized to work",
+        "authorised to work",
+        "right to work",
+        "eligible to work",
+        "legally authorized",
+        "legally authorised",
+        "visa status",
+        "sponsorship",
+        "require sponsorship",
+        "need sponsorship",
+        "visa sponsorship",
+        "work permit",
+        "immigration status",
+        "eligibility to work",
+        "work visa",
+        "employment eligibility"
+      ],
+      "weak": [
+        "visa"
+      ]
+    },
+    "nationality": {
+      "strong": [
+        "nationality",
+        "citizenship",
+        "country of citizenship",
+        "citizen of",
+        "citizenship status",
+        "nationalities"
+      ],
+      "weak": []
+    },
+    "current_company": {
+      "strong": [
+        "current company",
+        "current employer",
+        "present employer",
+        "employer name",
+        "current organisation",
+        "current organization",
+        "where do you work",
+        "company you work for",
+        "current workplace",
+        "most recent employer",
+        "most recent company"
+      ],
+      "weak": [
+        "employer"
+      ]
+    },
+    "current_title": {
+      "strong": [
+        "current title",
+        "job title",
+        "current role",
+        "current position",
+        "position title",
+        "designation",
+        "current job title",
+        "your role",
+        "your title",
+        "most recent title",
+        "current designation",
+        "headline title"
+      ],
+      "weak": [
+        "title",
+        "position"
+      ]
+    },
+    "hear_about": {
+      "strong": [
+        "how did you hear about us",
+        "how did you hear about",
+        "how did you find us",
+        "how did you find out about us",
+        "how did you find out",
+        "where did you hear",
+        "where did you find",
+        "referral source",
+        "source of application",
+        "how did you learn about",
+        "how did you hear"
+      ],
+      "weak": [
+        "referral",
+        "source"
       ]
     }
   },
@@ -346,5 +713,88 @@
     "cc-name": "@ignore:card",
     "cc-type": "@ignore:card"
   },
-  "_searchNote": "'search' phrases only ignore a field when they appear in its name/id, or start its label/placeholder; 'Job search status' stays matchable."
+  "_searchNote": "'search' phrases only ignore a field when they appear in its name/id, or start its label/placeholder; 'Job search status' stays matchable.",
+  "stopPhrases": [
+    "company website",
+    "company url",
+    "company site",
+    "employer website",
+    "company s website",
+    "companys website",
+    "organization website",
+    "organisation website",
+    "website you found",
+    "job board",
+    "company name",
+    "school name",
+    "university name",
+    "institution name",
+    "college name",
+    "organization name",
+    "organisation name",
+    "employer s name",
+    "project name",
+    "file name",
+    "user name",
+    "username",
+    "display name",
+    "screen name",
+    "reference name",
+    "referrer name",
+    "referral name",
+    "referee name",
+    "manager name",
+    "contact name",
+    "emergency contact",
+    "emergency contact name",
+    "name of reference",
+    "name of referrer",
+    "name of your manager",
+    "name on card",
+    "account name",
+    "business name",
+    "degree name",
+    "describe your experience",
+    "tell us about your experience",
+    "your experience with",
+    "experience with",
+    "relevant experience description",
+    "work experience description",
+    "previous experience",
+    "prior experience",
+    "ip address",
+    "web address",
+    "email address",
+    "job location",
+    "preferred location",
+    "work location",
+    "office location",
+    "location preference",
+    "preferred city",
+    "job title you are applying",
+    "position you are applying",
+    "role you are applying",
+    "title of the role",
+    "position applied",
+    "company size",
+    "team size",
+    "phone interview",
+    "mobile app",
+    "mobile development",
+    "cell biology",
+    "title of your",
+    "course title",
+    "thesis title",
+    "summary of the role",
+    "job summary",
+    "name of school",
+    "name of company",
+    "name of employer",
+    "name of university",
+    "name of institution",
+    "name of your company",
+    "privacy notice",
+    "area of expertise"
+  ],
+  "_stopNote": "stopPhrases belong to no kind. A hit inside one of them is ignored: 'company website' isn't your portfolio, 'company name' isn't your name, 'describe your experience' isn't your years of experience."
 }

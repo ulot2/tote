@@ -13,6 +13,7 @@ data class SeedTemplate(
 
 object SeedTemplates {
     val all = listOf(
+        SeedTemplate("name", "Full name", EntryType.SHORT_TEXT, Category.CONTACT, EntryIcon.TEXT, "Your name as on your CV"),
         SeedTemplate("linkedin", "LinkedIn", EntryType.LINK, Category.LINKS, EntryIcon.LINKEDIN, "linkedin.com/in/your-name"),
         SeedTemplate("portfolio", "Portfolio", EntryType.LINK, Category.LINKS, EntryIcon.GLOBE, "yourname.com"),
         SeedTemplate("github", "GitHub", EntryType.LINK, Category.LINKS, EntryIcon.GITHUB, "github.com/your-handle"),

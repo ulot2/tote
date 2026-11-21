@@ -116,7 +116,10 @@ class AutofillPlaygroundActivity : ComponentActivity() {
 
     private fun field(label: String, type: Int = InputType.TYPE_CLASS_TEXT): View {
         val box = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(0, dp(10), 0, 0) }
-        box.addView(text(label, 14f, fg, bold = true))
+        // Android leaves a plain TextView out of the structure it sends autofill services unless it
+        // has a resource id or is marked important. Real apps' labels usually have ids from XML; this
+        // screen builds views in code, so mark the label important to behave the same way.
+        box.addView(text(label, 14f, fg, bold = true).apply { importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_YES })
         box.addView(
             EditText(this).apply {
                 // No hint: like many real apps, the only label is the TextView above (Tote's "nearby text").

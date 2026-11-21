@@ -71,9 +71,11 @@ class FillResponseFactory(
         val attribution by lazy { attributionIntent() }
 
         plans.forEachIndexed { index, plan ->
-            // Inline chips go on the focused field only: the keyboard asked about that one.
+            // Inline chips go on every field, not just the focused one. When the user moves to another
+            // field on the same screen, Android reuses this response instead of asking again, and while
+            // the keyboard shows chips it hides the dropdown: a field without chips shows nothing.
             var inlineUsed = 0
-            val inlineAllowed = plan.field.focused && inlineSpecs.isNotEmpty()
+            val inlineAllowed = inlineSpecs.isNotEmpty()
             fun nextSpec() = if (inlineAllowed && inlineUsed < maxInline) inlineSpecs[minOf(inlineUsed, inlineSpecs.lastIndex)] else null
 
             // Keep a slot for "All entries…" among the inline chips.

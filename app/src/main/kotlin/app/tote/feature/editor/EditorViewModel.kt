@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import app.tote.core.data.platform.ClipboardWriter
 import app.tote.core.data.repo.EntryRepository
+import app.tote.core.matching.EntryKinds
 import app.tote.core.model.Category
 import app.tote.core.model.Entry
 import app.tote.core.model.EntryClassifier
@@ -36,6 +37,8 @@ data class EditorUiState(
     val categoryAuto: Boolean = true,
     val iconAuto: Boolean = true,
     val keywords: List<String> = emptyList(),
+    /** Wordings Tote already matches for this kind of entry (from the shared dictionary). */
+    val builtInKeywords: List<String> = emptyList(),
     val keywordDraft: String = "",
     val pinned: Boolean = false,
     /** Errors are only shown after a save attempt, so a fresh form isn't red. */
@@ -190,7 +193,10 @@ class EditorViewModel @Inject constructor(
         )
     }
 
-    private fun EditorUiState.validated() = copy(validation = EntryValidator.validate(label, value, type))
+    private fun EditorUiState.validated() = copy(
+        validation = EntryValidator.validate(label, value, type),
+        builtInKeywords = EntryKinds.builtInPhrases(Entry(label = label, value = value, type = type, category = category, icon = icon)),
+    )
 
     private fun defaultCategory(t: EntryType) = when (t) {
         EntryType.LINK -> Category.LINKS

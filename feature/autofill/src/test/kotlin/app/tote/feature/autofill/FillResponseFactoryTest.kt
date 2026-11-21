@@ -87,6 +87,41 @@ class FillResponseFactoryTest {
         assertEquals(FillResponseFactory.ALL_ENTRIES_ID, ids.last())
     }
 
+    @Test
+    @org.robolectric.annotation.Config(sdk = [35])
+    fun everyFieldGetsKeyboardChipsNotJustTheFocusedOne() {
+        // Android reuses a response when focus moves to another field, and hides the dropdown while
+        // the keyboard shows chips, so a field without chips would show nothing (seen on a phone).
+        val style = androidx.autofill.inline.UiVersions.newStylesBuilder()
+            .addStyle(androidx.autofill.inline.v1.InlineSuggestionUi.newStyleBuilder().build())
+            .build()
+        val spec = android.widget.inline.InlinePresentationSpec.Builder(android.util.Size(100, 40), android.util.Size(600, 40))
+            .setStyle(style).build()
+        val request = android.view.inputmethod.InlineSuggestionsRequest.Builder(listOf(spec)).setMaxSuggestionCount(4).build()
+
+        val first = autofillId(1)
+        val second = autofillId(2)
+        val plans = factory.plan(
+            listOf(
+                ParsedField(first, FieldSignals(label = "LinkedIn Profile"), focused = true),
+                ParsedField(second, FieldSignals(label = "Email", htmlType = "email"), focused = false),
+            ),
+            vault,
+            MatchContext(),
+        )
+        val datasets = datasetsOf(factory.build(plans, request, "r")!!)
+        val withChips = datasets.filter { inlineOf(it) != null }.map { fieldIdsOf(it) }.flatten().toSet()
+        assertTrue("first field has chips", first in withChips)
+        assertTrue("second field has chips too", second in withChips)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun fieldIdsOf(dataset: Dataset): List<AutofillId> =
+        Dataset::class.java.getDeclaredMethod("getFieldIds").apply { isAccessible = true }.invoke(dataset) as List<AutofillId>
+
+    private fun inlineOf(dataset: Dataset): Any? =
+        Dataset::class.java.getDeclaredMethod("getFieldInlinePresentation", Int::class.javaPrimitiveType).apply { isAccessible = true }.invoke(dataset, 0)
+
     @Test fun nothingToOfferMeansNoResponse() {
         assertNull(factory.build(emptyList(), null, "r"))
     }

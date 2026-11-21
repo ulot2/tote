@@ -209,3 +209,32 @@ Running log of choices made during the build, and places where the build deviate
 - **Visibility:** the service now records what its last request did (counts, timing, or the error's
   class name, never values or field text) and the Try autofill screen shows it. A silent failure
   like this one is now visible on the phone.
+
+## After 0.2.1: suggestions missing on some fields, blank icons, bigger built-in keywords
+
+- **Chips on every field.** Inline (keyboard) chips used to go only on the focused field. Android
+  reuses the response when focus moves to another field on the same screen, and hides the dropdown
+  while the keyboard shows chips, so other fields showed nothing. Every field's datasets now get
+  chips. A Robolectric test builds a real inline request and checks both fields, and it fails on
+  the old rule.
+- **Blank chip icons.** Gboard tints chip icons white, which flattened the coloured badge into a
+  square. Icons are now created with `BlendMode.DST` tinting, which keeps the bitmap's colours.
+- **Try autofill labels.** Android leaves plain TextViews without a resource id out of the autofill
+  structure, so the test screen's labels never reached Tote. They're marked important for autofill
+  now, like a real app's XML-id labels.
+- **Built-in keywords, much larger.** About 3–5× the wordings per kind (Greenhouse, Lever, Workable,
+  Ashby, Workday, SmartRecruiters, Google Forms, Typeform and Indian job-board phrasings, British and
+  American spellings, abbreviations), plus 9 new kinds: full/first/last name, pronouns, right to
+  work, nationality, current company, current title, and "how did you hear about us".
+- **Stop phrases** (`stopPhrases` in the dictionary) belong to no kind and swallow shorter hits
+  inside them: "company website", "company name", "username", "referrer name", "emergency contact",
+  "describe your experience", "preferred job location", "position you are applying for" and so on.
+  This keeps the bigger lists from causing wrong suggestions. Swallowing now compares how much of
+  the text each phrase covers, so compact hits ("website" for "web site") can be swallowed too.
+- **Date inputs get no suggestions.** Tote doesn't store dates, and "2 weeks" in a date picker is
+  noise.
+- **The editor shows the built-in keywords** for the entry's kind as muted read-only chips (first 8,
+  then "+N more"), so the user only adds what's missing. Unknown kinds get a hint to add their own.
+- **Fixtures: 61 → 114**, including 20 new wordings, 19 for the new kinds and 15 traps that must
+  *not* match (e.g. "Company website" mustn't offer Portfolio; "First name" mustn't offer Full
+  name). Every kind must know at least 4 wordings.

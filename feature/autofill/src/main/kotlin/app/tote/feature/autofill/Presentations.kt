@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.app.slice.Slice
 import android.content.Context
 import android.content.res.Configuration
+import android.graphics.BlendMode
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.service.autofill.InlinePresentation
@@ -58,7 +59,9 @@ class Presentations(private val context: Context, private val icons: IconRendere
         val content = InlineSuggestionUi.newContentBuilder(attribution)
             .setTitle(title)
             .apply { if (subtitle != null) setSubtitle(subtitle) }
-            .setStartIcon(Icon.createWithBitmap(icon))
+            // Keyboards tint chip icons (Gboard paints them white), which turns a coloured badge into a
+            // blank square. DST blend mode tells the renderer to keep the bitmap's own colours.
+            .setStartIcon(Icon.createWithBitmap(icon).setTintBlendMode(BlendMode.DST))
             .setContentDescription(if (subtitle != null) "$title, $subtitle" else title)
             .build()
         val slice: Slice = content.slice

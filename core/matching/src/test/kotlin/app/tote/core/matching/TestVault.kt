@@ -34,5 +34,21 @@ object TestVault {
     val bio = e("Short bio", "I build calm, useful Android apps.", EntryType.LONG_TEXT, Category.ANSWERS, EntryIcon.TEXT)
     val why = e("Why this company?", "I admire how your team ships.", EntryType.LONG_TEXT, Category.ANSWERS, EntryIcon.TEXT)
 
-    val all = listOf(linkedin, portfolio, github, x, email, phone, location, cvTech, cvNonTech, coverLetter, yoe, bio, why)
+    val fullName = e("Full name", "Ada Lovelace", EntryType.SHORT_TEXT, Category.CONTACT, EntryIcon.TEXT)
+    val firstName = e("First name", "Ada", EntryType.SHORT_TEXT, Category.CONTACT, EntryIcon.TEXT)
+    val lastName = e("Last name", "Lovelace", EntryType.SHORT_TEXT, Category.CONTACT, EntryIcon.TEXT)
+    val pronouns = e("Pronouns", "she/her", EntryType.SHORT_TEXT, Category.ANSWERS, EntryIcon.TEXT)
+    val company = e("Current company", "Analytical Engines Ltd", EntryType.SHORT_TEXT, Category.ANSWERS, EntryIcon.TEXT)
+    val title = e("Job title", "Senior Android Engineer", EntryType.SHORT_TEXT, Category.ANSWERS, EntryIcon.TEXT)
+    val workAuth = e("Right to work", "Yes, no sponsorship needed", EntryType.SHORT_TEXT, Category.ANSWERS, EntryIcon.TEXT)
+    val nationality = e("Nationality", "British", EntryType.SHORT_TEXT, Category.ANSWERS, EntryIcon.TEXT)
+    val salary = e("Salary expectations", "£60,000 to £70,000", EntryType.SHORT_TEXT, Category.ANSWERS, EntryIcon.TEXT)
+    val notice = e("Notice period", "2 weeks", EntryType.SHORT_TEXT, Category.ANSWERS, EntryIcon.TEXT)
+    val hearAbout = e("How did you hear about us?", "LinkedIn", EntryType.SHORT_TEXT, Category.ANSWERS, EntryIcon.TEXT)
+    val blog = e("Blog", "someone.substack.com", EntryType.LINK, Category.LINKS, EntryIcon.GLOBE)
+
+    val all = listOf(
+        linkedin, portfolio, github, x, email, phone, location, cvTech, cvNonTech, coverLetter, yoe, bio, why,
+        fullName, firstName, lastName, pronouns, company, title, workAuth, nationality, salary, notice, hearAbout, blog,
+    )
 }
