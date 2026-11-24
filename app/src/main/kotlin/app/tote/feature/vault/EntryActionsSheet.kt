@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import app.tote.core.model.Entry
 import app.tote.ui.components.EntryValueText
 import app.tote.ui.icons.EntryIconBadge
-import app.tote.ui.theme.Tote
+import app.tote.ui.theme.Tuck
 import app.tote.ui.theme.ToteShapes
 import kotlinx.coroutines.launch
 
@@ -47,7 +47,7 @@ fun SheetHandle() {
         Modifier
             .padding(top = 10.dp, bottom = 6.dp)
             .size(width = 36.dp, height = 4.dp)
-            .background(Tote.colors.outlineStrong, ToteShapes.pill),
+            .background(Tuck.colors.outlineStrong, ToteShapes.pill),
     )
 }
 
@@ -62,7 +62,7 @@ fun EntryActionsSheet(
     onShare: () -> Unit,
     onDelete: () -> Unit,
 ) {
-    val c = Tote.colors
+    val c = Tuck.colors
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     fun dismissThen(action: () -> Unit) {
@@ -84,7 +84,7 @@ fun EntryActionsSheet(
                 EntryIconBadge(entry.icon, size = 48.dp)
                 Spacer(Modifier.width(14.dp))
                 Column(Modifier.weight(1f)) {
-                    Text(entry.label, style = Tote.type.title, color = c.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(entry.label, style = Tuck.type.title, color = c.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     EntryValueText(entry, maxLines = 2)
                 }
             }
@@ -102,7 +102,7 @@ fun EntryActionsSheet(
 }
 
 @Composable
-private fun ActionRow(icon: ImageVector, label: String, tint: Color = Tote.colors.textPrimary, onClick: () -> Unit) {
+private fun ActionRow(icon: ImageVector, label: String, tint: Color = Tuck.colors.textPrimary, onClick: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -114,6 +114,6 @@ private fun ActionRow(icon: ImageVector, label: String, tint: Color = Tote.color
     ) {
         Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(22.dp))
         Spacer(Modifier.width(16.dp))
-        Text(label, style = Tote.type.body, color = tint)
+        Text(label, style = Tuck.type.body, color = tint)
     }
 }

@@ -14,7 +14,8 @@ interface PickerIntents {
 
     /**
      * Picker that fills the chosen entry into [autofillId] ("All entries…" in autofill).
-     * [urlField] makes links get a scheme when filled (Plan §6.5).
+     * [urlField] makes links get a scheme when filled (Plan §6.5). [source] and [signature] say where to
+     * remember the pick (Plan §6.3); both null when the field can't be learned.
      */
-    fun fillIntent(context: Context, autofillId: Parcelable, urlField: Boolean): Intent
+    fun fillIntent(context: Context, autofillId: Parcelable, urlField: Boolean, source: String?, signature: String?): Intent
 }

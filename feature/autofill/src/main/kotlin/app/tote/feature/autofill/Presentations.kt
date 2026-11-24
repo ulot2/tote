@@ -29,7 +29,7 @@ class Presentations(private val context: Context, private val icons: IconRendere
         setImageViewBitmap(R.id.tote_af_icon, icons.badge(entry.icon, dark, iconPx))
         setTextViewText(R.id.tote_af_label, entry.label)
         setTextViewText(R.id.tote_af_value, ValueFormatter.display(entry.type, entry.value))
-        setContentDescription(R.id.tote_af_label, "${entry.label}, Tote")
+        setContentDescription(R.id.tote_af_label, "${entry.label}, Tuck")
     }
 
     fun allEntries(): RemoteViews = RemoteViews(context.packageName, R.layout.tote_autofill_all).apply {

@@ -8,7 +8,7 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import app.tote.feature.tile.ToteTileService
 
-/** Outcome of asking the system to add Tote's tile. */
+/** Outcome of asking the system to add Tuck's tile. */
 enum class TileAddResult { ADDED, ALREADY_ADDED, NOT_ADDED, UNAVAILABLE }
 
 /** Wraps the Android 13+ "add tile" prompt (Plan §8.4 onboarding step, also in Settings). */

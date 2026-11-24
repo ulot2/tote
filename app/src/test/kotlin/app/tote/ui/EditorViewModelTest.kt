@@ -45,6 +45,14 @@ private class FakeRepo : EntryRepository {
     override suspend fun reorder(orderedIds: List<Long>) = Unit
 }
 
+private class FakeProfiles : app.tote.core.data.repo.ProfileRepository {
+    val store = MutableStateFlow(listOf(app.tote.core.model.Profile(1, "Tech"), app.tote.core.model.Profile(2, "Non-tech")))
+    override val profiles = store
+    override suspend fun add(name: String): Long = 0
+    override suspend fun rename(id: Long, name: String) = Unit
+    override suspend fun delete(id: Long) = Unit
+}
+
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class EditorViewModelTest {
@@ -58,6 +66,7 @@ class EditorViewModelTest {
         SavedStateHandle(mapOf("id" to route.id, "template" to route.template, "origin" to route.origin)),
         repo,
         ClipboardWriter(ApplicationProvider.getApplicationContext()),
+        FakeProfiles(),
     )
 
     @Test fun typingALinkedinUrlAutoDetectsEverything() {
@@ -96,6 +105,28 @@ class EditorViewModelTest {
         assertEquals(EntryIcon.GOOGLE_DRIVE, saved.icon)
         assertEquals(listOf("resume"), saved.keywords)
         assertTrue(vm.state.value.finished)
+    }
+
+    @Test fun profilesAreChosenPerEntryAndAllClearsThem() {
+        // S4: "CV (Non-tech)" goes in the Non-tech profile only.
+        val vm = vm(EditorRoute(template = "cv"))
+        assertEquals(listOf("Tech", "Non-tech"), vm.state.value.profiles.map { it.name })
+        vm.onLabelChange("CV (Non-tech)")
+        vm.onValueChange("drive.google.com/file/d/n/view")
+        vm.onProfileToggled(2)
+        vm.save()
+        assertEquals(setOf(2L), repo.store.value.single().profileIds)
+
+        val vm2 = vm(EditorRoute(id = repo.store.value.single().id))
+        vm2.onProfileToggled(1)
+        assertEquals(setOf(1L, 2L), vm2.state.value.profileIds)
+        vm2.onProfileToggled(null)
+        assertTrue(vm2.state.value.profileIds.isEmpty())
+    }
+
+    @Test fun editorShowsBuiltInKeywords() {
+        val vm = vm(EditorRoute(template = "linkedin"))
+        assertTrue("linkedin profile url" in vm.state.value.builtInKeywords)
     }
 
     @Test fun editingKeepsManualIconOverride() = kotlinx.coroutines.test.runTest {

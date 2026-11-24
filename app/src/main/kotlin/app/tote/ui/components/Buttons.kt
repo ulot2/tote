@@ -32,7 +32,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import app.tote.ui.theme.Tote
+import app.tote.ui.theme.Tuck
 import app.tote.ui.theme.ToteShapes
 
 enum class PillStyle { Primary, Secondary, Ghost, Danger }
@@ -59,7 +59,7 @@ fun PillButton(
     enabled: Boolean = true,
     contentPadding: PaddingValues = PaddingValues(horizontal = 20.dp, vertical = 12.dp),
 ) {
-    val c = Tote.colors
+    val c = Tuck.colors
     val (bg, fg, border) = when (style) {
         PillStyle.Primary -> Triple(c.accent, c.onAccent, null)
         PillStyle.Secondary -> Triple(c.surfaceRaised, c.textPrimary, null)
@@ -82,7 +82,7 @@ fun PillButton(
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
     ) {
         if (icon != null) Icon(icon, contentDescription = null, tint = fgAnimated, modifier = Modifier.size(20.dp))
-        Text(text, style = Tote.type.label, color = fgAnimated)
+        Text(text, style = Tuck.type.label, color = fgAnimated)
     }
 }
 
@@ -94,9 +94,9 @@ fun ToteIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     filled: Boolean = false,
-    tint: Color = Tote.colors.textPrimary,
+    tint: Color = Tuck.colors.textPrimary,
 ) {
-    val c = Tote.colors
+    val c = Tuck.colors
     val interaction = remember { MutableInteractionSource() }
     Box(
         modifier = modifier

@@ -29,7 +29,7 @@ import androidx.compose.ui.semantics.error
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import app.tote.ui.theme.Tote
+import app.tote.ui.theme.Tuck
 import app.tote.ui.theme.ToteShapes
 
 enum class FieldMessageKind { Error, Warning, Hint }
@@ -37,7 +37,7 @@ enum class FieldMessageKind { Error, Warning, Hint }
 data class FieldMessage(val text: String, val kind: FieldMessageKind)
 
 /**
- * Tote's text field: label above, soft filled container, accent ring on focus.
+ * Tuck's text field: label above, soft filled container, accent ring on focus.
  * Built on BasicTextField so it can match the design system exactly.
  */
 @Composable
@@ -47,7 +47,7 @@ fun ToteTextField(
     label: String,
     modifier: Modifier = Modifier,
     placeholder: String = "",
-    textStyle: TextStyle = Tote.type.body,
+    textStyle: TextStyle = Tuck.type.body,
     singleLine: Boolean = true,
     minLines: Int = 1,
     message: FieldMessage? = null,
@@ -55,7 +55,7 @@ fun ToteTextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     trailing: (@Composable () -> Unit)? = null,
 ) {
-    val c = Tote.colors
+    val c = Tuck.colors
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
     val isError = message?.kind == FieldMessageKind.Error
@@ -69,7 +69,7 @@ fun ToteTextField(
     )
 
     Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(label, style = Tote.type.label, color = c.textSecondary, modifier = Modifier.padding(start = 4.dp))
+        Text(label, style = Tuck.type.label, color = c.textSecondary, modifier = Modifier.padding(start = 4.dp))
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
@@ -115,7 +115,7 @@ fun ToteTextField(
             val m = message ?: return@AnimatedVisibility
             Text(
                 m.text,
-                style = Tote.type.bodySmall,
+                style = Tuck.type.bodySmall,
                 color = when (m.kind) {
                     FieldMessageKind.Error -> c.danger
                     FieldMessageKind.Warning -> c.warning

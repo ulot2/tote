@@ -44,7 +44,7 @@ class AutofillPlaygroundActivity : ComponentActivity() {
             setPadding(dp(20), dp(16), dp(20), dp(24))
         }
         column.addView(text("Try autofill", 26f, fg, bold = true))
-        column.addView(text("Tap a field. Tote's suggestions appear in a dropdown or above the keyboard.", 14f, muted).apply { setPadding(0, dp(4), 0, dp(8)) })
+        column.addView(text("Tap a field. Tuck's suggestions appear in a dropdown or above the keyboard.", 14f, muted).apply { setPadding(0, dp(4), 0, dp(8)) })
         column.addView(status)
 
         column.addView(section("In an app"))
@@ -77,7 +77,7 @@ class AutofillPlaygroundActivity : ComponentActivity() {
         setContentView(scroll)
     }
 
-    /** Shows what Tote's last fill request did, so a silent failure is visible on the phone. */
+    /** Shows what Tuck's last fill request did, so a silent failure is visible on the phone. */
     private val status by lazy { text("", 13f, muted).apply { setPadding(0, 0, 0, dp(8)) } }
     private val handler = android.os.Handler(android.os.Looper.getMainLooper())
     private val refresh = object : Runnable {
@@ -99,7 +99,7 @@ class AutofillPlaygroundActivity : ComponentActivity() {
 
     private fun statusText(): String {
         val enabled = getSystemService(android.view.autofill.AutofillManager::class.java)?.hasEnabledAutofillServices() == true
-        if (!enabled) return "Tote isn't your autofill service yet. Turn it on in Tote's Settings."
+        if (!enabled) return "Tuck isn't your autofill service yet. Turn it on in Tuck's Settings."
         val last = AutofillDiagnostics.last ?: return "Waiting for a request: tap a field."
         val ago = ((System.currentTimeMillis() - last.atMillis) / 1000).coerceAtLeast(0)
         return if (last.error != null) {
@@ -122,7 +122,7 @@ class AutofillPlaygroundActivity : ComponentActivity() {
         box.addView(text(label, 14f, fg, bold = true).apply { importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_YES })
         box.addView(
             EditText(this).apply {
-                // No hint: like many real apps, the only label is the TextView above (Tote's "nearby text").
+                // No hint: like many real apps, the only label is the TextView above (Tuck's "nearby text").
                 id = View.generateViewId()
                 inputType = type
                 setTextColor(fg)

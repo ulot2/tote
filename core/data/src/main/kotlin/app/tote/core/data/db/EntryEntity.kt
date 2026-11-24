@@ -39,3 +39,28 @@ data class ProfileEntity(
     @ColumnInfo(name = "accent_argb") val accentArgb: Long?,
     @ColumnInfo(name = "sort_order") val sortOrder: Int,
 )
+
+/**
+ * "On this site/app, for this field, the user picked this entry" (Plan §6.3). Deleted with its entry.
+ * [signature] is a normalised description of the field (see `FieldSignature`), never a typed value.
+ */
+@Entity(
+    tableName = "learned_mappings",
+    primaryKeys = ["source", "signature", "entry_id"],
+    foreignKeys = [
+        androidx.room.ForeignKey(
+            entity = EntryEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["entry_id"],
+            onDelete = androidx.room.ForeignKey.CASCADE,
+        ),
+    ],
+    indices = [Index("entry_id")],
+)
+data class LearnedMappingEntity(
+    val source: String,
+    val signature: String,
+    @ColumnInfo(name = "entry_id") val entryId: Long,
+    val hits: Int,
+    @ColumnInfo(name = "last_used_at") val lastUsedAt: Long,
+)

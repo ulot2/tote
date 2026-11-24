@@ -18,13 +18,13 @@ class IconRenderer(private val context: Context) {
 
     private val cache = HashMap<Triple<EntryIcon?, Boolean, Int>, Bitmap>()
 
-    /** [icon] null renders Tote's own mark (the "All entries…" row). */
+    /** [icon] null renders Tuck's own mark (the "All entries…" row). */
     @Synchronized
     fun badge(icon: EntryIcon?, dark: Boolean, sizePx: Int): Bitmap = cache.getOrPut(Triple(icon, dark, sizePx)) {
         val bitmap = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         val colors = if (icon == null) {
-            EntryIconPalette.Colors(0xFFC8F23C, 0xFF16200A) // lime tile, ink mark
+            EntryIconPalette.Colors(0xFFA99BFF, 0xFF170F3D) // Tuck's iris tile, ink mark
         } else {
             EntryIconPalette.colors(icon, dark)
         }
@@ -43,7 +43,7 @@ class IconRenderer(private val context: Context) {
         } else {
             val drawable = ContextCompat.getDrawable(context, drawableFor(icon))!!.mutate()
             drawable.setTint(colors.content.toInt())
-            val fraction = if (icon == null) 0.7f else if (icon.isBrand) 0.46f else 0.52f
+            val fraction = if (icon == null) 0.66f else if (icon.isBrand) 0.46f else 0.52f
             val inset = ((sizePx * (1 - fraction)) / 2).toInt()
             drawable.setBounds(inset, inset, sizePx - inset, sizePx - inset)
             drawable.draw(canvas)

@@ -14,6 +14,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import app.tote.feature.editor.EditorRoute as EditorScreenRoute
 import app.tote.feature.settings.SettingsRoute as SettingsScreenRoute
+import app.tote.feature.profiles.ProfilesRoute as ProfilesScreenRoute
+import app.tote.feature.learned.LearnedRoute as LearnedScreenRoute
 import app.tote.feature.vault.VaultRoute as VaultScreenRoute
 
 @Composable
@@ -34,6 +36,7 @@ fun ToteNavHost(modifier: Modifier = Modifier) {
                         VaultScreenRoute(
                             onOpenEditor = { nav.navigate(it) { launchSingleTop = true } },
                             onOpenSettings = { nav.navigate(SettingsRoute) { launchSingleTop = true } },
+                            onManageProfiles = { nav.navigate(ProfilesRoute) { launchSingleTop = true } },
                         )
                     }
                 }
@@ -47,8 +50,20 @@ fun ToteNavHost(modifier: Modifier = Modifier) {
                     enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(280)) + fadeIn() },
                     popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(240)) + fadeOut() },
                 ) {
-                    SettingsScreenRoute(onBack = { nav.popBackStack() })
+                    SettingsScreenRoute(
+                        onBack = { nav.popBackStack() },
+                        onOpenProfiles = { nav.navigate(ProfilesRoute) { launchSingleTop = true } },
+                        onOpenLearned = { nav.navigate(LearnedRoute) { launchSingleTop = true } },
+                    )
                 }
+                composable<ProfilesRoute>(
+                    enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(280)) + fadeIn() },
+                    popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(240)) + fadeOut() },
+                ) { ProfilesScreenRoute(onBack = { nav.popBackStack() }) }
+                composable<LearnedRoute>(
+                    enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(280)) + fadeIn() },
+                    popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(240)) + fadeOut() },
+                ) { LearnedScreenRoute(onBack = { nav.popBackStack() }) }
             }
         }
     }

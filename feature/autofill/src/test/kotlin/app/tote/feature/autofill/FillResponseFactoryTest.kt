@@ -29,7 +29,7 @@ class FillResponseFactoryTest {
     private val context = ApplicationProvider.getApplicationContext<Context>()
     private val pickerIntents = object : PickerIntents {
         override fun copyIntent(context: Context) = Intent("copy")
-        override fun fillIntent(context: Context, autofillId: Parcelable, urlField: Boolean) =
+        override fun fillIntent(context: Context, autofillId: Parcelable, urlField: Boolean, source: String?, signature: String?) =
             Intent("fill").setPackage(context.packageName).putExtra("id", autofillId).putExtra("url", urlField)
     }
     private val factory = FillResponseFactory(context, FieldMatcher(), Presentations(context, IconRenderer(context)), pickerIntents)
@@ -83,7 +83,7 @@ class FillResponseFactoryTest {
         assertNotNull(response)
         val datasets = datasetsOf(response!!)
         val ids = datasets.map { datasetIdOf(it) }
-        assertEquals("e:1", ids.first())
+        assertEquals("e:1:0", ids.first())
         assertEquals(FillResponseFactory.ALL_ENTRIES_ID, ids.last())
     }
 
@@ -122,13 +122,37 @@ class FillResponseFactoryTest {
     private fun inlineOf(dataset: Dataset): Any? =
         Dataset::class.java.getDeclaredMethod("getFieldInlinePresentation", Int::class.javaPrimitiveType).apply { isAccessible = true }.invoke(dataset, 0)
 
+    @Test fun learnedPickRanksFirstAndTheResponseRemembersWhereToLearn() {
+        // S6: the user once picked GitHub for "Website" on this site.
+        val github = Entry(4, "GitHub", "github.com/someone", EntryType.LINK, Category.LINKS, EntryIcon.GITHUB)
+        val signals = FieldSignals(label = "Website", htmlName = "urls[Other]", webDomain = "jobs.lever.co")
+        val key = app.tote.core.matching.FieldSignature.key(signals)!!
+        val id = autofillId(5)
+        val plans = factory.plan(listOf(ParsedField(id, signals, focused = true)), vault + github, MatchContext()) { k ->
+            if (k == key) mapOf(github.id to 1) else emptyMap()
+        }
+        assertEquals(github, plans.single().entries.first())
+        assertEquals(key, plans.single().learningKey)
+
+        // Without the learned pick, Portfolio would lead.
+        val fresh = factory.plan(listOf(ParsedField(id, signals, focused = true)), vault + github, MatchContext())
+        assertEquals(portfolio, fresh.single().entries.first())
+
+        val response = factory.build(plans, null, "r9")!!
+        val state = FillResponse::class.java.getDeclaredMethod("getClientState").apply { isAccessible = true }.invoke(response) as android.os.Bundle
+        val pickedId = FillResponseFactory.datasetId(github, 0)
+        assertEquals(key, FillResponseFactory.learningKeyOf(state, pickedId))
+        assertNull(FillResponseFactory.learningKeyOf(state, "all"))
+    }
+
     @Test fun nothingToOfferMeansNoResponse() {
         assertNull(factory.build(emptyList(), null, "r"))
     }
 
     @Test fun datasetIdsCarryOnlyTheEntryId() {
-        assertEquals("e:42", FillResponseFactory.datasetId(linkedin.copy(id = 42)))
-        assertEquals(42L, FillResponseFactory.entryIdOf("e:42"))
+        assertEquals("e:42:3", FillResponseFactory.datasetId(linkedin.copy(id = 42), 3))
+        assertEquals(42L, FillResponseFactory.entryIdOf("e:42:3"))
+        assertEquals(3, FillResponseFactory.fieldIndexOf("e:42:3"))
         assertNull(FillResponseFactory.entryIdOf("all"))
         assertNull(FillResponseFactory.entryIdOf(null))
     }

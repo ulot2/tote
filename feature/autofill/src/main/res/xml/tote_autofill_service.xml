@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Autofill service configuration. "Settings" in the system autofill picker opens Tote. -->
+<!-- Autofill service configuration. "Settings" in the system autofill picker opens Tuck. -->
 <autofill-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:settingsActivity="app.tote.MainActivity"
     android:supportsInlineSuggestions="true" />

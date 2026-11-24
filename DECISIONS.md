@@ -238,3 +238,74 @@ Running log of choices made during the build, and places where the build deviate
 - **Fixtures: 61 → 114**, including 20 new wordings, 19 for the new kinds and 15 traps that must
   *not* match (e.g. "Company website" mustn't offer Portfolio; "First name" mustn't offer Full
   name). Every kind must know at least 4 wordings.
+
+## Phase 5, part A: learning and profiles
+
+- **Learned mappings** live in a new `learned_mappings` table (schema v2). Room migrates from v1
+  automatically, since adding a table is something it can do on its own. A Robolectric
+  `MigrationTestHelper` test opens a real v1 database with an entry and checks it survives. The
+  key is (source, field signature, entry), with a hit count, and rows are deleted with their entry.
+- **What gets learned:** a pick from the autofill dropdown or chips (read from the fill event
+  history), or from "All entries…" (the picker records it). Each dataset id carries its field index
+  (`e:<entryId>:<fieldIndex>`), and the response's client state maps that index to the field's
+  learning key. The key is the site's domain or the app's package, plus the normalised field
+  signature. It never leaves the phone and never includes typed values.
+- **How learning ranks:** a learned entry gets the matcher's top boost (+200, plus hits), so S6
+  holds. Pick GitHub once for "Website" on a site, and GitHub leads there next time.
+- **Settings › Learned suggestions** lists remembered fields by site or app, described by their
+  label (or name/id), with what was picked. Each can be forgotten, and there's "Forget everything".
+- **Profiles:** add, rename and delete in Settings › Profiles. Deleting a profile moves entries that
+  belonged only to it back to "All" rather than hiding them, and resets the active profile if it
+  was the deleted one. A profile id left behind anywhere is read as "All".
+- **One active profile, everywhere.** The vault switcher, the picker's chips and Settings all set
+  the same value. Autofill, the tile subtitle and the picker follow it. The vault shows the active
+  profile's entries plus "All" entries, with a line saying how many are hidden. Reorder mode always
+  shows every entry, so a manual order is never saved for a partial list.
+- **Editor:** a Profiles section appears once profiles exist. "All profiles" (the default) or any
+  combination of profiles.
+- **Tile subtitle:** "Copy an entry" until profiles exist, then the active profile's name (or "All
+  profiles"). It follows changes live while the shade is open.
+
+## Redesign and rename to Tuck
+
+- **The app is now called Tuck.** The visible name changes everywhere: launcher label, tile,
+  autofill service, every string, the release APK (`Tuck.apk`) and the workflow. The **package id
+  stays `app.tote`**: Android treats a new id as a different app, so it wouldn't install as an
+  update and users would lose their vault. Kotlin package and class names (`app.tote.*`,
+  `ToteTheme`) stay too. They're internal, and renaming them would churn every file for nothing a
+  user sees.
+- **The Tuck mark** is a card tucked into a pocket. It's the adaptive launcher icon (ink mark on
+  iris) with a monochrome layer for themed icons, the splash icon, the Quick Settings tile glyph,
+  the "All entries…" badge in autofill, and the in-app wordmark. `IconRenderTest` renders them to
+  PNG.
+- **Accent:** Iris (`#A99BFF`, ink `#170F3D` on it) is the default. Ember, Marigold, Mint, Lime and
+  Bone are in Settings › Appearance › Accent, stored in DataStore. Each accent has its own dark and
+  light fill, text-on-fill and light-mode text colour, all checked for WCAG AA. Bone is cream in
+  dark mode and ink in light mode, because a cream fill would vanish on the light background.
+  "Use wallpaper colours" (Android 12+) still overrides the accent. System surfaces that can't
+  follow a user setting (launcher icon, autofill badge) always use Iris.
+- **New tokens:** `accentTint`/`accentTintBorder` are opaque accent-tinted surfaces (just-copied
+  row, autofill hero, banner), computed per accent so they never go translucent over content.
+- **Vault:**
+  - Sections are single grouped lists with hairline dividers. Each row draws its own corners
+    (first/middle/last), so drag-to-reorder still works per row.
+  - Pinned entries are compact pills.
+  - Profiles are a segmented control (it scrolls past 4 options).
+  - Search and "New entry" moved to a bottom dock within thumb reach.
+  - The copied row confirms in place ("Copied" badge, announced to TalkBack), replacing the
+    floating pill.
+- **Editor:**
+  - A hero card doubles as the autofill preview.
+  - Tapping its icon opens an icon sheet, which replaces the always-visible grid.
+  - Label and value are one grouped card, and type is a segmented control.
+  - Section is a dropdown row, and profiles share its card.
+  - "Matches fields like" shows built-in keywords next to the user's own, with "+ Add your own".
+- **Picker:** a title with a one-line hint, search and a profile dropdown in one row, "Most used",
+  and the row confirms with a check before closing.
+- **Settings:**
+  - Autofill status is the first card (on: tinted with Try it and Chrome setup; off: Turn on plus
+    the one-service warning).
+  - Chrome and tile steps open in sheets.
+  - The rest is grouped lists: your data, quick access, appearance, about.
+- **Not yet built:** onboarding (designed on the canvas, ships with Phase 5 part B) and Backup /
+  Restore (also part B, so the Settings rows appear then).

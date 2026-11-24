@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.sp
 import app.tote.core.model.EntryIcon
 import app.tote.core.model.EntryIconPalette
 import app.tote.ui.theme.Geist
-import app.tote.ui.theme.Tote
+import app.tote.ui.theme.Tuck
 import app.tote.ui.theme.ToteShapes
 
 private fun brandVector(name: String, pathData: String): ImageVector =
@@ -67,7 +67,7 @@ private data class BadgeStyle(val container: Color, val content: Color, val vect
 
 @Composable
 private fun styleFor(icon: EntryIcon): BadgeStyle {
-    val c = Tote.colors
+    val c = Tuck.colors
     val brand = EntryIconPalette.brand(icon, c.isDark)
     // Brand colours are shared with the autofill dropdown; neutral icons follow the live theme.
     val container = brand?.let { Color(it.container) } ?: c.surfaceHigh
@@ -99,13 +99,15 @@ fun EntryIconBadge(
     modifier: Modifier = Modifier,
     size: Dp = 40.dp,
     contentDescription: String? = null,
+    /** Circle instead of rounded square (pinned pills). */
+    round: Boolean = false,
 ) {
     val style = styleFor(icon)
     Box(
         modifier = modifier
             .size(size)
             .clearAndSetSemantics { if (contentDescription != null) this.contentDescription = contentDescription }
-            .background(style.container, ToteShapes.badge),
+            .background(style.container, if (round) ToteShapes.pill else ToteShapes.badge),
         contentAlignment = Alignment.Center,
     ) {
         if (style.vector != null) {

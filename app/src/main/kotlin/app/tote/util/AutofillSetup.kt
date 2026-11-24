@@ -13,7 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LifecycleResumeEffect
 
-/** Whether Tote is the autofill service, and how to make it so (Plan §8.4, §9.7). */
+/** Whether Tuck is the autofill service, and how to make it so (Plan §8.4, §9.7). */
 object AutofillSetup {
 
     const val CHROME_PACKAGE = "com.android.chrome"
@@ -26,7 +26,7 @@ object AutofillSetup {
         return if (manager.hasEnabledAutofillServices()) Status.ENABLED else Status.DISABLED
     }
 
-    /** Opens the system prompt that makes Tote the autofill service. */
+    /** Opens the system prompt that makes Tuck the autofill service. */
     fun requestIntent(context: Context): Intent =
         Intent(Settings.ACTION_REQUEST_SET_AUTOFILL_SERVICE).setData(Uri.parse("package:${context.packageName}"))
 

@@ -6,6 +6,10 @@ import app.tote.core.data.di.ApplicationScope
 import app.tote.core.data.platform.ClipboardWriter
 import kotlinx.coroutines.CoroutineScope
 import app.tote.core.data.repo.EntryRepository
+import app.tote.core.data.repo.LearningRepository
+import app.tote.core.data.repo.ProfileRepository
+import app.tote.core.data.settings.SettingsRepository
+import app.tote.core.model.Profile
 import app.tote.core.model.Entry
 import app.tote.core.model.EntryRanking
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +26,8 @@ data class PickerUiState(
     val query: String = "",
     val entries: List<Entry> = emptyList(),
     val totalCount: Int = 0,
+    val profiles: List<Profile> = emptyList(),
+    val activeProfileId: Long? = null,
 )
 
 @HiltViewModel
@@ -29,13 +35,30 @@ class PickerViewModel @Inject constructor(
     private val repository: EntryRepository,
     private val clipboard: ClipboardWriter,
     @ApplicationScope private val appScope: CoroutineScope,
+    private val learning: LearningRepository,
+    private val profiles: ProfileRepository,
+    private val settings: SettingsRepository,
 ) : ViewModel() {
 
     private val query = MutableStateFlow("")
 
-    val state: StateFlow<PickerUiState> = combine(repository.entries, query) { entries, q ->
-        PickerUiState(loading = false, query = q, entries = EntryRanking.search(entries, q), totalCount = entries.size)
+    val state: StateFlow<PickerUiState> = combine(repository.entries, query, profiles.profiles, settings.settings) { entries, q, profileList, s ->
+        val active = s.activeProfileId?.takeIf { id -> profileList.any { it.id == id } }
+        val visible = if (active == null) entries else entries.filter { it.isInAllProfiles || active in it.profileIds }
+        PickerUiState(
+            loading = false,
+            query = q,
+            entries = EntryRanking.search(visible, q),
+            totalCount = entries.size,
+            profiles = profileList,
+            activeProfileId = active,
+        )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, PickerUiState())
+
+    /** Switching here switches everywhere: vault, autofill and the tile follow the same setting. */
+    fun selectProfile(id: Long?) {
+        viewModelScope.launch { settings.setActiveProfile(id) }
+    }
 
     fun onQueryChange(value: String) {
         query.value = value
@@ -45,6 +68,11 @@ class PickerViewModel @Inject constructor(
     fun copy(entry: Entry) {
         clipboard.copy(entry.label, entry.value)
         recordUse(entry)
+    }
+
+    /** Remembers that [entry] was chosen for this field, so it's suggested first next time. */
+    fun learn(source: String, signature: String, entry: Entry) {
+        appScope.launch { learning.record(source, signature, entry.id) }
     }
 
     /** Counts a use without copying (autofill fills the field directly). */

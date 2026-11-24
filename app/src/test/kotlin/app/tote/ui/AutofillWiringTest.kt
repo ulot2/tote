@@ -78,7 +78,7 @@ class AutofillWiringTest {
                 )
             }
         }
-        compose.onNodeWithText("Fill from Tote").assertIsDisplayed()
+        compose.onNodeWithText("Fill from Tuck").assertIsDisplayed()
     }
 
     private fun autofillId(value: Int): AutofillId =

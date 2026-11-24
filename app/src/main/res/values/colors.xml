@@ -2,5 +2,6 @@
     <color name="tote_background">#FFF6F3EC</color>
     <color name="tote_lime">#FFC8F23C</color>
     <color name="tote_ink">#FF0F0E0C</color>
-    <color name="ic_launcher_background">#FF0F0E0C</color>
+    <color name="ic_launcher_background">#FFA99BFF</color>
+    <color name="tuck_iris">#FFA99BFF</color>
 </resources>

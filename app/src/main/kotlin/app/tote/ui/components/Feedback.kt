@@ -33,52 +33,13 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import app.tote.ui.theme.Tote
+import app.tote.ui.theme.Tuck
 import app.tote.ui.theme.ToteShapes
-
-/**
- * The small "Copied" pill that slides up and fades out (Plan §8.3).
- * [message] null hides it; the last message stays visible while it animates out.
- */
-@Composable
-fun CopiedPill(message: String?, modifier: Modifier = Modifier) {
-    val c = Tote.colors
-    var last by remember { mutableStateOf("") }
-    if (message != null) last = message
-    AnimatedVisibility(
-        visible = message != null,
-        modifier = modifier,
-        enter = slideInVertically(spring(dampingRatio = 0.7f, stiffness = Spring.StiffnessMediumLow)) { it } +
-            fadeIn(tween(120)) + scaleIn(initialScale = 0.9f),
-        exit = slideOutVertically(tween(220)) { -it / 2 } + fadeOut(tween(220)),
-    ) {
-        Row(
-            modifier = Modifier
-                .semantics { liveRegion = LiveRegionMode.Polite }
-                .shadow(12.dp, ToteShapes.pill, clip = false)
-                .background(c.textPrimary, ToteShapes.pill)
-                .widthIn(max = 320.dp)
-                .padding(start = 8.dp, end = 18.dp, top = 8.dp, bottom = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Box(
-                Modifier
-                    .size(26.dp)
-                    .background(c.accent, ToteShapes.pill),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(Icons.Rounded.Check, contentDescription = null, tint = c.onAccent, modifier = Modifier.size(16.dp))
-            }
-            Text(last, style = Tote.type.label, color = c.background, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        }
-    }
-}
 
 /** Themed snackbar with an optional action (used for "Deleted · Undo"). */
 @Composable
 fun ToteSnackbar(message: String, actionLabel: String?, onAction: () -> Unit, modifier: Modifier = Modifier) {
-    val c = Tote.colors
+    val c = Tuck.colors
     Row(
         modifier = modifier
             .shadow(12.dp, ToteShapes.pill, clip = false)
@@ -87,7 +48,7 @@ fun ToteSnackbar(message: String, actionLabel: String?, onAction: () -> Unit, mo
             .semantics { liveRegion = LiveRegionMode.Polite },
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(message, style = Tote.type.label, color = c.textPrimary, modifier = Modifier.weight(1f, fill = false))
+        Text(message, style = Tuck.type.label, color = c.textPrimary, modifier = Modifier.weight(1f, fill = false))
         if (actionLabel != null) {
             PillButton(
                 text = actionLabel,

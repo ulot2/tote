@@ -1,23 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Placeholder app mark: a lime tote bag with a card tucked in. 108dp adaptive canvas, art in the 66dp safe zone. -->
+<!-- Tuck mark: a card tucked into a pocket. 108dp adaptive canvas, art inside the 66dp safe zone. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Handle -->
-    <path
-        android:pathData="M42,50 L42,44 A12,12 0 0 1 66,44 L66,50"
-        android:strokeWidth="5"
-        android:strokeColor="#C8F23C"
-        android:strokeLineCap="round"
-        android:fillColor="#00000000" />
-    <!-- Bag body -->
-    <path
-        android:fillColor="#C8F23C"
-        android:pathData="M34,52 L74,52 Q78,52 77.6,56 L75.6,74 Q75,78 71,78 L37,78 Q33,78 32.4,74 L30.4,56 Q30,52 34,52 Z" />
-    <!-- Slot -->
-    <path
-        android:fillColor="#0F0E0C"
-        android:pathData="M45,60 L63,60 Q65,60 65,62 Q65,64 63,64 L45,64 Q43,64 43,62 Q43,60 45,60 Z" />
+    <group android:scaleX="2.7" android:scaleY="2.7" android:translateX="21.6" android:translateY="21.6">
+        <group android:rotation="-12" android:pivotX="12" android:pivotY="8.5">
+            <path android:fillColor="#FF170F3D" android:fillAlpha="0.45"
+                android:pathData="M9,2.5 L15,2.5 Q17,2.5 17,4.5 L17,12.5 Q17,14.5 15,14.5 L9,14.5 Q7,14.5 7,12.5 L7,4.5 Q7,2.5 9,2.5 Z" />
+        </group>
+        <path android:fillColor="#FF170F3D"
+            android:pathData="M3.5,10.5 L20.5,10.5 L20.5,16 A6,6 0 0 1 14.5,22 L9.5,22 A6,6 0 0 1 3.5,16 Z" />
+    </group>
 </vector>

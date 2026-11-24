@@ -1,5 +1,6 @@
 package app.tote.core.data.db
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
@@ -9,14 +10,17 @@ import app.tote.core.model.EntryIcon
 import app.tote.core.model.EntryType
 
 @Database(
-    entities = [EntryEntity::class, ProfileEntity::class],
-    version = 1,
+    entities = [EntryEntity::class, ProfileEntity::class, LearnedMappingEntity::class],
+    version = 2,
     exportSchema = true,
+    // v2 adds learned_mappings. Adding a table is something Room migrates on its own.
+    autoMigrations = [AutoMigration(from = 1, to = 2)],
 )
 @TypeConverters(EnumConverters::class)
 abstract class ToteDatabase : RoomDatabase() {
     abstract fun entryDao(): EntryDao
     abstract fun profileDao(): ProfileDao
+    abstract fun learnedDao(): LearnedDao
 
     companion object {
         const val NAME = "tote.db"

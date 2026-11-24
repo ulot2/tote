@@ -15,6 +15,7 @@ import app.tote.feature.vault.VaultUiState
 import app.tote.ui.nav.EditorRoute
 import app.tote.ui.theme.ToteTheme
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -32,6 +33,8 @@ class VaultScreenTest {
     private val restored = mutableListOf<Entry>()
     private val opened = mutableListOf<EditorRoute>()
 
+    private val selectedProfiles = mutableListOf<Long?>()
+
     private fun show(state: VaultUiState) = compose.setContent {
         ToteTheme(darkTheme = true) {
             VaultScreen(
@@ -45,6 +48,7 @@ class VaultScreenTest {
                 onCommitOrder = {},
                 onOpenEditor = { opened += it },
                 onOpenSettings = {},
+                onSelectProfile = { selectedProfiles += it },
             )
         }
     }
@@ -53,7 +57,7 @@ class VaultScreenTest {
         show(SampleData.state())
         compose.onNodeWithText("GitHub").performClick()
         assertEquals(listOf(SampleData.github), copied)
-        compose.onNodeWithText("Copied · GitHub").assertIsDisplayed()
+        compose.onNodeWithText("Copied").assertIsDisplayed()
     }
 
     @Test fun longPressOpensActionsAndDeleteCanBeUndone() {
@@ -81,7 +85,7 @@ class VaultScreenTest {
 
     @Test fun emptyVaultOffersTemplates() {
         show(SampleData.state(entries = emptyList()))
-        compose.onNodeWithText("Your tote is empty").assertIsDisplayed()
+        compose.onNodeWithText("Nothing tucked away yet").assertIsDisplayed()
         compose.onNodeWithText("Portfolio").performClick()
         assertEquals("portfolio", opened.single().template)
     }
@@ -96,6 +100,20 @@ class VaultScreenTest {
         show(SampleData.state(reordering = true))
         compose.onNodeWithContentDescription("Reorder GitHub").assertIsDisplayed()
         compose.onAllNodesWithText("Done").onFirst().assertIsDisplayed()
+    }
+
+    @Test fun profileSwitcherShowsOnlyWithProfilesAndSelects() {
+        show(SampleData.state())
+        assertTrue(compose.onAllNodesWithText("Tech").fetchSemanticsNodes().isEmpty())
+    }
+
+    @Test fun profileSwitcherSelectsAndExplainsHiddenEntries() {
+        val profiles = listOf(app.tote.core.model.Profile(1, "Tech"), app.tote.core.model.Profile(2, "Non-tech"))
+        show(SampleData.state().copy(profiles = profiles, activeProfileId = 1, hiddenByProfile = 2))
+        compose.onNodeWithText("2 entries from other profiles hidden").assertIsDisplayed()
+        compose.onNodeWithText("Non-tech").performClick()
+        compose.onNodeWithText("All").performClick()
+        assertEquals(listOf<Long?>(2, null), selectedProfiles)
     }
 
     @Test fun searchWithNoMatchesSaysSo() {

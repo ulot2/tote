@@ -15,6 +15,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import app.tote.core.data.settings.Accent
 import app.tote.core.data.settings.ThemeMode
 
 /** Shape tokens: large card radii, pill buttons and chips (Plan §8.2). */
@@ -41,7 +42,7 @@ object ToteSpacing {
     val maxContentWidth = 640.dp
 }
 
-object Tote {
+object Tuck {
     val colors: ToteColors @Composable @ReadOnlyComposable get() = LocalToteColors.current
     val type: ToteType @Composable @ReadOnlyComposable get() = LocalToteType.current
 }
@@ -57,14 +58,17 @@ fun isAppInDarkTheme(mode: ThemeMode): Boolean = when (mode) {
 fun ToteTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false,
+    accent: Accent = Accent.IRIS,
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
-    val colors = remember(darkTheme, dynamicColor) {
+    val colors = remember(darkTheme, dynamicColor, accent) {
         if (dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val scheme = if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
             TotePalette.fromDynamic(scheme, darkTheme)
-        } else if (darkTheme) TotePalette.Dark else TotePalette.Light
+        } else {
+            TotePalette.colors(darkTheme, accent)
+        }
     }
     val type = remember { ToteType() }
 

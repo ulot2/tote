@@ -17,7 +17,7 @@ object AppModule {
     @Provides
     fun pickerIntents(): PickerIntents = object : PickerIntents {
         override fun copyIntent(context: Context): Intent = PickerActivity.copyIntent(context)
-        override fun fillIntent(context: Context, autofillId: Parcelable, urlField: Boolean): Intent =
-            AutofillPickerActivity.fillIntent(context, autofillId, urlField)
+        override fun fillIntent(context: Context, autofillId: Parcelable, urlField: Boolean, source: String?, signature: String?): Intent =
+            AutofillPickerActivity.fillIntent(context, autofillId, urlField, source, signature)
     }
 }
