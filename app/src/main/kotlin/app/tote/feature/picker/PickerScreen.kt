@@ -50,7 +50,10 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -84,9 +87,8 @@ import app.tote.ui.components.PillStyle
 import app.tote.ui.components.ToteChip
 import app.tote.ui.components.ToteIconButton
 import androidx.compose.foundation.lazy.LazyRow
-import app.tote.ui.components.compositeOn
 import app.tote.ui.icons.EntryIconBadge
-import app.tote.ui.theme.Tote
+import app.tote.ui.theme.Tuck
 import app.tote.ui.theme.ToteShapes
 import app.tote.util.Haptics
 import kotlinx.coroutines.delay
@@ -113,7 +115,7 @@ fun PickerScreen(
     mode: PickerMode = PickerMode.COPY,
     onSelectProfile: (Long?) -> Unit = {},
 ) {
-    val c = Tote.colors
+    val c = Tuck.colors
     val view = LocalView.current
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current
@@ -208,37 +210,42 @@ fun PickerScreen(
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .padding(start = 20.dp, end = 8.dp, top = 4.dp),
+                            .padding(start = 20.dp, end = 12.dp, top = 4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(
-                            if (mode == PickerMode.FILL) "Fill from Tote" else "Copy from Tote",
-                            style = Tote.type.title,
-                            color = c.textPrimary,
-                            modifier = Modifier
-                                .weight(1f)
-                                .semantics { heading() },
-                        )
-                        ToteIconButton(Icons.AutoMirrored.Rounded.OpenInNew, contentDescription = "Open Tote", onClick = onOpenApp, tint = c.textSecondary)
-                        ToteIconButton(Icons.Rounded.Close, contentDescription = "Close", onClick = ::dismiss, tint = c.textSecondary)
-                    }
-                }
-
-                if (state.profiles.isNotEmpty()) {
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        modifier = Modifier.padding(top = 4.dp),
-                    ) {
-                        item { ToteChip("All", selected = state.activeProfileId == null, onClick = { onSelectProfile(null) }) }
-                        items(state.profiles, key = { it.id }) { p ->
-                            ToteChip(p.name, selected = state.activeProfileId == p.id, onClick = { onSelectProfile(p.id) })
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                if (mode == PickerMode.FILL) "Fill from Tuck" else "Copy from Tuck",
+                                style = Tuck.type.title,
+                                color = c.textPrimary,
+                                modifier = Modifier.semantics { heading() },
+                            )
+                            Text(
+                                if (mode == PickerMode.FILL) "Tap one to fill the field" else "Tap one, then paste anywhere",
+                                style = Tuck.type.bodySmall,
+                                color = c.textSecondary,
+                            )
                         }
+                        ToteIconButton(Icons.Rounded.Close, contentDescription = "Close", onClick = ::dismiss, tint = c.textSecondary, filled = true)
                     }
                 }
 
                 if (state.totalCount > 0) {
-                    PickerSearch(state.query, onQueryChange, Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+                    // Search and profile share one row (redesign).
+                    Row(
+                        Modifier.padding(start = 16.dp, end = 16.dp, top = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        PickerSearch(state.query, onQueryChange, Modifier.weight(1f))
+                        if (state.profiles.isNotEmpty()) ProfileMenu(state, onSelectProfile)
+                    }
+                    Text(
+                        if (state.query.isBlank()) "MOST USED" else "RESULTS",
+                        style = Tuck.type.overline,
+                        color = c.textSecondary,
+                        modifier = Modifier.padding(start = 20.dp, top = 18.dp, bottom = 6.dp).semantics { heading() },
+                    )
                 }
 
                 when {
@@ -246,7 +253,7 @@ fun PickerScreen(
                     state.totalCount == 0 -> EmptyPicker(onOpenApp)
                     state.entries.isEmpty() -> Text(
                         "Nothing matches “${state.query}”",
-                        style = Tote.type.body,
+                        style = Tuck.type.body,
                         color = c.textSecondary,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -254,8 +261,8 @@ fun PickerScreen(
                             .padding(vertical = 40.dp),
                     )
                     else -> LazyColumn(
-                        contentPadding = PaddingValues(start = 12.dp, end = 12.dp, top = 4.dp, bottom = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        contentPadding = PaddingValues(start = 12.dp, end = 12.dp, top = 0.dp, bottom = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(2.dp),
                     ) {
                         items(state.entries, key = { it.id }) { entry ->
                             PickerRow(entry, copied = picked?.id == entry.id, mode = mode, onClick = { pick(entry) }, modifier = Modifier.animateItem())
@@ -269,12 +276,12 @@ fun PickerScreen(
 
 @Composable
 private fun PickerRow(entry: Entry, copied: Boolean, mode: PickerMode, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    val c = Tote.colors
-    val bg = if (copied) c.accentSoft.compositeOn(c.surface) else c.surface
+    val c = Tuck.colors
+    val bg = if (copied) c.accentTint else c.surface
     Row(
         modifier
             .fillMaxWidth()
-            .clip(ToteShapes.field)
+            .clip(ToteShapes.card)
             .background(bg)
             .clickable(role = Role.Button, onClickLabel = if (mode == PickerMode.FILL) "Fill" else "Copy", onClick = onClick)
             .defaultMinSize(minHeight = 64.dp)
@@ -287,7 +294,7 @@ private fun PickerRow(entry: Entry, copied: Boolean, mode: PickerMode, onClick: 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     entry.label,
-                    style = Tote.type.titleSmall,
+                    style = Tuck.type.titleSmall,
                     color = c.textPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -324,14 +331,49 @@ private fun PickerRow(entry: Entry, copied: Boolean, mode: PickerMode, onClick: 
     }
 }
 
+/** The active profile as a small dropdown pill beside search. */
+@Composable
+private fun ProfileMenu(state: PickerUiState, onSelect: (Long?) -> Unit) {
+    val c = Tuck.colors
+    var open by remember { mutableStateOf(false) }
+    val active = state.profiles.firstOrNull { it.id == state.activeProfileId }
+    Box {
+        Row(
+            Modifier
+                .height(48.dp)
+                .clip(ToteShapes.pill)
+                .background(if (active != null) c.accentTint else c.background)
+                .border(1.dp, if (active != null) c.accentTintBorder else c.outline, ToteShapes.pill)
+                .clickable(role = Role.Button, onClickLabel = "Change profile") { open = true }
+                .padding(start = 14.dp, end = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            if (active != null) Box(Modifier.size(8.dp).background(c.accent, ToteShapes.pill))
+            Text(active?.name ?: "All", style = Tuck.type.label, color = c.textPrimary, maxLines = 1)
+            Icon(Icons.Rounded.KeyboardArrowDown, contentDescription = null, tint = c.textSecondary, modifier = Modifier.size(18.dp))
+        }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }, containerColor = c.surfaceRaised, shape = ToteShapes.field) {
+            (listOf<Long?>(null) + state.profiles.map { it.id }).forEach { id ->
+                val name = state.profiles.firstOrNull { it.id == id }?.name ?: "All"
+                DropdownMenuItem(
+                    text = { Text(name, style = Tuck.type.body, color = c.textPrimary) },
+                    trailingIcon = { if (id == state.activeProfileId) Icon(Icons.Rounded.Check, contentDescription = "Selected", tint = c.accentContent) },
+                    onClick = { onSelect(id); open = false },
+                )
+            }
+        }
+    }
+}
+
 @Composable
 private fun PickerSearch(query: String, onQueryChange: (String) -> Unit, modifier: Modifier = Modifier) {
-    val c = Tote.colors
+    val c = Tuck.colors
     BasicTextField(
         value = query,
         onValueChange = onQueryChange,
         singleLine = true,
-        textStyle = Tote.type.body.copy(color = c.textPrimary),
+        textStyle = Tuck.type.body.copy(color = c.textPrimary),
         cursorBrush = SolidColor(c.accentContent),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         modifier = modifier
@@ -350,7 +392,7 @@ private fun PickerSearch(query: String, onQueryChange: (String) -> Unit, modifie
                 Icon(Icons.Rounded.Search, contentDescription = null, tint = c.textSecondary, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(10.dp))
                 Box(Modifier.weight(1f)) {
-                    if (query.isEmpty()) Text("Search", style = Tote.type.body, color = c.textTertiary)
+                    if (query.isEmpty()) Text("Search", style = Tuck.type.body, color = c.textTertiary)
                     inner()
                 }
             }
@@ -360,21 +402,21 @@ private fun PickerSearch(query: String, onQueryChange: (String) -> Unit, modifie
 
 @Composable
 private fun EmptyPicker(onOpenApp: () -> Unit) {
-    val c = Tote.colors
+    val c = Tuck.colors
     Column(
         Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp, vertical = 28.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("Your tote is empty", style = Tote.type.title, color = c.textPrimary)
+        Text("Nothing tucked away yet", style = Tuck.type.title, color = c.textPrimary)
         Text(
             "Add your links and answers in the app, then copy them from here.",
-            style = Tote.type.bodySmall,
+            style = Tuck.type.bodySmall,
             color = c.textSecondary,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 6.dp, bottom = 20.dp),
         )
-        PillButton("Open Tote", onClick = onOpenApp, style = PillStyle.Primary)
+        PillButton("Open Tuck", onClick = onOpenApp, style = PillStyle.Primary)
     }
 }

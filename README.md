@@ -1,7 +1,9 @@
-# Tote
+# Tuck
+
+_Formerly Tote. The package id stays `app.tote` so installed copies update in place._
 
 A personal vault of the links and answers you type into every form: LinkedIn, portfolio, GitHub,
-email, CV link, stock answers. Tote suggests them when you tap a form field (autofill), or you copy them from the app or a Quick Settings tile.
+email, CV link, stock answers. Tuck suggests them when you tap a form field (autofill), or you copy them from the app or a Quick Settings tile.
 Android, Kotlin + Jetpack Compose. Fully offline: **no INTERNET permission**.
 
 See [`PLAN.md`](PLAN.md) for the build plan and [`DECISIONS.md`](DECISIONS.md) for deviations.
@@ -18,9 +20,9 @@ See [`PLAN.md`](PLAN.md) for the build plan and [`DECISIONS.md`](DECISIONS.md) f
 
 ## Build
 
-GitHub Actions runs the unit tests and builds `Tote.apk` on every push to `main` or `dev` and on every pull
+GitHub Actions runs the unit tests and builds `Tuck.apk` on every push to `main` or `dev` and on every pull
 request (see `.github/workflows/build.yml`). The APK is attached to the run page. Pushing a tag like `v0.1.0`
-publishes a release with `Tote.apk`.
+publishes a release with `Tuck.apk`.
 
 To build on a computer with the Android SDK: `./gradlew test assembleDebug`. The wrapper fetches the right
 Gradle. JVM tests include Robolectric screenshots of the main screens in `app/build/screenshots/`.

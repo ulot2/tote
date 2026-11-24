@@ -50,7 +50,7 @@ import app.tote.ui.components.PillButton
 import app.tote.ui.components.PillStyle
 import app.tote.ui.components.ToteIconButton
 import app.tote.ui.icons.EntryIconBadge
-import app.tote.ui.theme.Tote
+import app.tote.ui.theme.Tuck
 import app.tote.ui.theme.ToteShapes
 import app.tote.ui.theme.ToteSpacing
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -105,7 +105,7 @@ fun LearnedRoute(onBack: () -> Unit, viewModel: LearnedViewModel = hiltViewModel
     LearnedScreen(state, onBack, viewModel::forget, viewModel::clearAll)
 }
 
-/** "Learned suggestions" (Plan §8.4 Settings): see and clear what Tote remembered. */
+/** "Learned suggestions" (Plan §8.4 Settings): see and clear what Tuck remembered. */
 @Composable
 fun LearnedScreen(
     state: LearnedUiState,
@@ -113,7 +113,7 @@ fun LearnedScreen(
     onForget: (LearnedField) -> Unit,
     onClearAll: () -> Unit,
 ) {
-    val c = Tote.colors
+    val c = Tuck.colors
     var confirmClear by remember { mutableStateOf(false) }
     Box(Modifier.fillMaxSize().background(c.background), contentAlignment = Alignment.TopCenter) {
         LazyColumn(
@@ -128,10 +128,10 @@ fun LearnedScreen(
             item {
                 Column {
                     ToteIconButton(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", onClick = onBack, modifier = Modifier.padding(top = 4.dp))
-                    Text("Learned", style = Tote.type.display, color = c.textPrimary, modifier = Modifier.padding(top = 12.dp).semantics { heading() })
+                    Text("Learned", style = Tuck.type.display, color = c.textPrimary, modifier = Modifier.padding(top = 12.dp).semantics { heading() })
                     Text(
-                        "When you pick an entry for a field, Tote suggests it first there next time. It's all kept on this phone.",
-                        style = Tote.type.bodySmall,
+                        "When you pick an entry for a field, Tuck suggests it first there next time. It's all kept on this phone.",
+                        style = Tuck.type.bodySmall,
                         color = c.textSecondary,
                         modifier = Modifier.padding(top = 6.dp, bottom = 8.dp),
                     )
@@ -140,8 +140,8 @@ fun LearnedScreen(
             if (!state.loading && state.fields.isEmpty()) {
                 item {
                     Text(
-                        "Nothing learned yet. Fill a few forms with Tote and your picks will show up here.",
-                        style = Tote.type.body,
+                        "Nothing learned yet. Fill a few forms with Tuck and your picks will show up here.",
+                        style = Tuck.type.body,
                         color = c.textSecondary,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth().padding(top = 48.dp),
@@ -152,7 +152,7 @@ fun LearnedScreen(
                 item(key = "h-$source") {
                     Text(
                         source,
-                        style = Tote.type.overline,
+                        style = Tuck.type.overline,
                         color = c.textSecondary,
                         modifier = Modifier.padding(start = 4.dp, top = 16.dp).semantics { heading() },
                     )
@@ -174,7 +174,7 @@ fun LearnedScreen(
     if (confirmClear) {
         ToteDialog(
             title = "Forget everything learned?",
-            text = "Suggestions go back to Tote's own matching. Your entries stay.",
+            text = "Suggestions go back to Tuck’s own matching. Your entries stay.",
             confirm = "Forget",
             onConfirm = { confirmClear = false; onClearAll() },
             onDismiss = { confirmClear = false },
@@ -184,7 +184,7 @@ fun LearnedScreen(
 
 @Composable
 private fun LearnedRow(field: LearnedField, onForget: () -> Unit) {
-    val c = Tote.colors
+    val c = Tuck.colors
     val top = field.picks.first().first
     Row(
         Modifier
@@ -196,7 +196,7 @@ private fun LearnedRow(field: LearnedField, onForget: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
-            Text("“${field.description}”", style = Tote.type.titleSmall, color = c.textPrimary, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text("“${field.description}”", style = Tuck.type.titleSmall, color = c.textPrimary, maxLines = 2, overflow = TextOverflow.Ellipsis)
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 6.dp)) {
                 Icon(Icons.AutoMirrored.Rounded.ArrowForward, contentDescription = null, tint = c.textTertiary, modifier = Modifier.size(16.dp))
                 Spacer(Modifier.width(8.dp))
@@ -205,7 +205,7 @@ private fun LearnedRow(field: LearnedField, onForget: () -> Unit) {
                 val others = field.picks.size - 1
                 Text(
                     top.label + if (others > 0) " and $others more" else "",
-                    style = Tote.type.bodySmall,
+                    style = Tuck.type.bodySmall,
                     color = c.textSecondary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

@@ -39,7 +39,7 @@ data class EditorUiState(
     val categoryAuto: Boolean = true,
     val iconAuto: Boolean = true,
     val keywords: List<String> = emptyList(),
-    /** Wordings Tote already matches for this kind of entry (from the shared dictionary). */
+    /** Wordings Tuck already matches for this kind of entry (from the shared dictionary). */
     val builtInKeywords: List<String> = emptyList(),
     val keywordDraft: String = "",
     val pinned: Boolean = false,

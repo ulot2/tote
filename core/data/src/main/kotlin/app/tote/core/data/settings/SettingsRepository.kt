@@ -14,10 +14,14 @@ import javax.inject.Singleton
 
 enum class ThemeMode { SYSTEM, DARK, LIGHT }
 
+/** Accent colour choices (Settings › Appearance). Iris is the default. */
+enum class Accent { IRIS, EMBER, MARIGOLD, MINT, LIME, BONE }
+
 data class AppSettings(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     /** Material You colours. Off by default: Tote has its own palette (Plan §8.2). */
     val dynamicColor: Boolean = false,
+    val accent: Accent = Accent.IRIS,
     val onboardingDone: Boolean = false,
     /** null = the implicit "All" profile. */
     val activeProfileId: Long? = null,
@@ -32,6 +36,7 @@ class SettingsRepository @Inject constructor(
     private object Keys {
         val theme = stringPreferencesKey("theme_mode")
         val dynamic = booleanPreferencesKey("dynamic_color")
+        val accent = stringPreferencesKey("accent")
         val onboarding = booleanPreferencesKey("onboarding_done")
         val activeProfile = longPreferencesKey("active_profile_id")
         val autofillBannerDismissed = booleanPreferencesKey("autofill_banner_dismissed")
@@ -41,6 +46,7 @@ class SettingsRepository @Inject constructor(
         AppSettings(
             themeMode = p[Keys.theme]?.let { name -> ThemeMode.entries.firstOrNull { it.name == name } } ?: ThemeMode.SYSTEM,
             dynamicColor = p[Keys.dynamic] ?: false,
+            accent = p[Keys.accent]?.let { name -> Accent.entries.firstOrNull { it.name == name } } ?: Accent.IRIS,
             onboardingDone = p[Keys.onboarding] ?: false,
             activeProfileId = p[Keys.activeProfile],
             autofillBannerDismissed = p[Keys.autofillBannerDismissed] ?: false,
@@ -53,6 +59,10 @@ class SettingsRepository @Inject constructor(
 
     suspend fun setDynamicColor(enabled: Boolean) {
         store.edit { it[Keys.dynamic] = enabled }
+    }
+
+    suspend fun setAccent(accent: Accent) {
+        store.edit { it[Keys.accent] = accent.name }
     }
 
     suspend fun setOnboardingDone(done: Boolean) {

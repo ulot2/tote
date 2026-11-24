@@ -26,7 +26,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import app.tote.ui.theme.Tote
+import app.tote.ui.theme.Tuck
 import app.tote.ui.theme.ToteShapes
 
 /** Selectable pill chip. Selection is shown by fill *and* a check mark, never colour alone. */
@@ -39,7 +39,7 @@ fun ToteChip(
     leading: (@Composable () -> Unit)? = null,
     role: Role = Role.RadioButton,
 ) {
-    val c = Tote.colors
+    val c = Tuck.colors
     val bg by animateColorAsState(if (selected) c.accent else c.surface, label = "chipBg")
     val fg by animateColorAsState(if (selected) c.onAccent else c.textPrimary, label = "chipFg")
     val interaction = remember { MutableInteractionSource() }
@@ -57,14 +57,14 @@ fun ToteChip(
     ) {
         if (selected) Icon(Icons.Rounded.Check, contentDescription = null, tint = fg, modifier = Modifier.size(16.dp))
         leading?.invoke()
-        Text(text, style = Tote.type.label, color = fg)
+        Text(text, style = Tuck.type.label, color = fg)
     }
 }
 
 /** Removable keyword chip. */
 @Composable
 fun KeywordChip(text: String, onRemove: () -> Unit, modifier: Modifier = Modifier) {
-    val c = Tote.colors
+    val c = Tuck.colors
     Row(
         modifier = modifier
             .clip(ToteShapes.pill)
@@ -72,7 +72,7 @@ fun KeywordChip(text: String, onRemove: () -> Unit, modifier: Modifier = Modifie
             .padding(start = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text, style = Tote.type.label, color = c.textPrimary)
+        Text(text, style = Tuck.type.label, color = c.textPrimary)
         Icon(
             Icons.Rounded.Close,
             contentDescription = null,

@@ -71,8 +71,8 @@ class PickerScreenTest {
 
     @Test fun emptyVaultOffersToOpenApp() {
         show(stateOf(emptyList()))
-        compose.onNodeWithText("Your tote is empty").assertIsDisplayed()
-        compose.onNodeWithText("Open Tote").performClick()
+        compose.onNodeWithText("Nothing tucked away yet").assertIsDisplayed()
+        compose.onNodeWithText("Open Tuck").performClick()
         assertEquals(1, openedApp)
     }
 

@@ -151,7 +151,7 @@ class FillResponseFactory(
         PendingIntent.FLAG_UPDATE_CURRENT or (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0),
     ).intentSender
 
-    /** Long-pressing an inline chip opens Tote. */
+    /** Long-pressing an inline chip opens Tuck. */
     private fun attributionIntent(): PendingIntent {
         val launch = context.packageManager.getLaunchIntentForPackage(context.packageName) ?: Intent()
         return PendingIntent.getActivity(context, REQUEST_ATTRIBUTION, launch, PendingIntent.FLAG_IMMUTABLE)

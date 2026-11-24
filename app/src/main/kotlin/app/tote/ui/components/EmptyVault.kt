@@ -25,12 +25,12 @@ import androidx.compose.ui.unit.dp
 import app.tote.core.model.SeedTemplate
 import app.tote.core.model.SeedTemplates
 import app.tote.ui.icons.EntryIconBadge
-import app.tote.ui.theme.Tote
+import app.tote.ui.theme.Tuck
 
 /** A tote bag with cards peeking out: the empty-vault illustration. Purely decorative. */
 @Composable
 fun ToteIllustration(modifier: Modifier = Modifier) {
-    val c = Tote.colors
+    val c = Tuck.colors
     Canvas(modifier.size(width = 200.dp, height = 168.dp).clearAndSetSemantics { }) {
         val w = size.width
         val h = size.height
@@ -99,21 +99,21 @@ fun EmptyVault(
     onTemplate: (SeedTemplate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val c = Tote.colors
+    val c = Tuck.colors
     Column(
         modifier = modifier.fillMaxWidth().padding(top = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         ToteIllustration()
         Text(
-            "Your tote is empty",
-            style = Tote.type.headline,
+            "Nothing tucked away yet",
+            style = Tuck.type.headline,
             color = c.textPrimary,
             modifier = Modifier.padding(top = 28.dp),
         )
         Text(
             "Keep the links and answers you type into every form. Tap one to copy it.",
-            style = Tote.type.body,
+            style = Tuck.type.body,
             color = c.textSecondary,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 8.dp, start = 12.dp, end = 12.dp),
@@ -122,7 +122,7 @@ fun EmptyVault(
 
         Text(
             "OR START FROM",
-            style = Tote.type.overline,
+            style = Tuck.type.overline,
             color = c.textTertiary,
             modifier = Modifier.padding(top = 36.dp, bottom = 12.dp),
         )

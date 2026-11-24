@@ -57,7 +57,7 @@ class VaultScreenTest {
         show(SampleData.state())
         compose.onNodeWithText("GitHub").performClick()
         assertEquals(listOf(SampleData.github), copied)
-        compose.onNodeWithText("Copied · GitHub").assertIsDisplayed()
+        compose.onNodeWithText("Copied").assertIsDisplayed()
     }
 
     @Test fun longPressOpensActionsAndDeleteCanBeUndone() {
@@ -85,7 +85,7 @@ class VaultScreenTest {
 
     @Test fun emptyVaultOffersTemplates() {
         show(SampleData.state(entries = emptyList()))
-        compose.onNodeWithText("Your tote is empty").assertIsDisplayed()
+        compose.onNodeWithText("Nothing tucked away yet").assertIsDisplayed()
         compose.onNodeWithText("Portfolio").performClick()
         assertEquals("portfolio", opened.single().template)
     }

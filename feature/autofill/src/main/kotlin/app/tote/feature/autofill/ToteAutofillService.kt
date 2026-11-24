@@ -29,7 +29,7 @@ import java.util.UUID
 import javax.inject.Inject
 
 /**
- * Tote's autofill service (Plan §9.4).
+ * Tuck's autofill service (Plan §9.4).
  *
  * Fast path: the vault comes from [VaultSnapshot] (memory, kept warm from Room); parsing and
  * matching run off the main thread; nothing from the screen is kept after the request.
@@ -125,7 +125,7 @@ class ToteAutofillService : AutofillService() {
         }
     }
 
-    /** Don't offer Tote's own entries inside Tote, except on its autofill test screen. */
+    /** Don't offer Tuck's own entries inside Tuck, except on its autofill test screen. */
     private fun isToteItself(pkg: String?, className: String?): Boolean =
         pkg == packageName && className?.endsWith(PLAYGROUND_CLASS_SUFFIX) != true
 

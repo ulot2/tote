@@ -56,7 +56,7 @@ import app.tote.ui.components.PillButton
 import app.tote.ui.components.PillStyle
 import app.tote.ui.components.ToteIconButton
 import app.tote.ui.components.ToteTextField
-import app.tote.ui.theme.Tote
+import app.tote.ui.theme.Tuck
 import app.tote.ui.theme.ToteShapes
 import app.tote.ui.theme.ToteSpacing
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -119,7 +119,7 @@ fun ProfilesScreen(
     onDelete: (Long) -> Unit,
     onActivate: (Long?) -> Unit,
 ) {
-    val c = Tote.colors
+    val c = Tuck.colors
     var adding by remember { mutableStateOf(false) }
     var renaming by remember { mutableStateOf<Profile?>(null) }
     var deleting by remember { mutableStateOf<Profile?>(null) }
@@ -132,10 +132,10 @@ fun ProfilesScreen(
             item {
                 Column {
                     ToteIconButton(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", onClick = onBack, modifier = Modifier.padding(top = 4.dp))
-                    Text("Profiles", style = Tote.type.display, color = c.textPrimary, modifier = Modifier.padding(top = 12.dp).semantics { heading() })
+                    Text("Profiles", style = Tuck.type.display, color = c.textPrimary, modifier = Modifier.padding(top = 12.dp).semantics { heading() })
                     Text(
-                        "Keep different versions apart, like a Tech CV and a Non-tech CV. The active profile decides what Tote suggests; entries in \"All\" always show.",
-                        style = Tote.type.bodySmall,
+                        "Keep different versions apart, like a Tech CV and a Non-tech CV. The active profile decides what Tuck suggests; entries in \"All\" always show.",
+                        style = Tuck.type.bodySmall,
                         color = c.textSecondary,
                         modifier = Modifier.padding(top = 6.dp, bottom = 12.dp),
                     )
@@ -186,7 +186,7 @@ private fun ProfileCard(
     onRename: (() -> Unit)? = null,
     onDelete: (() -> Unit)? = null,
 ) {
-    val c = Tote.colors
+    val c = Tuck.colors
     Row(
         Modifier
             .fillMaxWidth()
@@ -200,19 +200,19 @@ private fun ProfileCard(
     ) {
         Column(Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(name, style = Tote.type.titleSmall, color = c.textPrimary)
+                Text(name, style = Tuck.type.titleSmall, color = c.textPrimary)
                 if (active) {
                     Spacer(Modifier.width(8.dp))
                     // A word, not just the colour, says which profile is active.
                     Text(
                         "Active",
-                        style = Tote.type.overline,
+                        style = Tuck.type.overline,
                         color = c.onAccent,
                         modifier = Modifier.background(c.accent, ToteShapes.pill).padding(horizontal = 8.dp, vertical = 2.dp),
                     )
                 }
             }
-            Text(detail, style = Tote.type.bodySmall, color = c.textSecondary, modifier = Modifier.padding(top = 2.dp))
+            Text(detail, style = Tuck.type.bodySmall, color = c.textSecondary, modifier = Modifier.padding(top = 2.dp))
         }
         if (onRename != null) ToteIconButton(Icons.Rounded.Edit, contentDescription = "Rename $name", onClick = onRename, tint = c.textSecondary)
         if (onDelete != null) ToteIconButton(Icons.Rounded.DeleteOutline, contentDescription = "Delete $name", onClick = onDelete, tint = c.textSecondary)
@@ -221,14 +221,14 @@ private fun ProfileCard(
 
 @Composable
 fun NameDialog(title: String, initial: String, onDone: (String) -> Unit, onDismiss: () -> Unit) {
-    val c = Tote.colors
+    val c = Tuck.colors
     var name by remember { mutableStateOf(initial) }
     val valid = name.isNotBlank() && name.trim().length <= 24
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = c.surface,
         shape = ToteShapes.cardLarge,
-        title = { Text(title, style = Tote.type.title, color = c.textPrimary) },
+        title = { Text(title, style = Tuck.type.title, color = c.textPrimary) },
         text = {
             ToteTextField(
                 value = name,

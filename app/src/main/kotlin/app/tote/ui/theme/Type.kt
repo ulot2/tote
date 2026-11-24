@@ -42,7 +42,7 @@ data class ToteType(
 
 val LocalToteType = staticCompositionLocalOf { ToteType() }
 
-/** Material typography mapped onto Tote's faces, so any M3 component we do use matches. */
+/** Material typography mapped onto Tuck's faces, so any M3 component we do use matches. */
 internal fun ToteType.toMaterial(): Typography = Typography(
     displayLarge = display, displayMedium = display, displaySmall = headline,
     headlineLarge = headline, headlineMedium = headline, headlineSmall = title,

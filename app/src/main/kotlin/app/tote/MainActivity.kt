@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
             ready = true
             val dark = isAppInDarkTheme(s.themeMode)
             SystemBarsFor(dark)
-            ToteTheme(darkTheme = dark, dynamicColor = s.dynamicColor) {
+            ToteTheme(darkTheme = dark, dynamicColor = s.dynamicColor, accent = s.accent) {
                 ToteNavHost()
             }
         }

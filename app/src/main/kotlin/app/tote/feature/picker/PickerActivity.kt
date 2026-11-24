@@ -51,7 +51,7 @@ open class PickerActivity : ComponentActivity() {
                 .collectAsStateWithLifecycle(initialValue = null)
             val s = settings ?: return@setContent
             val state by viewModel.state.collectAsStateWithLifecycle()
-            ToteTheme(darkTheme = isAppInDarkTheme(s.themeMode), dynamicColor = s.dynamicColor) {
+            ToteTheme(darkTheme = isAppInDarkTheme(s.themeMode), dynamicColor = s.dynamicColor, accent = s.accent) {
                 PickerScreen(
                     state = state,
                     onQueryChange = viewModel::onQueryChange,

@@ -265,3 +265,47 @@ Running log of choices made during the build, and places where the build deviate
   combination of profiles.
 - **Tile subtitle:** "Copy an entry" until profiles exist, then the active profile's name (or "All
   profiles"). It follows changes live while the shade is open.
+
+## Redesign and rename to Tuck
+
+- **The app is now called Tuck.** The visible name changes everywhere: launcher label, tile,
+  autofill service, every string, the release APK (`Tuck.apk`) and the workflow. The **package id
+  stays `app.tote`**: Android treats a new id as a different app, so it wouldn't install as an
+  update and users would lose their vault. Kotlin package and class names (`app.tote.*`,
+  `ToteTheme`) stay too. They're internal, and renaming them would churn every file for nothing a
+  user sees.
+- **The Tuck mark** is a card tucked into a pocket. It's the adaptive launcher icon (ink mark on
+  iris) with a monochrome layer for themed icons, the splash icon, the Quick Settings tile glyph,
+  the "All entries…" badge in autofill, and the in-app wordmark. `IconRenderTest` renders them to
+  PNG.
+- **Accent:** Iris (`#A99BFF`, ink `#170F3D` on it) is the default. Ember, Marigold, Mint, Lime and
+  Bone are in Settings › Appearance › Accent, stored in DataStore. Each accent has its own dark and
+  light fill, text-on-fill and light-mode text colour, all checked for WCAG AA. Bone is cream in
+  dark mode and ink in light mode, because a cream fill would vanish on the light background.
+  "Use wallpaper colours" (Android 12+) still overrides the accent. System surfaces that can't
+  follow a user setting (launcher icon, autofill badge) always use Iris.
+- **New tokens:** `accentTint`/`accentTintBorder` are opaque accent-tinted surfaces (just-copied
+  row, autofill hero, banner), computed per accent so they never go translucent over content.
+- **Vault:**
+  - Sections are single grouped lists with hairline dividers. Each row draws its own corners
+    (first/middle/last), so drag-to-reorder still works per row.
+  - Pinned entries are compact pills.
+  - Profiles are a segmented control (it scrolls past 4 options).
+  - Search and "New entry" moved to a bottom dock within thumb reach.
+  - The copied row confirms in place ("Copied" badge, announced to TalkBack), replacing the
+    floating pill.
+- **Editor:**
+  - A hero card doubles as the autofill preview.
+  - Tapping its icon opens an icon sheet, which replaces the always-visible grid.
+  - Label and value are one grouped card, and type is a segmented control.
+  - Section is a dropdown row, and profiles share its card.
+  - "Matches fields like" shows built-in keywords next to the user's own, with "+ Add your own".
+- **Picker:** a title with a one-line hint, search and a profile dropdown in one row, "Most used",
+  and the row confirms with a check before closing.
+- **Settings:**
+  - Autofill status is the first card (on: tinted with Try it and Chrome setup; off: Turn on plus
+    the one-service warning).
+  - Chrome and tile steps open in sheets.
+  - The rest is grouped lists: your data, quick access, appearance, about.
+- **Not yet built:** onboarding (designed on the canvas, ships with Phase 5 part B) and Backup /
+  Restore (also part B, so the Settings rows appear then).
