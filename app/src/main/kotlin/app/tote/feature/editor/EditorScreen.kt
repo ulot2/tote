@@ -105,6 +105,7 @@ fun EditorRoute(
         onPaste = viewModel::pasteFromClipboard,
         onTypeSelected = viewModel::onTypeSelected,
         onCategorySelected = viewModel::onCategorySelected,
+        onProfileToggled = viewModel::onProfileToggled,
         onIconSelected = viewModel::onIconSelected,
         onKeywordDraftChange = viewModel::onKeywordDraftChange,
         onAddKeyword = viewModel::addKeyword,
@@ -130,6 +131,7 @@ fun EditorScreen(
     onRemoveKeyword: (String) -> Unit,
     onSave: () -> Unit,
     onDelete: () -> Unit,
+    onProfileToggled: (Long?) -> Unit = {},
 ) {
     val c = Tote.colors
     var confirmDiscard by remember { mutableStateOf(false) }
@@ -218,6 +220,17 @@ fun EditorScreen(
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Category.entries.forEach { cat ->
                             ToteChip(cat.title(), selected = state.category == cat, onClick = { onCategorySelected(cat) })
+                        }
+                    }
+                }
+
+                if (state.profiles.isNotEmpty()) {
+                    Group("Profiles", hint = if (state.profileIds.isEmpty()) "Shown in every profile" else "Only in the ones you pick") {
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            ToteChip("All profiles", selected = state.profileIds.isEmpty(), onClick = { onProfileToggled(null) })
+                            state.profiles.forEach { p ->
+                                ToteChip(p.name, selected = p.id in state.profileIds, onClick = { onProfileToggled(p.id) }, role = Role.Checkbox)
+                            }
                         }
                     }
                 }

@@ -17,6 +17,9 @@ interface EntryDao {
     @Query("SELECT * FROM entries WHERE id = :id")
     suspend fun get(id: Long): EntryEntity?
 
+    @Query("SELECT * FROM entries ORDER BY category, sort_order, id")
+    suspend fun allOnce(): List<EntryEntity>
+
     @Query("SELECT * FROM entries WHERE id = :id")
     fun observe(id: Long): Flow<EntryEntity?>
 

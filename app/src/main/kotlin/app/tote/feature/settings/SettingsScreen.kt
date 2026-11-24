@@ -63,6 +63,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import app.tote.BuildConfig
 import app.tote.core.data.settings.AppSettings
+import app.tote.core.data.repo.LearningRepository
+import app.tote.core.data.repo.ProfileRepository
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import app.tote.core.data.settings.SettingsRepository
 import app.tote.core.data.settings.ThemeMode
 import app.tote.ui.components.ToteIconButton
@@ -80,15 +86,35 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settings: SettingsRepository,
+    profiles: ProfileRepository,
+    learning: LearningRepository,
 ) : ViewModel() {
     val state: StateFlow<AppSettings> = settings.settings.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppSettings())
+
+    /** "Tech (active) · 2 profiles" style summary for the Profiles row. */
+    val profileSummary: StateFlow<String> = combine(profiles.profiles, settings.settings) { list, s ->
+        val active = list.firstOrNull { it.id == s.activeProfileId }?.name ?: "All"
+        if (list.isEmpty()) "None yet. Everything is in All." else "$active is active · ${list.size} ${if (list.size == 1) "profile" else "profiles"}"
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "")
+
+    val learnedCount: StateFlow<Int> = learning.mappings
+        .map { rows -> rows.map { it.source to it.signature }.distinct().size }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0)
+
     fun setTheme(mode: ThemeMode) { viewModelScope.launch { settings.setThemeMode(mode) } }
     fun setDynamic(enabled: Boolean) { viewModelScope.launch { settings.setDynamicColor(enabled) } }
 }
 
 @Composable
-fun SettingsRoute(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewModel()) {
+fun SettingsRoute(
+    onBack: () -> Unit,
+    onOpenProfiles: () -> Unit = {},
+    onOpenLearned: () -> Unit = {},
+    viewModel: SettingsViewModel = hiltViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val profileSummary by viewModel.profileSummary.collectAsStateWithLifecycle()
+    val learnedCount by viewModel.learnedCount.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val autofillStatus = rememberAutofillStatus()
     val chrome = remember { AutofillSetup.chromeLaunchIntent(context) }
@@ -106,6 +132,14 @@ fun SettingsRoute(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewMod
         onManageAutofill = { context.startActivity(AutofillSetup.manageIntent()) },
         onOpenChrome = chrome?.let { intent -> { context.startActivity(intent) } },
         onTryAutofill = { context.startActivity(Intent(context, AutofillPlaygroundActivity::class.java)) },
+        profileSummary = profileSummary,
+        onOpenProfiles = onOpenProfiles,
+        learnedSummary = when (learnedCount) {
+            0 -> "Nothing yet"
+            1 -> "1 field remembered"
+            else -> "$learnedCount fields remembered"
+        },
+        onOpenLearned = onOpenLearned,
     )
 }
 
@@ -123,6 +157,10 @@ fun SettingsScreen(
     onManageAutofill: () -> Unit = {},
     onOpenChrome: (() -> Unit)? = null,
     onTryAutofill: () -> Unit = {},
+    profileSummary: String = "",
+    onOpenProfiles: () -> Unit = {},
+    learnedSummary: String = "",
+    onOpenLearned: () -> Unit = {},
 ) {
     val c = Tote.colors
     Box(Modifier.fillMaxSize().background(c.background), contentAlignment = Alignment.TopCenter) {
@@ -187,6 +225,13 @@ fun SettingsScreen(
             AutofillCard(autofillStatus, onEnableAutofill, onManageAutofill, onTryAutofill)
             Spacer(Modifier.height(12.dp))
             ChromeCard(onOpenChrome)
+
+            SectionLabel("Profiles and learning")
+            Card {
+                NavRow("Profiles", profileSummary, onOpenProfiles)
+                Spacer(Modifier.height(4.dp))
+                NavRow("Learned suggestions", learnedSummary, onOpenLearned)
+            }
 
             SectionLabel("Quick Settings tile")
             Card {
@@ -356,6 +401,26 @@ private fun TileSteps() = Steps(
         "Drag Tote into your tiles.",
     ),
 )
+
+@Composable
+private fun NavRow(title: String, detail: String, onClick: () -> Unit) {
+    val c = Tote.colors
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(ToteShapes.field)
+            .clickable(role = Role.Button, onClick = onClick)
+            .defaultMinSize(minHeight = 56.dp)
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(title, style = Tote.type.titleSmall, color = c.textPrimary)
+            if (detail.isNotEmpty()) Text(detail, style = Tote.type.bodySmall, color = c.textSecondary)
+        }
+        Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, contentDescription = null, tint = c.textTertiary)
+    }
+}
 
 @Composable
 private fun SectionLabel(text: String) {

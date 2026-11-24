@@ -8,6 +8,13 @@ import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import app.tote.core.data.platform.PickerIntents
+import app.tote.core.data.repo.VaultSnapshot
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -20,16 +27,41 @@ import javax.inject.Inject
 class ToteTileService : TileService() {
 
     @Inject lateinit var pickerIntents: PickerIntents
+    @Inject lateinit var snapshot: VaultSnapshot
+
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private var listening: Job? = null
 
     override fun onStartListening() {
         super.onStartListening()
+        render(snapshot.state.value)
+        // Follow the active profile while the shade is open, so switching it in the picker shows here.
+        listening?.cancel()
+        listening = scope.launch { snapshot.state.collect { render(it) } }
+    }
+
+    override fun onStopListening() {
+        listening?.cancel()
+        listening = null
+        super.onStopListening()
+    }
+
+    override fun onDestroy() {
+        scope.cancel()
+        super.onDestroy()
+    }
+
+    private fun render(vault: VaultSnapshot.Snapshot?) {
         val tile = qsTile ?: return
         tile.state = Tile.STATE_ACTIVE
         tile.label = getString(R.string.tile_label)
         tile.icon = Icon.createWithResource(this, R.drawable.ic_tile)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // Phase 5 replaces this with the active profile's name.
-            tile.subtitle = getString(R.string.tile_subtitle)
+            // The subtitle names the active profile (Plan §9.5) once profiles exist.
+            tile.subtitle = when {
+                vault == null || vault.profiles.isEmpty() -> getString(R.string.tile_subtitle)
+                else -> vault.activeProfile?.name ?: getString(R.string.tile_subtitle_all)
+            }
         }
         tile.updateTile()
     }

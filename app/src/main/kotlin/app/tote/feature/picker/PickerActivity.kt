@@ -62,6 +62,7 @@ open class PickerActivity : ComponentActivity() {
                     },
                     onFinished = ::finish,
                     mode = mode,
+                    onSelectProfile = viewModel::selectProfile,
                 )
             }
         }
@@ -70,6 +71,8 @@ open class PickerActivity : ComponentActivity() {
     protected open fun onPick(entry: Entry) = viewModel.copy(entry)
 
     protected fun recordUse(entry: Entry) = viewModel.recordUse(entry)
+
+    protected fun learn(source: String, signature: String, entry: Entry) = viewModel.learn(source, signature, entry)
 
     /** The sheet is a moment, not a place: leaving it (home, recents, screen off) closes it. */
     override fun onStop() {
@@ -117,12 +120,17 @@ class AutofillPickerActivity : PickerActivity() {
         // Set the result now; the sheet animates out and then finishes, delivering it.
         setResult(RESULT_OK, AutofillResults.resultFor(this, id, entry, urlField))
         recordUse(entry)
+        val source = intent.getStringExtra(AutofillResults.EXTRA_SOURCE)
+        val signature = intent.getStringExtra(AutofillResults.EXTRA_SIGNATURE)
+        if (source != null && signature != null) learn(source, signature, entry)
     }
 
     companion object {
-        fun fillIntent(context: Context, autofillId: Parcelable, urlField: Boolean): Intent =
+        fun fillIntent(context: Context, autofillId: Parcelable, urlField: Boolean, source: String? = null, signature: String? = null): Intent =
             Intent(context, AutofillPickerActivity::class.java)
                 .putExtra(AutofillResults.EXTRA_AUTOFILL_ID, autofillId)
                 .putExtra(AutofillResults.EXTRA_URL_FIELD, urlField)
+                .putExtra(AutofillResults.EXTRA_SOURCE, source)
+                .putExtra(AutofillResults.EXTRA_SIGNATURE, signature)
     }
 }

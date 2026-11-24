@@ -12,6 +12,7 @@ import android.util.Log
 import app.tote.core.data.di.ApplicationScope
 import app.tote.core.data.platform.PickerIntents
 import app.tote.core.data.repo.EntryRepository
+import app.tote.core.data.repo.LearningRepository
 import app.tote.core.data.repo.VaultSnapshot
 import app.tote.core.matching.FieldMatcher
 import app.tote.core.matching.MatchContext
@@ -39,6 +40,7 @@ class ToteAutofillService : AutofillService() {
 
     @Inject lateinit var snapshot: VaultSnapshot
     @Inject lateinit var repository: EntryRepository
+    @Inject lateinit var learning: LearningRepository
     @Inject lateinit var pickerIntents: PickerIntents
     @Inject @ApplicationScope lateinit var appScope: CoroutineScope
 
@@ -66,7 +68,9 @@ class ToteAutofillService : AutofillService() {
                 val vault = withTimeout(VAULT_TIMEOUT_MS) { snapshot.current() }
                 val (built, fieldCount, suggestionCount) = withContext(Dispatchers.Default) {
                     val fields = StructureParser.parse(AssistNodeView.windows(structure), structure.activityComponent?.packageName)
-                    val plans = factory.plan(fields, vault.entries, MatchContext(activeProfileId = vault.activeProfileId))
+                    val plans = factory.plan(fields, vault.entries, MatchContext(activeProfileId = vault.activeProfileId)) { key ->
+                        vault.learnedFor(key.source, key.signature)
+                    }
                     Triple(factory.build(plans, inlineRequest, UUID.randomUUID().toString()), fields.size, plans.sumOf { it.entries.size })
                 }
                 AutofillDiagnostics.record(AutofillDiagnostics.LastRequest(System.currentTimeMillis(), fieldCount, suggestionCount, elapsedMs()))
@@ -96,17 +100,29 @@ class ToteAutofillService : AutofillService() {
         super.onDestroy()
     }
 
-    /** Counts suggestions the user picked last time (Plan §9.4 step 7). "All entries…" picks are counted by the picker. */
+    /**
+     * Counts suggestions the user picked last time and remembers them for that field (Plan §9.4
+     * step 7, §6.3). "All entries…" picks are handled by the picker.
+     */
     private fun countSelections(history: FillEventHistory?) {
         history ?: return
-        val responseId = history.clientState?.getString(FillResponseFactory.KEY_RESPONSE_ID) ?: return
+        val state = history.clientState
+        val responseId = state?.getString(FillResponseFactory.KEY_RESPONSE_ID) ?: return
         if (responseId in countedResponses) return
         countedResponses.addLast(responseId)
         if (countedResponses.size > 20) countedResponses.removeFirst()
         val picked = history.events.orEmpty()
             .filter { it.type == FillEventHistory.Event.TYPE_DATASET_SELECTED }
-            .mapNotNull { FillResponseFactory.entryIdOf(it.datasetId) }
-        if (picked.isNotEmpty()) appScope.launch { picked.forEach { repository.recordUse(it) } }
+            .mapNotNull { event ->
+                FillResponseFactory.entryIdOf(event.datasetId)?.let { it to FillResponseFactory.learningKeyOf(state, event.datasetId) }
+            }
+        if (picked.isEmpty()) return
+        appScope.launch {
+            picked.forEach { (entryId, key) ->
+                repository.recordUse(entryId)
+                key?.let { learning.record(it.source, it.signature, entryId) }
+            }
+        }
     }
 
     /** Don't offer Tote's own entries inside Tote, except on its autofill test screen. */

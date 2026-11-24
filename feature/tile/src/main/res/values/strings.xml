@@ -1,4 +1,5 @@
 <resources>
     <string name="tile_label">Tote</string>
     <string name="tile_subtitle">Copy an entry</string>
+    <string name="tile_subtitle_all">All profiles</string>
 </resources>

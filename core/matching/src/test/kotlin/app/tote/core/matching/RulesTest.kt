@@ -77,6 +77,13 @@ class RulesTest {
         assertNull(hit)
     }
 
+    @Test fun signatureDescriptionPrefersTheLabel() {
+        val sig = FieldSignature.of(FieldSignals(label = "LinkedIn Profile", htmlName = "urls[LinkedIn]"))
+        assertEquals("linked in profile", FieldSignature.describe(sig))
+        assertEquals("urls linked in", FieldSignature.describe(FieldSignature.of(FieldSignals(htmlName = "urls[LinkedIn]"))))
+        assertEquals("a field", FieldSignature.describe(""))
+    }
+
     @Test fun signatureIsStableAndValueFree() {
         val a = FieldSignals(label = "LinkedIn Profile", htmlName = "urls[LinkedIn]", webDomain = "www.Jobs.Lever.co")
         val b = a.copy()

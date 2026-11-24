@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import app.tote.core.data.platform.ClipboardWriter
 import app.tote.core.data.repo.EntryRepository
+import app.tote.core.data.repo.ProfileRepository
+import app.tote.core.model.Profile
 import app.tote.core.matching.EntryKinds
 import app.tote.core.model.Category
 import app.tote.core.model.Entry
@@ -41,6 +43,9 @@ data class EditorUiState(
     val builtInKeywords: List<String> = emptyList(),
     val keywordDraft: String = "",
     val pinned: Boolean = false,
+    /** Empty = in every profile ("All"). */
+    val profileIds: Set<Long> = emptySet(),
+    val profiles: List<Profile> = emptyList(),
     /** Errors are only shown after a save attempt, so a fresh form isn't red. */
     val showErrors: Boolean = false,
     val validation: EntryValidator.Result = EntryValidator.Result(emptyList(), emptyList()),
@@ -53,6 +58,7 @@ class EditorViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: EntryRepository,
     private val clipboard: ClipboardWriter,
+    private val profileRepository: ProfileRepository,
 ) : ViewModel() {
 
     private val route = savedStateHandle.toRoute<EditorRoute>()
@@ -62,6 +68,12 @@ class EditorViewModel @Inject constructor(
     val state: StateFlow<EditorUiState> = _state.asStateFlow()
 
     init {
+        // Profiles can change while the editor is open (rare, but cheap to follow).
+        viewModelScope.launch {
+            profileRepository.profiles.collect { list ->
+                _state.update { s -> s.copy(profiles = list, profileIds = s.profileIds.filterTo(mutableSetOf()) { id -> list.any { it.id == id } }) }
+            }
+        }
         viewModelScope.launch {
             val existing = if (route.id != 0L) repository.get(route.id) else null
             original = existing
@@ -79,6 +91,8 @@ class EditorViewModel @Inject constructor(
                     iconAuto = !existing.iconOverridden,
                     keywords = existing.keywords,
                     pinned = existing.pinned,
+                    profileIds = existing.profileIds,
+                    profiles = _state.value.profiles,
                 ).validated()
             } else {
                 val template = SeedTemplates.byKey(route.template)
@@ -93,9 +107,10 @@ class EditorViewModel @Inject constructor(
                         // The template knows what it is; only the icon keeps auto-detecting.
                         typeAuto = false,
                         categoryAuto = false,
+                        profiles = _state.value.profiles,
                     ).validated()
                 } else {
-                    EditorUiState(loading = false).validated()
+                    EditorUiState(loading = false, profiles = _state.value.profiles).validated()
                 }
             }
         }
@@ -120,6 +135,15 @@ class EditorViewModel @Inject constructor(
     }
 
     fun onCategorySelected(c: Category) = edit { copy(category = c, categoryAuto = false) }
+
+    /** null = "All profiles"; otherwise toggles one profile on or off. */
+    fun onProfileToggled(id: Long?) = edit {
+        when {
+            id == null -> copy(profileIds = emptySet())
+            id in profileIds -> copy(profileIds = profileIds - id)
+            else -> copy(profileIds = profileIds + id)
+        }
+    }
 
     /** null = back to automatic detection. */
     fun onIconSelected(i: EntryIcon?) = edit {
@@ -164,6 +188,7 @@ class EditorViewModel @Inject constructor(
                 iconOverridden = !s.iconAuto,
                 keywords = s.keywords,
                 pinned = s.pinned,
+                profileIds = s.profileIds,
             )
             repository.save(entry)
             _state.update { it.copy(finished = true) }

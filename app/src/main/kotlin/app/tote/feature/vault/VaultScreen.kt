@@ -87,6 +87,7 @@ import app.tote.ui.components.EntryActions
 import app.tote.ui.components.EntryCard
 import app.tote.ui.components.PillButton
 import app.tote.ui.components.PinnedCard
+import app.tote.ui.components.ToteChip
 import app.tote.ui.components.ToteIconButton
 import app.tote.ui.components.ToteSnackbar
 import app.tote.ui.components.pressScale
@@ -112,6 +113,7 @@ private data class CopyEvent(val entryId: Long, val label: String, val nonce: Lo
 fun VaultRoute(
     onOpenEditor: (EditorRoute) -> Unit,
     onOpenSettings: () -> Unit,
+    onManageProfiles: () -> Unit = {},
     viewModel: VaultViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -132,6 +134,8 @@ fun VaultRoute(
         showAutofillBanner = autofill == AutofillSetup.Status.DISABLED && !bannerDismissed,
         onEnableAutofill = { context.startActivity(AutofillSetup.requestIntent(context)) },
         onDismissAutofillBanner = viewModel::dismissAutofillBanner,
+        onSelectProfile = viewModel::selectProfile,
+        onManageProfiles = onManageProfiles,
     )
 }
 
@@ -150,6 +154,8 @@ fun VaultScreen(
     showAutofillBanner: Boolean = false,
     onEnableAutofill: () -> Unit = {},
     onDismissAutofillBanner: () -> Unit = {},
+    onSelectProfile: (Long?) -> Unit = {},
+    onManageProfiles: () -> Unit = {},
 ) {
     val c = Tote.colors
     val view = LocalView.current
@@ -263,6 +269,12 @@ fun VaultScreen(
                     )
                 }
                 return@LazyColumn
+            }
+
+            if (state.profiles.isNotEmpty() && !state.reordering) {
+                item(key = "profiles", contentType = "profiles") {
+                    ProfileSwitcher(state, onSelectProfile, onManageProfiles)
+                }
             }
 
             if (!state.reordering && !state.loading) {
@@ -537,6 +549,35 @@ private fun SearchField(query: String, onQueryChange: (String) -> Unit, onClear:
             }
         },
     )
+}
+
+/**
+ * The profile switcher (Plan §8.4): "All" plus each profile, then a manage button. The choice
+ * filters this list and decides what autofill and the tile offer.
+ */
+@Composable
+private fun ProfileSwitcher(state: VaultUiState, onSelect: (Long?) -> Unit, onManage: () -> Unit) {
+    val c = Tote.colors
+    Column(Modifier.padding(top = 4.dp)) {
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = ToteSpacing.screen),
+            modifier = Modifier.fillMaxWidth().layoutBleed(ToteSpacing.screen),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            item { ToteChip("All", selected = state.activeProfileId == null, onClick = { onSelect(null) }) }
+            items(state.profiles, key = { it.id }) { p -> ToteChip(p.name, selected = state.activeProfileId == p.id, onClick = { onSelect(p.id) }) }
+            item { ToteIconButton(Icons.Rounded.Tune, contentDescription = "Manage profiles", onClick = onManage, tint = c.textSecondary) }
+        }
+        if (state.hiddenByProfile > 0) {
+            Text(
+                "${state.hiddenByProfile} ${if (state.hiddenByProfile == 1) "entry" else "entries"} from other profiles hidden",
+                style = Tote.type.bodySmall,
+                color = c.textTertiary,
+                modifier = Modifier.padding(start = 4.dp, top = 8.dp),
+            )
+        }
+    }
 }
 
 /** Nudges the user to turn on autofill, the main surface (Plan §2). Dismissible for good. */

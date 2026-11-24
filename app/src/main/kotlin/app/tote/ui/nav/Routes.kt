@@ -22,6 +22,12 @@ data class EditorRoute(val id: Long = 0L, val template: String? = null, val orig
 @Serializable
 data object SettingsRoute
 
+@Serializable
+data object ProfilesRoute
+
+@Serializable
+data object LearnedRoute
+
 /** Shared-element keys. The same key on two screens makes Compose morph one into the other. */
 object SharedKeys {
     fun entry(id: Long, origin: String) = when (origin) {

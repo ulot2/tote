@@ -81,7 +81,9 @@ import app.tote.feature.vault.SheetHandle
 import app.tote.ui.components.EntryValueText
 import app.tote.ui.components.PillButton
 import app.tote.ui.components.PillStyle
+import app.tote.ui.components.ToteChip
 import app.tote.ui.components.ToteIconButton
+import androidx.compose.foundation.lazy.LazyRow
 import app.tote.ui.components.compositeOn
 import app.tote.ui.icons.EntryIconBadge
 import app.tote.ui.theme.Tote
@@ -109,6 +111,7 @@ fun PickerScreen(
     onFinished: () -> Unit,
     startVisible: Boolean = false,
     mode: PickerMode = PickerMode.COPY,
+    onSelectProfile: (Long?) -> Unit = {},
 ) {
     val c = Tote.colors
     val view = LocalView.current
@@ -218,6 +221,19 @@ fun PickerScreen(
                         )
                         ToteIconButton(Icons.AutoMirrored.Rounded.OpenInNew, contentDescription = "Open Tote", onClick = onOpenApp, tint = c.textSecondary)
                         ToteIconButton(Icons.Rounded.Close, contentDescription = "Close", onClick = ::dismiss, tint = c.textSecondary)
+                    }
+                }
+
+                if (state.profiles.isNotEmpty()) {
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        modifier = Modifier.padding(top = 4.dp),
+                    ) {
+                        item { ToteChip("All", selected = state.activeProfileId == null, onClick = { onSelectProfile(null) }) }
+                        items(state.profiles, key = { it.id }) { p ->
+                            ToteChip(p.name, selected = state.activeProfileId == p.id, onClick = { onSelectProfile(p.id) })
+                        }
                     }
                 }
 

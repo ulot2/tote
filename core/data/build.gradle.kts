@@ -21,6 +21,8 @@ android {
     testOptions {
         unitTests.isIncludeAndroidResources = true
     }
+    // Room's exported schemas, so migration tests can open the old versions.
+    sourceSets.getByName("test").assets.srcDir("$projectDir/schemas")
 }
 
 kotlin {

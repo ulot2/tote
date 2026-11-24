@@ -17,6 +17,8 @@ object AutofillResults {
 
     const val EXTRA_AUTOFILL_ID = "app.tote.extra.AUTOFILL_ID"
     const val EXTRA_URL_FIELD = "app.tote.extra.URL_FIELD"
+    const val EXTRA_SOURCE = "app.tote.extra.SOURCE"
+    const val EXTRA_SIGNATURE = "app.tote.extra.SIGNATURE"
 
     fun autofillId(intent: Intent): AutofillId? =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

@@ -57,6 +57,40 @@ class ScreenshotTest {
     }
 
     @Test fun vaultDark() = vault(true, SampleData.state())
+
+    private val profiles = listOf(app.tote.core.model.Profile(1, "Tech"), app.tote.core.model.Profile(2, "Non-tech"))
+
+    @Test fun vaultProfilesDark() = snap("vault-profiles", true) {
+        VaultScreen(SampleData.state().copy(profiles = profiles, activeProfileId = 1, hiddenByProfile = 1), {}, {}, {}, {}, {}, {}, {}, {}, {})
+    }
+
+    @Test fun profilesScreenDark() = snap("profiles", true) {
+        app.tote.feature.profiles.ProfilesScreen(
+            app.tote.feature.profiles.ProfilesUiState(
+                loading = false,
+                rows = listOf(
+                    app.tote.feature.profiles.ProfileRow(profiles[0], 2, active = true),
+                    app.tote.feature.profiles.ProfileRow(profiles[1], 1, active = false),
+                ),
+                allCount = 6,
+            ),
+            {}, {}, { _, _ -> }, {}, {},
+        )
+    }
+
+    @Test fun learnedScreenDark() = snap("learned", true) {
+        app.tote.feature.learned.LearnedScreen(
+            app.tote.feature.learned.LearnedUiState(
+                loading = false,
+                fields = listOf(
+                    app.tote.feature.learned.LearnedField("jobs.lever.co", "label:website", "website", listOf(SampleData.github to 3)),
+                    app.tote.feature.learned.LearnedField("jobs.lever.co", "label:other link", "other link", listOf(SampleData.portfolio to 1, SampleData.github to 1)),
+                    app.tote.feature.learned.LearnedField("boards.greenhouse.io", "label:resume cv", "resume cv", listOf(SampleData.cv to 2)),
+                ),
+            ),
+            {}, {}, {},
+        )
+    }
     @Test fun vaultLight() = vault(false, SampleData.state())
     @Test fun vaultReorderDark() = vault(true, SampleData.state(reordering = true))
     @Test fun emptyDark() = vault(true, SampleData.state(entries = emptyList()))

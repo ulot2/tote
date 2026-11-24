@@ -19,6 +19,15 @@ object FieldSignature {
         return parts.joinToString("|")
     }
 
+    /**
+     * A short human description of a stored signature for the "Learned suggestions" screen:
+     * the field's label if known, else its name or id. ("label:linked in profile" → "linked in profile")
+     */
+    fun describe(signature: String): String {
+        val parts = signature.split('|').associate { it.substringBefore(':') to it.substringAfter(':', "") }
+        return listOf("label", "name", "id", "ac", "hint").firstNotNullOfOrNull { parts[it]?.takeIf(String::isNotBlank) } ?: "a field"
+    }
+
     fun key(field: FieldSignals): LearningKey? {
         val source = field.source ?: return null
         val signature = of(field).ifEmpty { return null }

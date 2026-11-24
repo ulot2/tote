@@ -238,3 +238,30 @@ Running log of choices made during the build, and places where the build deviate
 - **Fixtures: 61 → 114**, including 20 new wordings, 19 for the new kinds and 15 traps that must
   *not* match (e.g. "Company website" mustn't offer Portfolio; "First name" mustn't offer Full
   name). Every kind must know at least 4 wordings.
+
+## Phase 5, part A: learning and profiles
+
+- **Learned mappings** live in a new `learned_mappings` table (schema v2). Room migrates from v1
+  automatically, since adding a table is something it can do on its own. A Robolectric
+  `MigrationTestHelper` test opens a real v1 database with an entry and checks it survives. The
+  key is (source, field signature, entry), with a hit count, and rows are deleted with their entry.
+- **What gets learned:** a pick from the autofill dropdown or chips (read from the fill event
+  history), or from "All entries…" (the picker records it). Each dataset id carries its field index
+  (`e:<entryId>:<fieldIndex>`), and the response's client state maps that index to the field's
+  learning key. The key is the site's domain or the app's package, plus the normalised field
+  signature. It never leaves the phone and never includes typed values.
+- **How learning ranks:** a learned entry gets the matcher's top boost (+200, plus hits), so S6
+  holds. Pick GitHub once for "Website" on a site, and GitHub leads there next time.
+- **Settings › Learned suggestions** lists remembered fields by site or app, described by their
+  label (or name/id), with what was picked. Each can be forgotten, and there's "Forget everything".
+- **Profiles:** add, rename and delete in Settings › Profiles. Deleting a profile moves entries that
+  belonged only to it back to "All" rather than hiding them, and resets the active profile if it
+  was the deleted one. A profile id left behind anywhere is read as "All".
+- **One active profile, everywhere.** The vault switcher, the picker's chips and Settings all set
+  the same value. Autofill, the tile subtitle and the picker follow it. The vault shows the active
+  profile's entries plus "All" entries, with a line saying how many are hidden. Reorder mode always
+  shows every entry, so a manual order is never saved for a partial list.
+- **Editor:** a Profiles section appears once profiles exist. "All profiles" (the default) or any
+  combination of profiles.
+- **Tile subtitle:** "Copy an entry" until profiles exist, then the active profile's name (or "All
+  profiles"). It follows changes live while the shade is open.
