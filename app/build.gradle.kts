@@ -98,6 +98,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.reorderable)
 
+    testImplementation(libs.room.runtime)
+    testImplementation(libs.datastore.preferences)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)

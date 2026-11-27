@@ -8,7 +8,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import app.tote.core.data.repo.EntryRepository
+import app.tote.core.model.Entry
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.tote.core.data.settings.AppSettings
@@ -24,6 +29,7 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject lateinit var settingsRepository: SettingsRepository
+    @Inject lateinit var entryRepository: EntryRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splash = installSplashScreen()
@@ -32,16 +38,25 @@ class MainActivity : ComponentActivity() {
         splash.setKeepOnScreenCondition { !ready }
         enableEdgeToEdge()
         setContent {
-            val settings by settingsRepository.settings
-                .map<AppSettings, AppSettings?> { it }
-                .collectAsStateWithLifecycle(initialValue = null)
-            // Wait for the first settings read so a forced light/dark theme never flashes.
+            val settingsFlow = remember { settingsRepository.settings.map<AppSettings, AppSettings?> { it } }
+            val settings by settingsFlow.collectAsStateWithLifecycle(initialValue = null)
+            val emptyFlow = remember { entryRepository.entries.map<List<Entry>, Boolean?> { it.isEmpty() } }
+            val vaultEmpty by emptyFlow.collectAsStateWithLifecycle(initialValue = null)
+            // Wait for the first settings and vault reads so a forced light/dark theme never
+            // flashes and the right first screen shows.
             val s = settings ?: return@setContent
+            val empty = vaultEmpty ?: return@setContent
+            // Decided once: saving entries during onboarding mustn't swap the screen underneath.
+            val showOnboarding = rememberSaveable { !s.onboardingDone && empty }
+            LaunchedEffect(Unit) {
+                // Someone who used Tuck before onboarding existed already has entries: never show it.
+                if (!s.onboardingDone && !empty) settingsRepository.setOnboardingDone(true)
+            }
             ready = true
             val dark = isAppInDarkTheme(s.themeMode)
             SystemBarsFor(dark)
             ToteTheme(darkTheme = dark, dynamicColor = s.dynamicColor, accent = s.accent) {
-                ToteNavHost()
+                ToteNavHost(showOnboarding = showOnboarding)
             }
         }
     }

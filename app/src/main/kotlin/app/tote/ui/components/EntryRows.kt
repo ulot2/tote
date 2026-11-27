@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -104,7 +105,7 @@ fun CopiedBadge(modifier: Modifier = Modifier) {
     val c = Tuck.colors
     Row(
         modifier
-            .height(32.dp)
+            .heightIn(min = 32.dp)
             .background(c.accent, RoundedCornerShape(16.dp))
             .padding(start = 8.dp, end = 12.dp)
             .semantics { liveRegion = LiveRegionMode.Polite },
@@ -223,7 +224,7 @@ fun PinnedPill(entry: Entry, actions: EntryActions, modifier: Modifier = Modifie
     val interaction = remember { MutableInteractionSource() }
     Row(
         modifier
-            .height(48.dp)
+            .heightIn(min = 48.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(bg)
             .border(1.dp, if (copied) c.accentTintBorder else border, RoundedCornerShape(24.dp))

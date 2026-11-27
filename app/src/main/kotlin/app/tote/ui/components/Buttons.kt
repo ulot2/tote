@@ -35,7 +35,8 @@ import androidx.compose.ui.unit.dp
 import app.tote.ui.theme.Tuck
 import app.tote.ui.theme.ToteShapes
 
-enum class PillStyle { Primary, Secondary, Ghost, Danger }
+/** [Quiet] is a text-only button for the lesser of two actions, like "I'll add my own later". */
+enum class PillStyle { Primary, Secondary, Ghost, Danger, Quiet }
 
 /** Subtle press-in scale shared by tappable surfaces. */
 @Composable
@@ -65,8 +66,9 @@ fun PillButton(
         PillStyle.Secondary -> Triple(c.surfaceRaised, c.textPrimary, null)
         PillStyle.Ghost -> Triple(Color.Transparent, c.textPrimary, BorderStroke(1.dp, c.outlineStrong))
         PillStyle.Danger -> Triple(Color.Transparent, c.danger, BorderStroke(1.dp, c.danger.copy(alpha = 0.5f)))
+        PillStyle.Quiet -> Triple(Color.Transparent, c.textSecondary, null)
     }
-    val bgAnimated by animateColorAsState(if (enabled) bg else c.surfaceRaised, label = "pillBg")
+    val bgAnimated by animateColorAsState(if (enabled || style == PillStyle.Quiet) bg else c.surfaceRaised, label = "pillBg")
     val fgAnimated by animateColorAsState(if (enabled) fg else c.textTertiary, label = "pillFg")
     val interaction = remember { MutableInteractionSource() }
     Row(

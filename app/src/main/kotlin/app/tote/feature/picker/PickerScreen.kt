@@ -340,7 +340,7 @@ private fun ProfileMenu(state: PickerUiState, onSelect: (Long?) -> Unit) {
     Box {
         Row(
             Modifier
-                .height(48.dp)
+                .heightIn(min = 48.dp)
                 .clip(ToteShapes.pill)
                 .background(if (active != null) c.accentTint else c.background)
                 .border(1.dp, if (active != null) c.accentTintBorder else c.outline, ToteShapes.pill)
@@ -383,7 +383,7 @@ private fun PickerSearch(query: String, onQueryChange: (String) -> Unit, modifie
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .height(48.dp)
+                    .heightIn(min = 48.dp)
                     .background(c.background, ToteShapes.pill)
                     .border(1.dp, c.outline, ToteShapes.pill)
                     .padding(horizontal = 16.dp),
