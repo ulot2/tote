@@ -24,6 +24,12 @@ interface LearnedDao {
         bump(source, signature, entryId, now)
     }
 
+    @Query("SELECT * FROM learned_mappings")
+    suspend fun allOnce(): List<LearnedMappingEntity>
+
+    @Query("INSERT OR IGNORE INTO learned_mappings (source, signature, entry_id, hits, last_used_at) VALUES (:source, :signature, :entryId, :hits, :lastUsedAt)")
+    suspend fun insertIfMissing(source: String, signature: String, entryId: Long, hits: Int, lastUsedAt: Long): Long
+
     @Query("DELETE FROM learned_mappings WHERE source = :source AND signature = :signature")
     suspend fun forget(source: String, signature: String)
 

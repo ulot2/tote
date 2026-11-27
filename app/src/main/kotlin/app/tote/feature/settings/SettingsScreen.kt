@@ -1,6 +1,20 @@
 package app.tote.feature.settings
 
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import app.tote.core.data.backup.BackupRepository
+import app.tote.core.data.backup.ReadResult
+import app.tote.core.data.backup.RestoreSummary
+import app.tote.core.data.backup.VaultBackup
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.delay
+import androidx.compose.runtime.LaunchedEffect
+import app.tote.ui.components.ToteSnackbar
+import java.time.LocalDate
 import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -79,6 +93,7 @@ import app.tote.ui.theme.ToteSpacing
 import app.tote.ui.theme.TotePalette
 import app.tote.ui.theme.Tuck
 import app.tote.util.AutofillSetup
+import app.tote.util.BackupFiles
 import app.tote.util.TileAddResult
 import app.tote.util.TilePrompt
 import app.tote.util.rememberAutofillStatus
@@ -91,12 +106,83 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/** Backup and restore, as the Settings screen shows it. */
+sealed interface BackupUi {
+    data object Idle : BackupUi
+    data object Working : BackupUi
+    /** A file was read and checked; nothing changes until the user confirms. */
+    data class ConfirmRestore(val summary: RestoreSummary) : BackupUi
+    data class Done(val message: String) : BackupUi
+    data class Failed(val title: String, val message: String) : BackupUi
+}
+
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settings: SettingsRepository,
     profiles: ProfileRepository,
     learning: LearningRepository,
+    private val backups: BackupRepository,
+    @ApplicationContext private val context: Context,
 ) : ViewModel() {
+    private val _backup = MutableStateFlow<BackupUi>(BackupUi.Idle)
+    val backup: StateFlow<BackupUi> = _backup
+    private var pending: VaultBackup? = null
+
+    fun exportTo(uri: Uri) {
+        _backup.value = BackupUi.Working
+        viewModelScope.launch {
+            _backup.value = try {
+                val text = backups.export()
+                BackupFiles.write(context, uri, text)
+                val count = backups.read(text).let { (it as? ReadResult.Ok)?.backup?.entries?.size ?: 0 }
+                BackupUi.Done("Backed up ${plural(count, "entry", "entries")}")
+            } catch (e: Exception) {
+                BackupUi.Failed("Couldn't save the backup", "Tuck couldn't write to that file. Try another folder.")
+            }
+        }
+    }
+
+    fun readForRestore(uri: Uri) {
+        _backup.value = BackupUi.Working
+        viewModelScope.launch {
+            val text = BackupFiles.read(context, uri)
+            if (text == null) {
+                _backup.value = BackupUi.Failed("Couldn't open that file", "Pick the .json file Tuck saved when you backed up.")
+                return@launch
+            }
+            _backup.value = when (val read = backups.read(text)) {
+                is ReadResult.Ok -> {
+                    pending = read.backup
+                    BackupUi.ConfirmRestore(backups.preview(read.backup))
+                }
+                ReadResult.NotABackup -> BackupUi.Failed("That isn't a Tuck backup", "Pick the .json file Tuck saved when you backed up.")
+                is ReadResult.TooNew -> BackupUi.Failed("Backup from a newer Tuck", "Update Tuck, then restore this file again.")
+            }
+        }
+    }
+
+    fun confirmRestore() {
+        val backup = pending ?: return
+        pending = null
+        _backup.value = BackupUi.Working
+        viewModelScope.launch {
+            _backup.value = try {
+                val done = backups.restore(backup)
+                BackupUi.Done(
+                    if (done.entriesAdded == 0) "Nothing new. Everything was already in Tuck."
+                    else "Restored ${plural(done.entriesAdded, "entry", "entries")}",
+                )
+            } catch (e: Exception) {
+                BackupUi.Failed("Couldn't restore", "Nothing was changed. Try the file again.")
+            }
+        }
+    }
+
+    fun dismissBackup() {
+        pending = null
+        _backup.value = BackupUi.Idle
+    }
+
     val state: StateFlow<AppSettings> = settings.settings.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppSettings())
 
     /** "Tech is active · 2 profiles" style summary for the Profiles row. */
@@ -114,6 +200,8 @@ class SettingsViewModel @Inject constructor(
     fun setAccent(accent: Accent) { viewModelScope.launch { settings.setAccent(accent) } }
 }
 
+internal fun plural(n: Int, one: String, many: String) = "$n ${if (n == 1) one else many}"
+
 @Composable
 fun SettingsRoute(
     onBack: () -> Unit,
@@ -124,7 +212,14 @@ fun SettingsRoute(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val profileSummary by viewModel.profileSummary.collectAsStateWithLifecycle()
     val learnedCount by viewModel.learnedCount.collectAsStateWithLifecycle()
+    val backup by viewModel.backup.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val createBackup = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(BackupRepository.MIME_TYPE)) { uri ->
+        if (uri != null) viewModel.exportTo(uri)
+    }
+    val openBackup = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) viewModel.readForRestore(uri)
+    }
     val autofillStatus = rememberAutofillStatus()
     val chrome = remember { AutofillSetup.chromeLaunchIntent(context) }
     var tileResult by rememberSaveable { mutableStateOf<TileAddResult?>(null) }
@@ -150,6 +245,11 @@ fun SettingsRoute(
         },
         onOpenLearned = onOpenLearned,
         onAccent = { viewModel.setAccent(it) },
+        backup = backup,
+        onBackup = { createBackup.launch(BackupRepository.fileName(LocalDate.now())) },
+        onRestore = { openBackup.launch(BackupFiles.OPEN_TYPES) },
+        onConfirmRestore = viewModel::confirmRestore,
+        onDismissBackup = viewModel::dismissBackup,
     )
 }
 
@@ -176,6 +276,11 @@ fun SettingsScreen(
     learnedSummary: String = "",
     onOpenLearned: () -> Unit = {},
     onAccent: (Accent) -> Unit = {},
+    backup: BackupUi = BackupUi.Idle,
+    onBackup: () -> Unit = {},
+    onRestore: () -> Unit = {},
+    onConfirmRestore: () -> Unit = {},
+    onDismissBackup: () -> Unit = {},
 ) {
     val c = Tuck.colors
     var chromeSheet by remember { mutableStateOf(false) }
@@ -219,6 +324,10 @@ fun SettingsScreen(
                 NavRow("Profiles", profileSummary, onOpenProfiles)
                 GroupDivider(inset = 16)
                 NavRow("Learned suggestions", learnedSummary, onOpenLearned)
+                GroupDivider(inset = 16)
+                NavRow("Back up to a file", "A readable JSON file. Keep it somewhere private.", onBackup, enabled = backup != BackupUi.Working)
+                GroupDivider(inset = 16)
+                NavRow("Restore from a file", "Adds what's missing. Nothing is deleted.", onRestore, enabled = backup != BackupUi.Working)
             }
 
             SectionLabel("Quick access")
@@ -333,6 +442,33 @@ fun SettingsScreen(
                 }
             }
         }
+        if (backup is BackupUi.Done) {
+            LaunchedEffect(backup) {
+                delay(3_500)
+                onDismissBackup()
+            }
+            ToteSnackbar(
+                message = backup.message,
+                actionLabel = null,
+                onAction = {},
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .navigationBarsPadding()
+                    .padding(horizontal = ToteSpacing.screen, vertical = 16.dp),
+            )
+        }
+    }
+
+    when (backup) {
+        is BackupUi.ConfirmRestore -> RestoreSheet(backup.summary, onConfirm = onConfirmRestore, onDismiss = onDismissBackup)
+        is BackupUi.Failed -> StepsSheet(
+            title = backup.title,
+            intro = backup.message,
+            steps = emptyList(),
+            action = null,
+            onDismiss = onDismissBackup,
+        )
+        else -> Unit
     }
 
     if (chromeSheet) {
@@ -501,6 +637,49 @@ private fun AccentPicker(selected: Accent, enabled: Boolean, onSelect: (Accent) 
     }
 }
 
+/** "Restore from a file": says exactly what will change before anything does. */
+@Composable
+private fun RestoreSheet(summary: RestoreSummary, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    val c = Tuck.colors
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        shape = ToteShapes.sheet,
+        containerColor = c.surface,
+        dragHandle = { SheetHandle() },
+    ) {
+        Column(Modifier.navigationBarsPadding().padding(horizontal = 24.dp).padding(bottom = 24.dp)) {
+            Text("Restore this backup?", style = Tuck.type.title, color = c.textPrimary, modifier = Modifier.padding(top = 8.dp).semantics { heading() })
+            Text(restoreDescription(summary), style = Tuck.type.body, color = c.textSecondary, modifier = Modifier.padding(top = 8.dp))
+            Text(
+                "Nothing in Tuck is deleted or overwritten.",
+                style = Tuck.type.bodySmall,
+                color = c.textTertiary,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+            PillButton(
+                if (summary.entriesAdded == 0 && summary.profilesAdded == 0) "Nothing to add" else "Restore",
+                onClick = onConfirm,
+                enabled = summary.entriesAdded > 0 || summary.profilesAdded > 0,
+                modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+            )
+            PillButton("Cancel", onClick = onDismiss, style = PillStyle.Ghost, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
+        }
+    }
+}
+
+internal fun restoreDescription(s: RestoreSummary): String = buildString {
+    if (s.entriesAdded == 0) append("Everything in this file is already in Tuck.")
+    else {
+        append("Adds ${plural(s.entriesAdded, "entry", "entries")}")
+        if (s.profilesAdded > 0) append(" and ${plural(s.profilesAdded, "profile", "profiles")}")
+        append(".")
+    }
+    if (s.entriesSkipped > 0 && s.entriesAdded > 0) {
+        append(" ${plural(s.entriesSkipped, "entry is", "entries are")} already here and will be skipped.")
+    }
+}
+
 @Composable
 private fun StepsSheet(title: String, intro: String, steps: List<String>, action: Pair<String, () -> Unit>?, onDismiss: () -> Unit) {
     val c = Tuck.colors
@@ -562,12 +741,12 @@ private fun Group(modifier: Modifier = Modifier, content: @Composable () -> Unit
 }
 
 @Composable
-private fun NavRow(title: String, detail: String, onClick: () -> Unit) {
+private fun NavRow(title: String, detail: String, onClick: () -> Unit, enabled: Boolean = true) {
     val c = Tuck.colors
     Row(
         Modifier
             .fillMaxWidth()
-            .clickable(role = Role.Button, onClick = onClick)
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
             .defaultMinSize(minHeight = 64.dp)
             .padding(start = 16.dp, end = 12.dp, top = 10.dp, bottom = 10.dp),
         verticalAlignment = Alignment.CenterVertically,

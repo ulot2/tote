@@ -24,7 +24,9 @@ class AssistNodeView(private val node: AssistStructure.ViewNode) : NodeView<Auto
     // Only non-editable views contribute text, and only as labels: a field's own value is never read.
     override val text: String? get() = if (node.autofillType == android.view.View.AUTOFILL_TYPE_NONE) node.text?.toString() else null
     override val inputType: Int get() = node.inputType
-    override val importantForAutofill: Int get() = node.importantForAutofill
+    // Android 8.x has no such flag on the node; treat every field as "auto" there.
+    override val importantForAutofill: Int get() =
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) node.importantForAutofill else android.view.View.IMPORTANT_FOR_AUTOFILL_AUTO
     override val webDomain: String? get() = node.webDomain
     override val children: List<NodeView<AutofillId>>
         get() = (0 until node.childCount).map { AssistNodeView(node.getChildAt(it)) }

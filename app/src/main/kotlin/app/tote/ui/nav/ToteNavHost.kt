@@ -17,20 +17,33 @@ import app.tote.feature.settings.SettingsRoute as SettingsScreenRoute
 import app.tote.feature.profiles.ProfilesRoute as ProfilesScreenRoute
 import app.tote.feature.learned.LearnedRoute as LearnedScreenRoute
 import app.tote.feature.vault.VaultRoute as VaultScreenRoute
+import app.tote.feature.onboarding.OnboardingRoute as OnboardingScreenRoute
 
 @Composable
-fun ToteNavHost(modifier: Modifier = Modifier) {
+fun ToteNavHost(showOnboarding: Boolean = false, modifier: Modifier = Modifier) {
     val nav = rememberNavController()
     SharedTransitionLayout(modifier) {
         CompositionLocalProvider(LocalSharedTransitionScope provides this) {
             NavHost(
                 navController = nav,
-                startDestination = VaultRoute,
+                startDestination = if (showOnboarding) OnboardingRoute else VaultRoute,
                 enterTransition = { fadeIn(tween(220)) },
                 exitTransition = { fadeOut(tween(180)) },
                 popEnterTransition = { fadeIn(tween(220)) },
                 popExitTransition = { fadeOut(tween(180)) },
             ) {
+                composable<OnboardingRoute>(
+                    exitTransition = { fadeOut(tween(260)) },
+                ) {
+                    OnboardingScreenRoute(
+                        onDone = {
+                            nav.navigate(VaultRoute) {
+                                popUpTo(OnboardingRoute) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        },
+                    )
+                }
                 composable<VaultRoute> {
                     CompositionLocalProvider(LocalNavAnimatedScope provides this) {
                         VaultScreenRoute(

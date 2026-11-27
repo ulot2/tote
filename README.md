@@ -49,5 +49,5 @@ base64 -w0 tote.p12 > tote.p12.b64   # paste this into TOTE_KEY
 - [x] Phase 2: Quick Settings tile and picker
 - [x] Phase 3: matching engine
 - [x] Phase 4: autofill service
-- [ ] Phase 5: profiles, learning, polish (part A: learning and profiles done)
+- [x] Phase 5: profiles, learning, onboarding, backup and restore, accessibility
 - [ ] Phase 6: release prep

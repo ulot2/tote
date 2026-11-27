@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -558,7 +559,7 @@ private fun DockSearch(query: String, onQueryChange: (String) -> Unit, onClear: 
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .height(56.dp)
+                    .heightIn(min = 56.dp)
                     .background(c.surfaceRaised, ToteShapes.pill)
                     .border(1.dp, c.outlineStrong, ToteShapes.pill)
                     .padding(start = 18.dp, end = 4.dp),

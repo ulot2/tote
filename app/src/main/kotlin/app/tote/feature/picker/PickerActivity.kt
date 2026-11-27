@@ -14,6 +14,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.tote.MainActivity
 import app.tote.core.data.settings.AppSettings
@@ -46,9 +47,8 @@ open class PickerActivity : ComponentActivity() {
         )
         disableWindowAnimations()
         setContent {
-            val settings by settingsRepository.settings
-                .map<AppSettings, AppSettings?> { it }
-                .collectAsStateWithLifecycle(initialValue = null)
+            val settingsFlow = remember { settingsRepository.settings.map<AppSettings, AppSettings?> { it } }
+            val settings by settingsFlow.collectAsStateWithLifecycle(initialValue = null)
             val s = settings ?: return@setContent
             val state by viewModel.state.collectAsStateWithLifecycle()
             ToteTheme(darkTheme = isAppInDarkTheme(s.themeMode), dynamicColor = s.dynamicColor, accent = s.accent) {

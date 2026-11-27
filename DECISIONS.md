@@ -307,5 +307,40 @@ Running log of choices made during the build, and places where the build deviate
     the one-service warning).
   - Chrome and tile steps open in sheets.
   - The rest is grouped lists: your data, quick access, appearance, about.
-- **Not yet built:** onboarding (designed on the canvas, ships with Phase 5 part B) and Backup /
-  Restore (also part B, so the Settings rows appear then).
+- **Onboarding and Backup / Restore** followed in Phase 5 part B (below).
+
+## Phase 5 part B: backup, onboarding, accessibility
+
+- **Backup format:** plain, pretty-printed JSON (`tuck-backup-YYYY-MM-DD.json`) with a `format`
+  marker (`tuck-vault`) and a `version`. It holds entries, profiles and learned picks. Ids in the
+  file are only references inside the file and are remapped on restore. Enums are stored by name;
+  unknown names (a newer app's new type or icon) fall back to plain text instead of failing, and
+  unknown keys are ignored. A file with a higher `version` is refused with "update Tuck".
+- **Not encrypted, on purpose:** the user owns the file and should be able to read it, and Tuck
+  holds no secrets (Plan §1). The Settings row says so: "A readable JSON file. Keep it somewhere
+  private."
+- **Restore merges, never deletes:** entries with the same label and value (label case-insensitive)
+  are skipped, profiles are matched by name, learned picks follow their entries. Restoring the same
+  file twice changes nothing. A confirm sheet says exactly what will be added and skipped first.
+- **Files go through the system picker** (Storage Access Framework `CreateDocument` /
+  `OpenDocument`), so Tuck still needs no storage or internet permission. Reads are capped at
+  8 MB so a wrong pick can't fill memory. The picker also offers `text/plain` and
+  `application/octet-stream`, because some file managers label JSON that way.
+- **Onboarding:** four steps under one progress bar, per the design board: welcome, pick your
+  essentials (the design's ten templates; five preselected), paste in the values, turn on
+  autofill plus the tile. Every step can be skipped. Blank values are skipped; going back and
+  saving again edits the entries instead of duplicating them. The welcome step has "Restore from
+  a backup" for reinstalls, which restores and goes straight to the vault.
+- **Who sees onboarding:** only a fresh install with an empty vault. Anyone upgrading with
+  entries is marked done silently. The choice is made once at launch, so saving entries during
+  onboarding can't swap the screen underneath.
+- **Large text:** screenshots at font scale 2.0 (Android's maximum, applied linearly, which is
+  harsher than the platform's non-linear scaling). Fixed heights on the search fields, pinned
+  pills, the Copied badge and the picker's profile button became minimum heights. The template
+  grid switches to one column from font scale 1.4, where two columns broke words.
+- **Motion:** step changes slide in the direction of travel; progress segments and tile
+  selection animate colour. Compose scales all of it by the system animation setting, so
+  "Remove animations" turns it off.
+- **Fixed while here:** lint found that the autofill service read `importantForAutofill`, which
+  only exists from Android 9, so autofill would have crashed on Android 8.x. It now treats every
+  field as "auto" there. Two Flow operators were also moved out of composition.

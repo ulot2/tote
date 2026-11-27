@@ -28,6 +28,10 @@ data object ProfilesRoute
 @Serializable
 data object LearnedRoute
 
+/** First run only; see `MainActivity`. */
+@Serializable
+data object OnboardingRoute
+
 /** Shared-element keys. The same key on two screens makes Compose morph one into the other. */
 object SharedKeys {
     fun entry(id: Long, origin: String) = when (origin) {

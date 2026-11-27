@@ -54,6 +54,9 @@ interface EntryDao {
 @Dao
 interface ProfileDao {
     @Query("SELECT * FROM profiles ORDER BY sort_order, id")
+    suspend fun allOnce(): List<ProfileEntity>
+
+    @Query("SELECT * FROM profiles ORDER BY sort_order, id")
     fun observeAll(): Flow<List<ProfileEntity>>
 
     @Insert
